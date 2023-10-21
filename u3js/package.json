@@ -1,0 +1,21 @@
+{
+  "name": "u3js",
+  "description": "A lite 3d engine base on threejs",
+  "version": "0.0.1",
+  "author": "bobolinks",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "dependencies": {
+    "three": "^0.157.0",
+    "troika-three-text": "^0.48.0-unicode.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.2",
+    "@types/three": "^0.156.0",
+    "typescript": "^5.1.6"
+  },
+  "scripts": {
+    "build": "vite build"
+  }
+}

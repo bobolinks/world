@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    .wrap {
+      position: relative;
+      background: black;
+      display: flex;
+      justify-content: center;
+    }
+
+    .wrap .canvas {
+      margin: auto;
+      background: white;
+    }
+  </style>
+  <script src="./ammo.wasm.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./three.module.min.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from 'three';
+    import { U3JsRuntime } from '../dist/u3js.mjs';
+
+    const ammoLoading = window.Ammo().then(e => {
+      window.ammo = e;
+    })
+
+    window.addEventListener('load', async () => {
+      const cavans = document.getElementById('canvas');
+      cavans.width = window.innerWidth * window.devicePixelRatio;
+      cavans.height = window.innerHeight * window.devicePixelRatio;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+      await ammoLoading;
+      startApp();
+    });
+
+    async function startApp() {
+      const cavans = document.getElementById('canvas');
+      const app = new U3JsRuntime(cavans);
+      const qs = location.search ? location.search.replace(/^\?/, '') : '';
+      const query = Object.fromEntries(qs.split('&').map(kv => kv.split('=')));
+      if (query.url) {
+        app.resize(cavans.width, cavans.height);
+        app.run();
+
+        await app.load(decodeURIComponent(query.url));
+
+        window.addEventListener('resize', () => {
+          resize(cavans, app);
+        });
+      }
+    }
+
+    function resize(cavans, app) {
+      let { width, height } = document.body.getBoundingClientRect();
+      if (app.settings.aspect === 'auto') {
+        // do nothing
+      } else if (app.settings.aspect > 1) {
+        height = width / app.settings.aspect;
+      } else {
+        width = height * app.settings.aspect;
+      }
+      cavans.width = width * window.devicePixelRatio;
+      cavans.height = height * window.devicePixelRatio;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      app.resize(cavans.width, cavans.height);
+    }
+
+  </script>
+</head>
+
+<body style="width: 100vw; height: 100vh;">
+  <div ref="root" class="wrap" style="position: relative; width: 100%; height: 100%;">
+    <canvas id="canvas" class="canvas" />
+  </div>
+</body>
+
+</html>

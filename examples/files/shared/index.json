@@ -1,0 +1,219 @@
+{
+  "object": {
+    "uuid": "ff892429-3da1-455f-a7c4-fe25b169c9a3",
+    "type": "Object3D",
+    "layers": 1,
+    "matrix": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "children": [
+      {
+        "uuid": "d4c3cedc-d729-4d87-8d36-2b0cbe242b91",
+        "type": "PhysicalScene",
+        "name": "default",
+        "layers": 1,
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "children": [
+          {
+            "uuid": "bd310b42-c053-4033-a17b-c7e0dafaafbe",
+            "type": "PerspectiveCamera",
+            "name": "defaultCamera",
+            "layers": 1,
+            "matrix": [
+              0.7071067811865475,
+              8.326672684688674e-17,
+              -0.7071067811865477,
+              0,
+              -0.4082482904638631,
+              0.8164965809277259,
+              -0.4082482904638629,
+              0,
+              0.5773502691896257,
+              0.5773502691896258,
+              0.5773502691896257,
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "fov": 50,
+            "zoom": 1,
+            "near": 0.001,
+            "far": 1000,
+            "focus": 10,
+            "aspect": 1,
+            "filmGauge": 35,
+            "filmOffset": 0
+          },
+          {
+            "uuid": "3efed862-9a7f-4734-b966-586b5386d575",
+            "type": "PointLight",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0.7274878407638519,
+              0.8164824496424237,
+              -0.7411325717419116,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "color": 16777215,
+            "intensity": 1,
+            "distance": 0,
+            "decay": 2,
+            "shadow": {
+              "mapSize": [
+                2048,
+                2048
+              ],
+              "camera": {
+                "uuid": "653e592c-58ad-4df5-9300-49f3acc46450",
+                "type": "PerspectiveCamera",
+                "layers": 1,
+                "up": [
+                  0,
+                  1,
+                  0
+                ],
+                "fov": 90,
+                "zoom": 1,
+                "near": 0.5,
+                "far": 500,
+                "focus": 10,
+                "aspect": 1,
+                "filmGauge": 35,
+                "filmOffset": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "uuid": "816ae50e-f7c1-4819-a345-a6a558cb9010",
+        "type": "PhysicalScene",
+        "name": "[Spawns]",
+        "layers": 1,
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ]
+      }
+    ],
+    "revision": 26,
+    "world": {
+      "aspect": 1.7777777777777777,
+      "toneMapping": 4,
+      "toneMappingExposure": 1,
+      "shadowMap": {
+        "enabled": true,
+        "type": 2
+      },
+      "width": 3840,
+      "height": 2160,
+      "useLegacyLights": false
+    },
+    "scene": "default"
+  },
+  "metadata": {
+    "version": 4.6,
+    "type": "Object",
+    "generator": "Object3D.toJSON"
+  },
+  "geometries": [],
+  "materials": [],
+  "textures": [],
+  "images": [],
+  "shapes": [],
+  "skeletons": [],
+  "animations": [],
+  "nodes": [],
+  "listeners": []
+}

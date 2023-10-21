@@ -1,0 +1,35 @@
+{
+  "files": [
+    "src/types/types.d.ts",
+    "src/types/ammo.d.ts",
+    "src/types/troika-three-text.d.ts"
+  ],
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "typeRoots": [
+      "./node_modules/@types/",
+    ],
+  },
+  "include": [
+    "src/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "src/types/types.d.ts",
+    "src/types/ammo.d.ts",
+  ],
+  "exclude": [
+    "node_modules",
+  ]
+}

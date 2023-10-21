@@ -1,0 +1,70 @@
+// 垂直居中样式
+.vertical-middle {
+  &:before {
+    content: '';
+    height: 100%;
+  }
+  &:before, .centered {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}
+
+// 绝对定位占据父元素全部空间
+.abs-full {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+}
+
+// flex 占据剩余空间
+.flex-column, .flex-row {
+  display: flex;
+  flex-wrap: nowrap;
+  .column-fill, .row-fill {
+    flex: 1 1 auto;
+  }
+}
+.flex-column {
+  flex-direction: column;
+  .column-fill {
+    height: 0;
+  }
+}
+.flex-row {
+  flex-direction: row;
+  .row-fill {
+    width: 0;
+  }
+}
+
+// 常用的列表 grid 布局, 解决 flex 列表布局最后一行的左对齐问题
+.grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 170px);
+  grid-gap: 1em;
+  justify-content: space-evenly;
+  justify-items: center;
+}
+
+.leftside {
+  min-width: 320px;
+  max-width: 320px;
+}
+
+.rightside {
+  min-width: 400px;
+  max-width: 400px;
+}
+
+.center {
+  min-width: 400px;
+  flex: 1 1 auto;
+}
+
+.min-width {
+  min-width: 1120px;
+  max-width: 100vw;
+}

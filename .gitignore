@@ -106,3 +106,6 @@ typings/
 *.blend[1-9]
 design/3d/assets
 design/3d/resource
+
+examples/logs
+examples/temp

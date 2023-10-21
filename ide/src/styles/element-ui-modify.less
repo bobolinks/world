@@ -1,0 +1,123 @@
+// elementUI 一些样式调整, 跟主题颜色无关, 例如导航菜单的缩进等, 这些调整是全局通用的
+
+.el-dialog {
+  --el-dialog-padding-primary: 12px !important;
+}
+
+// loading
+.el-loading-spinner {
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background-color: fade(white, 60);
+  font-weight: bold;
+  width: 100px;
+  border-radius: 5px;
+  padding: 10px;
+  left: 50%;
+  margin-left: -50px;
+  margin-top: -47px;
+
+  .el-loading-text {
+    white-space: nowrap;
+  }
+}
+
+// primary button 添加背景渐变
+.el-button--primary {
+  background-image: var(--rect-gradient);
+  border: 0;
+}
+
+// 调整 el-tabs 样式, 高度铺满
+.el-tabs.full-height {
+  display: flex;
+  flex-flow: column nowrap;
+
+  >.el-tabs__content {
+    flex: 1 1 auto;
+    padding: 0 !important;
+
+    .el-tab-pane {
+      padding: 15px;
+    }
+  }
+}
+
+.el-menu-item:hover,
+.el-menu-item:focus {
+  background-color: transparent !important;
+}
+
+.el-color-picker {
+  margin-right: 12px !important;
+}
+
+
+/* el-dialog */
+
+.el-dialog {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.el-dialog__header {
+  all: unset;
+}
+
+.el-dialog.el-dialog--center {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.el-dialog__header {
+  background: var(--background-color-title);
+  color: var(--color-title-dialog);
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+  border-bottom: 1px solid #f2f2f2;
+  padding: 6px;
+  padding-left: 1em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.el-dialog__header  .el-dialog__title {
+  color: var(--color-title-dialog);
+}
+
+.el-dialog__headerbtn {
+  width: 32px !important;
+  height: 32px !important;
+}
+
+.el-dialog__headerbtn .el-dialog__close {
+  color: var(--color-title-dialog);
+  border-radius: 10px;
+  border: none;
+  /* 1px solid var(--color-title-dialog); */
+}
+
+.el-dialog__body {
+  background: var(--background-color-dialog);
+  padding: 2rem;
+}
+
+.el-dialog__footer {
+  background: var(--background-color-dialog);
+  padding: 10px;
+}
+
+.el-dialog--center .el-dialog__body {
+  padding: 10px;
+}
+
+.el-tabs__item {
+  padding: 0 8px !important;
+}
+
+.el-upload-dragger {
+  width: unset !important;
+}

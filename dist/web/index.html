@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link id="themeStyle" rel="stylesheet" type="text/css" href="/themes/light.css" />
+  <link rel="stylesheet" href="assets/fonts/open-sans/open-sans.css" type="text/css" />
+  <link rel="stylesheet" href="assets/fonts/tabler-icons/tabler-icons.min.css" type="text/css" />
+  <script src="./ammo.wasm.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@latest/min/vs/loader.min.js"></script>
+  <script>
+    window.require.config({ paths: { 'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@latest/min/vs' } });
+    require(['vs/editor/editor.main'], () => {
+      window.dispatchEvent(new Event('monacoReady'));
+    });
+    window.Ammo().then(e => {
+      window.ammo = e;
+      window.dispatchEvent(new Event('ammoReady'));
+    })
+  </script>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three/addons/": "/node_modules/three/examples/jsm/"
+      }
+    }
+  </script>
+  <script type="module" crossorigin src="/assets/index-1df103ec.js"></script>
+  <link rel="stylesheet" href="/assets/index-e32ed2db.css">
+</head>
+
+<body>
+  <div id="app" style="height: 100vh;"></div>
+  
+</body>
+
+</html>
