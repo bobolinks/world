@@ -20721,7 +20721,7 @@ class aA extends tn {
     t && t.children.splice(r, 1), this._sceneTmp.children.push(this), this._renderTarget = this._pmremGenerator.fromScene(this._sceneTmp), t && (r !== -1 ? t.children.splice(r, 0, this) : t.children.push(this)), this._sceneRoot && (this._sceneRoot.background = this._renderTarget.texture, this._sceneRoot.environment = this._renderTarget.texture);
   }
   serialize(t) {
-    t.scale = this.scale.toArray(), t.turbidity = this.turbidity, t.rayleigh = this.rayleigh, t.mieCoefficient = this.mieCoefficient, t.mieDirectionalG = this.mieDirectionalG, t.sunPosition = this.sunPosition.toArray(), this._sun && (t.sun = this._sun.uuid);
+    t.scale = this.scale.toArray(), t.turbidity = this.turbidity, t.rayleigh = this.rayleigh, t.mieCoefficient = this.mieCoefficient, t.mieDirectionalG = this.mieDirectionalG, t.sunPosition = this.sunPosition.toArray(), this._sun && (t.sun = this._sun.uuid || this._sun);
   }
   deserialize(t) {
     this.scale.fromArray(t.scale), this.turbidity = t.turbidity, this.rayleigh = t.rayleigh, this.mieCoefficient = t.mieCoefficient, this.mieDirectionalG = t.mieDirectionalG, this.sunPosition.fromArray(t.sunPosition), t.sun && (this._sun = t.sun), this.updateRenderTarget();
@@ -21855,7 +21855,7 @@ uA(
     },
     proto: "Effect",
     group: "Effects.Burning Effect",
-    icon: "polygon",
+    icon: "fireworks",
     create: () => new dA()
   }
 );
