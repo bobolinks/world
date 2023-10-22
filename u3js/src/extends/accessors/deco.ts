@@ -189,7 +189,7 @@ export const three = {
     proto: 'Light'
   },
   AmbientLightProbe: {
-    cls: THREE.AmbientLightProbe,
+    // cls: THREE.AmbientLightProbe,
     isAmbientLightProbe: true,
     members: {},
     proto: 'LightProbe'
@@ -370,7 +370,7 @@ export const three = {
     proto: 'Light'
   },
   HemisphereLightProbe: {
-    cls: THREE.HemisphereLightProbe,
+    // cls: THREE.HemisphereLightProbe,
     isHemisphereLightProbe: true,
     members: {},
     proto: 'LightProbe'

@@ -2,7 +2,9 @@
   "ts-node": {
     "files": true,
   },
-  "files": [],
+  "files": [
+    "./u3js/src/types/types.d.ts",
+  ],
   "compilerOptions": {
     "resolveJsonModule": true,
     "experimentalDecorators": true

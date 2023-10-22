@@ -19,7 +19,7 @@ export default {
   },
   async load() {
     await shared.load();
-    if (store.state.projectName !== 'shared') {
+    if (store.state.projectName && store.state.projectName !== 'shared') {
       const project = new Project(store.state.projectName);
       try {
         await project.load(true);
@@ -31,6 +31,6 @@ export default {
     } else {
       global.project = shared;
     }
-    global.dispatchEvent({ type: 'projectLoaded', soure: null as any, project: shared })
+    global.dispatchEvent({ type: 'projectLoaded', soure: null as any, project: global.project })
   }
 };

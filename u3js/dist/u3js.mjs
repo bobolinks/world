@@ -5995,7 +5995,7 @@ vec3 mx_srgb_texture_to_lin_rec709(vec3 color)
     proto: "Light"
   },
   AmbientLightProbe: {
-    cls: M.AmbientLightProbe,
+    // cls: THREE.AmbientLightProbe,
     isAmbientLightProbe: !0,
     members: {},
     proto: "LightProbe"
@@ -6188,7 +6188,7 @@ vec3 mx_srgb_texture_to_lin_rec709(vec3 color)
     proto: "Light"
   },
   HemisphereLightProbe: {
-    cls: M.HemisphereLightProbe,
+    // cls: THREE.HemisphereLightProbe,
     isHemisphereLightProbe: !0,
     members: {},
     proto: "LightProbe"

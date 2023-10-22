@@ -1,9 +1,4 @@
 {
-  "files": [
-    "src/types/types.d.ts",
-    "src/types/ammo.d.ts",
-    "src/types/troika-three-text.d.ts"
-  ],
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
@@ -24,8 +19,6 @@
   "include": [
     "src/*.ts",
     "src/**/*.ts",
-    "src/types/types.d.ts",
-    "src/types/ammo.d.ts",
   ],
   "exclude": [
     "node_modules",

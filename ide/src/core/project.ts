@@ -4,37 +4,32 @@ import { MeshBasicNodeMaterial, UniformNode, } from "three/examples/jsm/nodes/No
 import type { UserEventMap } from './u3js/types/types';
 import apis from "../apis";
 import Net from '../utils/net';
-import { toJSON } from "./u3js/serializer";
+import { Output, toJSON } from "./u3js/serializer";
 import { ObjectLoader } from './u3js/loader';
 import { PhysicalScene } from './u3js/extends/three/scene';
-import { createObject, emptyObject } from './u3js/extends/three/utils';
+import { addThreeClass, createObject, emptyObject } from './u3js/extends/three/utils';
 import { Graph } from './u3js/extends/graph/graph';
 import { WorldSettings } from "./world";
 import { SpawnsScene } from './spawns';
 import { BuiltinSceneSpawns, } from './u3js';
 import { ScriptNode } from './u3js/extends/nodes/script';
 import { ScriptBlockNode } from './u3js/extends/nodes/block';
+import { jsImport } from './u3js/extends/helper/import';
+import type { pluginInstall } from './u3js/types/plugin';
+import { addConstructor, addNodeClass } from './u3js/extends/helper/clslib';
+import { addEffectClass } from './u3js/extends/three/effect';
 
 // disable script in editor mode
 ScriptNode.prototype.exec = function () { } as any;
 ScriptBlockNode.prototype.exec = function () { } as any;
 
-type ObjectJson = {
-  [key: string]: any;
-  uuid: string;
-  type: string;
-  userData: { [key: string]: any; };
-  children: Array<ObjectJson>;
-};
-
-export interface ProjectJson {
-  [key: string]: any;
-  revision: number;
-  scene: string;
-  camera: string;
-  world: WorldSettings;
-  userData: { [key: string]: any; };
-  children: Array<ObjectJson>;
+interface ProjectOutput extends Output {
+  project: {
+    revision: number;
+    scene: string;
+    world: WorldSettings;
+    plugins: string[];
+  };
 }
 
 const defaultWorldSetting: WorldSettings = {
@@ -55,9 +50,10 @@ function defaultCamera() {
   return camera;
 }
 
-export type ProjectEvent = 'projectLoaded' | 'sceneChanged' | 'treeModified' | 'objectChanged' | 'objectAdded' | 'objectRemoved';
+export type ProjectEvent = 'projectLoaded' | 'projectSettingsChanged' | 'sceneChanged' | 'treeModified' | 'objectChanged' | 'objectAdded' | 'objectRemoved';
 export type ProjectEventMap = {
   projectLoaded: { type: ProjectEvent; soure: EventDispatcher; project: Project; };
+  projectSettingsChanged: { type: 'projectSettingsChanged', soure: EventDispatcher; project: Project; };
   sceneChanged: { type: ProjectEvent; soure: EventDispatcher; scene: Scene; };
   treeModified: { type: ProjectEvent; soure: EventDispatcher; root: Object3D; };
   objectChanged: { type: ProjectEvent; soure: EventDispatcher; object: Object3D; };
@@ -66,10 +62,10 @@ export type ProjectEventMap = {
 };
 
 export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
-  public readonly json: ProjectJson;
   public readonly world: WorldSettings;
   public readonly uuid = THREE.MathUtils.generateUUID();
   public readonly textures: Record<string, THREE.Texture> = {};
+  public readonly plugins = new Set<string>;
 
   scene: PhysicalScene;
   readonly scenes: Array<PhysicalScene> = [];
@@ -81,15 +77,6 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     super();
 
     this.world = { ...defaultWorldSetting };
-
-    this.json = {
-      revision: 0,
-      scene: 'defaultScene',
-      camera: 'defaultCamera',
-      world: this.world,
-      userData: {},
-      children: [],
-    };
 
     this.scene = new PhysicalScene();
     this.scene.name = 'defaultScene';
@@ -106,10 +93,26 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
 
   async load(ignoreEvent?: boolean): Promise<this> {
     const loader = new ObjectLoader();
-    let json = await Net.request({ url: `/fs/file/${this.name}/index.json` }) as ProjectJson;
+    let json = await Net.request({ url: `/fs/file/${this.name}/index.json` }) as ProjectOutput;
     if (typeof json === 'string') {
       json = JSON.parse(json);
     }
+
+    // install plugins first
+    if (json.project.plugins) {
+      this.plugins.clear();
+      json.project.plugins.forEach(e => this.plugins.add(e));
+      const plugins: Array<{ pluginInstall: typeof pluginInstall }> = await Promise.all(json.project.plugins.map(e => jsImport(e)));
+      for (const plugin of plugins) {
+        plugin.pluginInstall(
+          addThreeClass,
+          addEffectClass,
+          addNodeClass,
+          addConstructor,
+        );
+      }
+    }
+
     const root = await loader.parseAsync(json);
 
     emptyObject(this.textures);
@@ -119,19 +122,15 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       }
     }
 
-    emptyObject(this.json);
-    Object.assign(this.json, json);
-
     // load global settings
-    const { object } = json;
-    if ((object as any).world) {
+    if (json.project.world) {
       emptyObject(this.world);
-      Object.assign(this.world, { ...defaultWorldSetting, ...(object as any).world });
+      Object.assign(this.world, { ...defaultWorldSetting, ...json.project.world });
     }
     if (!this.world.aspect) {
       this.world.aspect = 'auto';
     }
-    this._revision = object.revision || 0;
+    this._revision = json.project.revision || 0;
 
     // load scenes
     for (const child of this.scenes) {
@@ -143,7 +142,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     if (!this.scenes.find(e => e.name === BuiltinSceneSpawns)) {
       this.scenes.push(new SpawnsScene);
     }
-    this.scene = (this.scenes.find(e => e.name === object.scene) || this.scenes[0]) as PhysicalScene;
+    this.scene = (this.scenes.find(e => e.name === json.project.scene) || this.scenes[0]) as PhysicalScene;
 
     this.scenes.forEach(e => this.hookInEditorMode(e));
 
@@ -171,16 +170,19 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
 
     root.children = this.scenes;
 
-    const data = toJSON(root, this.textures);
+    const output: ProjectOutput = toJSON(root, this.textures) as any;
 
     root.children = [];
     root.nodes = undefined;
 
-    data.object.revision = this.revision;
-    data.object.world = this.world;
-    data.object.scene = this.scene.name;
+    output.project = {
+      revision: this.revision,
+      world: this.world,
+      scene: this.scene.name,
+      plugins: [...this.plugins],
+    };
 
-    return data;
+    return output;
   }
 
   async flush(): Promise<void> {

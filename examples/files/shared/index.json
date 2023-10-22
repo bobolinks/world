@@ -1,4 +1,20 @@
 {
+  "project": {
+    "revision": 26,
+    "world": {
+      "aspect": 1.7777777777777777,
+      "toneMapping": 4,
+      "toneMappingExposure": 1,
+      "shadowMap": {
+        "enabled": true,
+        "type": 2
+      },
+      "width": 3840,
+      "height": 2160,
+      "useLegacyLights": false
+    },
+    "scene": "default"
+  },
   "object": {
     "uuid": "ff892429-3da1-455f-a7c4-fe25b169c9a3",
     "type": "Object3D",
@@ -186,21 +202,7 @@
           0
         ]
       }
-    ],
-    "revision": 26,
-    "world": {
-      "aspect": 1.7777777777777777,
-      "toneMapping": 4,
-      "toneMappingExposure": 1,
-      "shadowMap": {
-        "enabled": true,
-        "type": 2
-      },
-      "width": 3840,
-      "height": 2160,
-      "useLegacyLights": false
-    },
-    "scene": "default"
+    ]
   },
   "metadata": {
     "version": 4.6,

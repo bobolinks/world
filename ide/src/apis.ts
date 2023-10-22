@@ -13,7 +13,7 @@ export default {
   async createProject(name: string): Promise<any> {
     await Rpc.request({
       url: `/fs/mkdir/${name}`,
-    }, ['images', 'sounds', 'fonts', 'models']);
+    }, ['images', 'sounds', 'fonts', 'models', 'plugins']);
   },
   async renameProject(old: string, name: string) {
     await Rpc.request({
@@ -77,6 +77,17 @@ export default {
     const set = await Promise.all(paths.map(async (e) => {
       const rs = await Rpc.request({ url: `/fs/ls/${e}` });
       return rs ? Object.entries(rs).filter((e) => !(e[1] as any).isd).map(([k]) => `/fs/file/${e}/${k}`) : [];
+    }));
+    return set.flat();
+  },
+  async getPlugins(project: string): Promise<Array<{ url: string; size: number }>> {
+    const paths = ['shared/plugins'];
+    if (project !== 'shared') {
+      paths.push(`${project}/plugins`);
+    }
+    const set = await Promise.all(paths.map(async (e) => {
+      const rs = await Rpc.request({ url: `/fs/ls/${e}` });
+      return rs ? Object.entries(rs).filter((e) => !(e[1] as any).isd && /\.js|\.mjs$/.test(e[0])).map(([k, i]) => ({ url: `/fs/file/${e}/${k}`, size: (i as any).size })) : [];
     }));
     return set.flat();
   },

@@ -40,6 +40,7 @@ const isGridShow = ref(global.world?.gridHelper.visible);
 function aspectChanged(value: number | 'auto') {
   screen.value.aspect = value;
   global.project.world.aspect = value;
+  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project } );
   global.dispatchEvent({ type: 'worldSettingsModified', soure: null as any, settings: { aspect: value } });
 }
 

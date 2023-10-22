@@ -29,8 +29,9 @@
         </el-icon>
       </div>
       <div class="rightside topbtns" style="align-items: center; display: flex; flex-direction: row">
-        <i class="icon-start" action="run" @click="run" />
+        <i class="icon-start" @click="run" />
         <p style="flex: 1 1 auto" />
+        <i class="icon-chip" @click="pluginsModel.visible = !pluginsModel.visible" />
         <el-icon>
           <Setting @click="settingsModel.visible = !settingsModel.visible" />
         </el-icon>
@@ -46,6 +47,7 @@
     </div>
     <Uploader v-model="uploaderModel.visible" title="Upload files" />
     <Settings v-model="settingsModel.visible" title="World settings" />
+    <Plugings v-model="pluginsModel.visible" title="Plugins" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -55,6 +57,7 @@ import { ElMessageBox } from 'element-plus';
 import Keyboard, { updateKeys } from './keyboard.vue';
 import Uploader from './popovers/uploader.vue';
 import Settings from './popovers/settings.vue';
+import Plugings from './popovers/plugings.vue';
 import { store } from '../store';
 import { local } from '../lang';
 import apis from '../apis';
@@ -73,6 +76,9 @@ const uploaderModel = ref({
   visible: false,
 });
 const settingsModel = ref({
+  visible: false,
+});
+const pluginsModel = ref({
   visible: false,
 });
 

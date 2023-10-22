@@ -26,7 +26,7 @@ function keyFormat(s: string) {
 export const ChangedEvents: Array<GlobalEvent> = [
   'graphAdded', 'graphModified', 'graphConnected', 'graphDisconnected', 'graphRemoved',
   'objectAdded', 'objectModified', 'objectRemoved',
-  'worldSettingsModified',
+  'projectSettingsChanged',
 ];
 
 type KeyListenerCallback = (e: KeyboardEvent) => void;

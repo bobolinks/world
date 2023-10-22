@@ -11,6 +11,7 @@ const state = {
   projects: [] as Array<string>,
   projectName: localStorage.getItem('projectName') || 'shared',
   audioListeners: [] as Array<{ name: string; value: string }>,
+  pluginsChanged: false,
 };
 
 export const store = createStore({

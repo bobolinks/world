@@ -1,17 +1,13 @@
 // vite.config.js
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-// import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   build: {
-    emptyOutDir: false,
     lib: {
       // Could also be a dictionary or array of multiple entry points
-      entry: resolve(__dirname, 'src/index.ts'),
-      name: 'U3JS',
-      // the proper extensions will be added
-      fileName: 'u3js',
+      entry: [resolve(__dirname, 'src/wsjoy.ts'), resolve(__dirname, 'src/fire.ts'),],
+      formats: ['es'],
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
@@ -26,5 +22,4 @@ export default defineConfig({
       },
     },
   },
-  // plugins: [dts({ rollupTypes: true })],
 })

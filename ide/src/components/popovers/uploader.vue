@@ -1,7 +1,7 @@
 <template>
   <el-dialog v-model="modelVisibleValue" :title="title" width="30%" draggable align-center @close="modelVisibleValue = false">
     <el-upload class="uploader" drag :action="url" multiple :file-list="fileList" :on-success="handleSuccess"
-      :before-upload="beforeUpload" accept="image/*,audio/*,.glb,.fbx,.ttf">
+      :before-upload="beforeUpload" accept="image/*,audio/*,.glb,.fbx,.ttf,.js,.mjs">
       <el-icon class="el-icon--upload">
         <upload-filled />
       </el-icon>
@@ -53,6 +53,8 @@ function beforeUpload(file: File) {
     return new File([file], `fonts@${file.name}`, { type: file.type });
   } else if (/\.glb|\.fbx$/i.test(file.name)) {
     return new File([file], `models@${file.name}`, { type: file.type });
+  } else if (/\.js|\.mjs$/i.test(file.name)) {
+    return new File([file], `plugins@${file.name}`, { type: file.type });
   }
   return false;
 }

@@ -9,7 +9,7 @@ declare module 'three' {
   }
 }
 
-export type MimeType = 'image/*' | 'audio/*' | 'font/*' | 'model/*' | 'video/*' | 'application/json';
+export type MimeType = 'image/*' | 'audio/*' | 'font/*' | 'model/*' | 'video/*' | 'application/json' | 'application/javascript';
 export type DragEventType = 'dragNodeClass' | 'dragObjectClass' | 'dragObject' | 'dragFile';
 export type DragEventMap = {
   dragNodeClass: { type: 'dragNodeClass'; soure: EventDispatcher | null; name: string; };
