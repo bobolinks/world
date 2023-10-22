@@ -12,7 +12,7 @@ for (const [key, info] of Object.entries(clsExtends)) {
   if (!info.group) {
     continue;
   }
-  if (info.group.startsWith('Scenes.') || info.group.startsWith('Entities.') || info.group.startsWith('Shapes.')) {
+  if (info.group.startsWith('Scenes.') || info.group.startsWith('Entities.') || info.group.startsWith('Shapes.') || info.group.startsWith('Effects.')) {
     continue;
   }
   const title = info.group.split('.').pop();

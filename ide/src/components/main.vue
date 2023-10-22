@@ -71,7 +71,7 @@ function updateScene() {
     return;
   }
   global.world.setScene(global.project.scene);
-  global.editor.setScene(global.project.scene);
+  global.editor?.setScene(global.project.scene);
   global.history.setScene(global.project.scene);
 }
 

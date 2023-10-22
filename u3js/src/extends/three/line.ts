@@ -113,7 +113,7 @@ addThreeClass('BezierLine', {
     density: 'Number',
   },
   proto: 'Mesh',
-  group: 'Shapes.Bezier Line',
+  group: 'Objects.Bezier Line',
   icon: 'line',
 });
 

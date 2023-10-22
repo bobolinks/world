@@ -25,7 +25,7 @@
           <label class="shortname">F</label>
         </div>
       </template>
-      <Effects />
+      <EffectNodes />
     </el-tab-pane>
     <el-tab-pane v-if="store.state.isWorldView">
       <template #label>
@@ -111,7 +111,7 @@ import Envs from './panels/envs.vue';
 import Images from './panels/images.vue';
 import Sounds from './panels/sounds.vue';
 import Fonts from './panels/fonts.vue';
-import Effects from './panels/effects.vue';
+import EffectNodes from './panels/effectNodes.vue';
 import Models from './panels/models.vue';
 import Entities from './panels/entities.vue';
 import Shapes from './panels/shapes.vue';

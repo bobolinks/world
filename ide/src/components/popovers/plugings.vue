@@ -56,7 +56,6 @@ function updateStatus() {
 }
 
 function reload() {
-  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project } );
   location.reload();
 }
 
