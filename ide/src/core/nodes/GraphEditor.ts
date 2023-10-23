@@ -1,18 +1,18 @@
 import * as THREE from 'three';
 import * as Nodes from 'three/examples/jsm/nodes/Nodes';
-import type { GraphEvent, GraphEventMap, GraphNode, HistoryManager, LinkPoint, ThreeNode, UserEventMap, UserEventName } from '../u3js/types/types';
+import type { GraphEvent, GraphEventMap, GraphNode, HistoryManager, LinkPoint, ThreeNode, UserEventMap, UserEventName } from 'u3js/src/types/types';
 import { Canvas, ButtonInput, StringInput, ContextMenu, Search, Node, TreeViewNode, TreeViewInput, Element } from '../../libs/flow';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
 import { NodeMaterial } from 'three/examples/jsm/nodes/Nodes';
-import { Graph, } from '../u3js/extends/graph/graph';
+import { Graph, } from 'u3js/src/extends/graph/graph';
 import { createEditorFromNode } from './editors';
 import { parseDragParams } from '../drags';
-import { NodeProtoMore, createThreeNode, getProto, tree } from '../u3js/extends/helper/clslib';
-import { ObjectNode } from '../u3js/extends/nodes/object';
-import { ScriptBlockNode } from '../u3js/extends/nodes/block';
+import { NodeProtoMore, createThreeNode, getProto, tree } from 'u3js/src/extends/helper/clslib';
+import { ObjectNode } from 'u3js/src/extends/nodes/object';
+import { ScriptBlockNode } from 'u3js/src/extends/nodes/block';
 import { NodeEditor } from './NodeEditor';
 import { editorsCahced } from './editorsCached';
-import { logger } from '../u3js/extends/helper/logger';
+import { logger } from 'u3js/src/extends/helper/logger';
 
 declare module 'three' {
   interface Object3D {

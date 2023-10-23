@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { CPUNodeObjectValueType, NodeTypeName, } from '../../u3js/types/types';
+import type { CPUNodeObjectValueType, NodeTypeName, } from 'u3js/src/types/types';
 import { Element, StringInput, } from "../../../libs/flow";
 import { parseDragParams } from "../../drags";
 import { ElemScopedType, valueOf } from "./utils";
-import { getProxyRawObject } from '../../u3js/extends/three/utils';
+import { getProxyRawObject } from 'u3js/src/extends/three/utils';
 
 export const createObjectInput = (scoped: ElemScopedType, field: string, element: Element, type: NodeTypeName, enums: { [key: string]: number | string; }, values: Array<string>) => {
   const value: Exclude<CPUNodeObjectValueType, HTMLImageElement> = valueOf(scoped, field);

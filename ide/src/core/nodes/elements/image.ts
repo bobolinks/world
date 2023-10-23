@@ -3,7 +3,7 @@ import { ImageLoader, Texture, } from "three";
 import { Element, StringInput, } from "../../../libs/flow";
 import { parseDragParams } from "../../drags";
 import { ElemScopedType, valueOf } from "./utils";
-import type { NodeTypeName } from '../../u3js/types/types';
+import type { NodeTypeName } from 'u3js/src/types/types';
 
 export const createImageInput = (scoped: ElemScopedType, field: string, element: Element, type: NodeTypeName, enums: { [key: string]: number | string; }, values: Array<string>) => {
   const value: HTMLImageElement = valueOf(scoped, field) ?? document.createElement('img');

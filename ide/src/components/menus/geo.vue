@@ -6,7 +6,7 @@ import { Mesh, Object3D, Vector3, Euler, Matrix4 } from 'three';
 import { onMounted, onUnmounted, ref } from 'vue';
 import Menubar from '../elements/menubar.vue';
 import { global } from '../../global';
-import { Entity } from '../../core/u3js/extends/three/entity';
+import { Entity } from 'u3js/src/extends/three/entity';
 
 const isEnabled = ref(false);
 const menus = ref<{title: string; value: string}[]>([

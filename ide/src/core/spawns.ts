@@ -1,5 +1,5 @@
-import { BuiltinSceneSpawns, PhysicalScene } from "./u3js";
-import { addThreeClass } from "./u3js/extends/three/utils";
+import { BuiltinSceneSpawns, PhysicalScene } from "u3js/src";
+import { addThreeClass } from "u3js/src/extends/three/utils";
 
 export class SpawnsScene extends PhysicalScene {
   constructor() {

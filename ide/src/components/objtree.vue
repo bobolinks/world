@@ -19,13 +19,13 @@ import { ref, onMounted, onUnmounted, } from 'vue';
 import { ElNotification } from 'element-plus';
 import type { TreeNode, TreeNodeData } from 'element-plus/es/components/tree-v2/src/types';
 import { Object3D, Scene } from 'three';
+import { BuiltinObjectKeyHidden } from 'u3js/src/index';
 import { global } from '../global';
 import { store } from '../store';
 import icons from '../assets/font/iconfont.json';
 import { local } from '../lang';
 import { fillDragParams, parseDragParams } from '../core/drags';
 import { showSelector } from './elements/selector.vue';
-import { BuiltinObjectKeyHidden } from '../core/u3js/index';
 
 const props = {
   value: 'id',

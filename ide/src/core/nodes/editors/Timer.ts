@@ -1,7 +1,7 @@
 import { TimerNode } from 'three/examples/jsm/nodes/Nodes';
-import type { GraphNode, HistoryManager } from '../../u3js/types/types';
+import type { GraphNode, HistoryManager } from 'u3js/src/types/types';
 import { ButtonInput, Element, LabelElement, NumberInput } from '../../../libs/flow';
-import { Graph, } from '../../u3js/extends/graph/graph';
+import { Graph, } from 'u3js/src/extends/graph/graph';
 import { InputEditor } from './input';
 import { NodeEditorParams } from '../NodeEditor';
 

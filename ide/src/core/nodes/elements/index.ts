@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { LabelElement, Element } from "../../../libs/flow";
-import type { CPUNodeValueTypeName, NodePin, } from '../../u3js/types/types';
+import type { CPUNodeValueTypeName, NodePin, } from 'u3js/src/types/types';
 import { consumeChain, createReadonlyTypeInput } from "./elements";
 import { ElemScopedType } from "./utils";
 

@@ -1,6 +1,6 @@
 import { EventDispatcher, Scene } from "three";
-import type { DataKeyPoint, HistoryEventMap } from "./u3js/types/types";
-import { logger } from "./u3js/extends/helper/logger";
+import type { DataKeyPoint, HistoryEventMap } from "u3js/src/types/types";
+import { logger } from "u3js/src/extends/helper/logger";
 
 type KeyChain = {
   cursor: number;

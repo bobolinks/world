@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-undef */
-export { logger as Logger } from '../core/u3js/extends/helper/logger';
+export { logger as Logger } from 'u3js/src/extends/helper/logger';
 export { default as Time } from './time';
 export { default as Sys } from './sys';
 

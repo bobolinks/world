@@ -1,9 +1,9 @@
 import { Object3D, Texture } from 'three';
-import type { GraphNode, HistoryManager, LinkPoint } from '../../u3js/types/types';
+import type { GraphNode, HistoryManager, LinkPoint } from 'u3js/src/types/types';
 import { Element, LabelElement } from '../../../libs/flow';
-import { ObjectNode } from '../../u3js/extends/nodes/object';
-import { Graph, } from '../../u3js/extends/graph/graph';
-import { getPinsByNode } from '../../u3js/extends/helper/clslib';
+import { ObjectNode } from 'u3js/src/extends/nodes/object';
+import { Graph, } from 'u3js/src/extends/graph/graph';
+import { getPinsByNode } from 'u3js/src/extends/helper/clslib';
 import { NodeEditor, NodeEditorParams } from '../NodeEditor';
 import { createElementFieldFromNode } from '../elements';
 import { consumeChain } from '../elements/elements';

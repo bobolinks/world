@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Color, Euler, Vector2, Vector3, Vector4 } from 'three';
 import { ColorInput, Element, Input, NumberInput, SelectInput, StringInput, ToggleInput, } from '../../../libs/flow';
-import type { CPUNodeValueTypeName, NodeTypeName, } from '../../u3js/types/types';
+import type { CPUNodeValueTypeName, NodeTypeName, } from 'u3js/src/types/types';
 import { CodeElement } from './code';
 import { ElemScopedType, valueEnsure, valueOf } from './utils';
 import { createImageInput } from './image';

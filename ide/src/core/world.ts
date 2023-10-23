@@ -10,21 +10,19 @@ import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
-// @ts-ignore
-import { nodeFrame } from 'three/examples/jsm/renderers/webgl-legacy/nodes/WebGLNodes.js';
-// @ts-ignore
-import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
-// @ts-ignore
-import WebGPURenderer from 'three/examples/jsm/renderers/webgpu/WebGPURenderer.js';
+// // @ts-ignore
+// import { nodeFrame } from 'three/examples/jsm/renderers/webgl-legacy/nodes/WebGLNodes.js';
+// // @ts-ignore
+// import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
+// // @ts-ignore
+// import WebGPURenderer from 'three/examples/jsm/renderers/webgpu/WebGPURenderer.js';
+import { nodeFrame, WebGPU, WebGPURenderer } from 'u3js/src/libs/three/examples';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { ViewHelper } from 'three/examples/jsm/helpers/ViewHelper';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer';
-import { PhysicalScene } from './u3js/extends/three/scene';
-import type { HistoryManager, UserEventMap } from './u3js/types/types';
-import worldGlobal, { MaxGPUComputeWidth, MaxGPUComputeHeight } from './u3js/extends/three/worldGlobal';
-
-// import { Reflector } from 'three/examples/jsm/objects/Reflector.js';
-// import { Water } from 'three/examples/jsm/objects/Water2.js';
+import { PhysicalScene } from 'u3js/src/extends/three/scene';
+import type { HistoryManager, UserEventMap } from 'u3js/src/types/types';
+import worldGlobal, { MaxGPUComputeWidth, MaxGPUComputeHeight } from 'u3js/src/extends/three/worldGlobal';
 
 const stats = new Stats();
 stats.dom.style.top = 'unset';
@@ -242,31 +240,6 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     };
 
     this.resize(this.context.width, this.context.height);
-
-
-    // // test
-    // const geometry = new THREE.CircleGeometry(40, 64);
-    // const groundMirror = new Reflector(geometry, {
-    //   clipBias: 0,
-    //   textureWidth: 1024,
-    //   textureHeight: 1024,
-    //   color: 0xb5b5b5
-    // });
-    // groundMirror.position.y = 0.5;
-    // groundMirror.rotateX(- Math.PI / 2);
-    // this.root.add(groundMirror);
-    // const waterGeometry = new THREE.PlaneGeometry(20, 20);
-
-    // const water = new Water(waterGeometry, {
-    //   color: new THREE.Color(0xffffff),
-    //   scale: 4,
-    //   flowDirection: new THREE.Vector2(1, 0),
-    //   textureWidth: 1024,
-    //   textureHeight: 1024
-    // });
-
-    // water.rotation.x = Math.PI * - 0.5;
-    // this.root.add(water);
   }
   resize(width: number, height: number) {
     if (!this.context) {

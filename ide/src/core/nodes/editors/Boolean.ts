@@ -1,6 +1,6 @@
-import type { GraphNode, HistoryManager } from '../../u3js/types/types';
+import type { GraphNode, HistoryManager } from 'u3js/src/types/types';
 import { ConstNode } from 'three/examples/jsm/nodes/Nodes';
-import { Graph, } from '../../u3js/extends/graph/graph';
+import { Graph, } from 'u3js/src/extends/graph/graph';
 import { Element } from '../../../libs/flow';
 import { InputEditor } from './input';
 import { NodeEditorParams } from '../NodeEditor';

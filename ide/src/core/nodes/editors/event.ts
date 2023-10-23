@@ -1,6 +1,6 @@
-import type { GraphNode, HistoryManager } from '../../u3js/types/types';
-import { EventListenerNode } from '../../u3js/extends/nodes/event';
-import { Graph, } from '../../u3js/extends/graph/graph';
+import type { GraphNode, HistoryManager } from 'u3js/src/types/types';
+import { EventListenerNode } from 'u3js/src/extends/nodes/event';
+import { Graph, } from 'u3js/src/extends/graph/graph';
 import { NodeEditorParams } from '../NodeEditor';
 import { BlockEditor } from './block';
 

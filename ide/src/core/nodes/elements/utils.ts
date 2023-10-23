@@ -1,5 +1,5 @@
 import { Object3D, Texture } from 'three';
-import type { ThreeNode } from '../../u3js/types/types';
+import type { ThreeNode } from 'u3js/src/types/types';
 
 export type ElemScopedType = ThreeNode | Object3D | Texture;
 

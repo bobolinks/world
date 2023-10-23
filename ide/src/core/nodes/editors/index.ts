@@ -1,12 +1,12 @@
 import { Texture } from "three";
-import type { GraphNode, HistoryManager } from '../../u3js/types/types';
-import { EventListenerNode } from "../../u3js/extends/nodes/event";
-import { ObjectNode } from "../../u3js/extends/nodes/object";
-import { ScriptNode } from "../../u3js/extends/nodes/script";
-import { ScriptBlockNode } from "../../u3js/extends/nodes/block";
-import { getClsName } from "../../u3js/extends/helper/clslib";
-import { TextMesh } from "../../u3js/extends/three/text";
-import { Graph, } from "../../u3js/extends/graph/graph";
+import type { GraphNode, HistoryManager } from 'u3js/src/types/types';
+import { EventListenerNode } from "u3js/src/extends/nodes/event";
+import { ObjectNode } from "u3js/src/extends/nodes/object";
+import { ScriptNode } from "u3js/src/extends/nodes/script";
+import { ScriptBlockNode } from "u3js/src/extends/nodes/block";
+import { getClsName } from "u3js/src/extends/helper/clslib";
+import { TextMesh } from "u3js/src/extends/three/text";
+import { Graph, } from "u3js/src/extends/graph/graph";
 import { NodeEditor, NodeEditorParams } from "../NodeEditor";
 import { BooleanEditor } from "./Boolean";
 import { ColorEditor } from "./Color";
@@ -23,9 +23,9 @@ import { ScriptEditor } from "./script";
 import { BlockEditor } from "./block";
 import { TextureEditor } from "./texture";
 import { TextEditor } from "./text";
-import { Model3D } from "../../u3js";
+import { Model3D } from "u3js/src";
 import { ModelEditor } from "./model";
-import { KeyboardNode } from "../../u3js/extends/nodes/keyboard";
+import { KeyboardNode } from "u3js/src/extends/nodes/keyboard";
 
 // type NodeValueOption = Color | Vector2 | Vector3 | Vector4 | Matrix3 | Matrix4 | boolean | number
 const cls2Editor = {

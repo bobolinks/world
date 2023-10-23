@@ -1,23 +1,23 @@
 import * as THREE from 'three';
 import { ACESFilmicToneMapping, Object3D, PCFSoftShadowMap, Scene, EventDispatcher, PerspectiveCamera, Camera, BoxGeometry, Mesh, } from "three";
 import { MeshBasicNodeMaterial, UniformNode, } from "three/examples/jsm/nodes/Nodes";
-import type { UserEventMap } from './u3js/types/types';
+import type { UserEventMap } from 'u3js/src/types/types';
 import apis from "../apis";
 import Net from '../utils/net';
-import { Output, toJSON } from "./u3js/serializer";
-import { ObjectLoader } from './u3js/loader';
-import { PhysicalScene } from './u3js/extends/three/scene';
-import { addThreeClass, createObject, emptyObject } from './u3js/extends/three/utils';
-import { Graph } from './u3js/extends/graph/graph';
+import { Output, toJSON } from "u3js/src/serializer";
+import { ObjectLoader } from 'u3js/src/loader';
+import { PhysicalScene } from 'u3js/src/extends/three/scene';
+import { addThreeClass, createObject, emptyObject } from 'u3js/src/extends/three/utils';
+import { Graph } from 'u3js/src/extends/graph/graph';
 import { WorldSettings } from "./world";
 import { SpawnsScene } from './spawns';
-import { BuiltinSceneSpawns, } from './u3js';
-import { ScriptNode } from './u3js/extends/nodes/script';
-import { ScriptBlockNode } from './u3js/extends/nodes/block';
-import { jsImport } from './u3js/extends/helper/import';
-import type { pluginInstall } from './u3js/types/plugin';
-import { addConstructor, addNodeClass } from './u3js/extends/helper/clslib';
-import { addEffectClass } from './u3js/extends/three/effect';
+import { BuiltinSceneSpawns, } from 'u3js/src';
+import { ScriptNode } from 'u3js/src/extends/nodes/script';
+import { ScriptBlockNode } from 'u3js/src/extends/nodes/block';
+import { jsImport } from 'u3js/src/extends/helper/import';
+import type { pluginInstall } from 'u3js/src/types/plugin';
+import { addConstructor, addNodeClass } from 'u3js/src/extends/helper/clslib';
+import { addEffectClass } from 'u3js/src/extends/three/effect';
 
 // disable script in editor mode
 ScriptNode.prototype.exec = function () { } as any;
@@ -101,15 +101,19 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     // install plugins first
     if (json.project.plugins) {
       this.plugins.clear();
-      json.project.plugins.forEach(e => this.plugins.add(e));
-      const plugins: Array<{ pluginInstall: typeof pluginInstall }> = await Promise.all(json.project.plugins.map(e => jsImport(e)));
-      for (const plugin of plugins) {
-        plugin.pluginInstall(
-          addThreeClass,
-          addEffectClass,
-          addNodeClass,
-          addConstructor,
-        );
+      try {
+        json.project.plugins.forEach(e => this.plugins.add(e));
+        const plugins: Array<{ pluginInstall: typeof pluginInstall }> = await Promise.all(json.project.plugins.map(e => jsImport(e)));
+        for (const plugin of plugins) {
+          plugin.pluginInstall(
+            addThreeClass,
+            addEffectClass,
+            addNodeClass,
+            addConstructor,
+          );
+        }
+      } catch (e) {
+        console.error(e);
       }
     }
 

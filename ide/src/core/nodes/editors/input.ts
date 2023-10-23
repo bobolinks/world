@@ -1,6 +1,6 @@
 import InputNode from 'three/examples/jsm/nodes/core/InputNode';
-import type { GraphNode, HistoryManager } from '../../u3js/types/types';
-import { Graph, } from '../../u3js/extends/graph/graph';
+import type { GraphNode, HistoryManager } from 'u3js/src/types/types';
+import { Graph, } from 'u3js/src/extends/graph/graph';
 import { NodeEditor, NodeEditorParams } from '../NodeEditor';
 
 export class InputEditor extends NodeEditor {

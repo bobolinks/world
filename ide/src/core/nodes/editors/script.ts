@@ -1,9 +1,9 @@
 import { Object3D } from 'three';
-import type { GraphNode, HistoryManager, LinkPoint, NodePin, PinDirect, ThreeNode, } from '../../u3js/types/types';
+import type { GraphNode, HistoryManager, LinkPoint, NodePin, PinDirect, ThreeNode, } from 'u3js/src/types/types';
 import { ButtonInput, SelectInput, StringInput, LabelElement, Element, Input } from '../../../libs/flow';
-import { PinTypeSupported, ScriptNode } from '../../u3js/extends/nodes/script';
-import { Graph, } from '../../u3js/extends/graph/graph';
-import { getPinsByNode } from '../../u3js/extends/helper/clslib';
+import { PinTypeSupported, ScriptNode } from 'u3js/src/extends/nodes/script';
+import { Graph, } from 'u3js/src/extends/graph/graph';
+import { getPinsByNode } from 'u3js/src/extends/helper/clslib';
 import { NodeEditor, NodeEditorParams } from '../NodeEditor';
 import { createElementFieldFromNode } from '../elements';
 import { consumeChain } from '../elements/elements';

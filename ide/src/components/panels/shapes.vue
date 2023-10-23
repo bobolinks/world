@@ -2,9 +2,9 @@
   <Grid :items="items" @on-item-dragstart="onItemDragstart" />
 </template>
 <script setup lang="ts">
+import { clsExtends } from 'u3js/src/extends/three/utils';
 import { fillDragParams } from '../../core/drags';
 import Grid from './grid.vue';
-import { clsExtends } from '../../core/u3js/extends/three/utils';
 
 const items: Array<any> = [];
 

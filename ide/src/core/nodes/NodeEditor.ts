@@ -1,6 +1,6 @@
-import type { GraphNode, PinDirect, ThreeNode, HistoryManager } from '../u3js/types/types';
+import type { GraphNode, PinDirect, ThreeNode, HistoryManager } from 'u3js/src/types/types';
+import { BoundType, Graph, } from "u3js/src/extends/graph/graph";
 import { Node as FlowNode, ButtonInput, TitleElement, ContextMenu, Element } from '../../libs/flow';
-import { BoundType, Graph, } from "../u3js/extends/graph/graph";
 import { editorsCahced } from './editorsCached';
 
 export type NodeEditorParams = {

@@ -6,6 +6,7 @@
   "license": "MIT",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
+  "type": "module",
   "dependencies": {
     "three": "^0.157.0",
     "troika-three-text": "^0.48.0-unicode.1"

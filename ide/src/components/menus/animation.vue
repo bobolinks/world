@@ -5,7 +5,7 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 import Menubar from '../elements/menubar.vue';
 import { global } from '../../global';
-import { Character } from '../../core/u3js';
+import { Character } from 'u3js/src/extends/three/character';
 
 const isEnabled = ref(false);
 const menus = ref<{title: string; value: string}[]>([]);

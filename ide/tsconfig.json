@@ -1,7 +1,6 @@
 {
   "files": [
-    "types/index.d.ts",
-    "src/core/u3js/types/types.d.ts"
+    "types/index.d.ts"
   ],
   "compilerOptions": {
     "target": "esnext",

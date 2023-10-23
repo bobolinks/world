@@ -1,5 +1,5 @@
 import { EventDispatcher, } from "three";
-import type { CPUNodeObjectValueType, CPUNodeObjectValueTypeName } from "./u3js/types/types";
+import type { CPUNodeObjectValueType, CPUNodeObjectValueTypeName } from "u3js/src/types/types";
 
 type UUID = string;
 

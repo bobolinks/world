@@ -1,6 +1,6 @@
-import type { GraphNode, HistoryManager } from '../../u3js/types/types';
-import { ScriptBlockNode } from '../../u3js/extends/nodes/block';
-import { Graph, } from '../../u3js/extends/graph/graph';
+import type { GraphNode, HistoryManager } from 'u3js/src/types/types';
+import { ScriptBlockNode } from 'u3js/src/extends/nodes/block';
+import { Graph, } from 'u3js/src/extends/graph/graph';
 import { ScriptEditor } from './script';
 import { NodeEditorParams } from '../NodeEditor';
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { NodeTypeName } from '../../u3js/types/types';
+import type { NodeTypeName } from 'u3js/src/types/types';
 import { Element, StringInput, } from "../../../libs/flow";
 import { parseDragParams, MimeType } from "../../drags";
 import { ElemScopedType, valueEnsure, valueOf } from "./utils";

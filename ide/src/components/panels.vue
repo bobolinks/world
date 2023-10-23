@@ -30,11 +30,11 @@
     <el-tab-pane v-if="store.state.isWorldView">
       <template #label>
         <div class="picker-label">
-          <i class="icon-triangle" />
-          <label class="fullname">Shapes</label>
+          <i class="icon-fireworks" />
+          <label class="fullname">Effects</label>
         </div>
       </template>
-      <Shapes />
+      <Effects />
     </el-tab-pane>
     <el-tab-pane v-if="store.state.isWorldView">
       <template #label>
@@ -112,9 +112,10 @@ import Images from './panels/images.vue';
 import Sounds from './panels/sounds.vue';
 import Fonts from './panels/fonts.vue';
 import EffectNodes from './panels/effectNodes.vue';
+import Effects from './panels/effects.vue';
 import Models from './panels/models.vue';
 import Entities from './panels/entities.vue';
-import Shapes from './panels/shapes.vue';
+// import Shapes from './panels/shapes.vue';
 import apis from '../apis';
 import { onMounted } from 'vue';
 

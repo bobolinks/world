@@ -2,8 +2,8 @@
   <Grid :items="items" @on-item-dragstart="onItemDragstart" />
 </template>
 <script setup lang="ts">
+import { protos } from 'u3js/src/extends/helper/clslib';
 import { fillDragParams } from '../../core/drags';
-import { protos } from '../../core/u3js/extends/helper/clslib';
 import Grid from './grid.vue';
 
 const items: Array<any> = [];

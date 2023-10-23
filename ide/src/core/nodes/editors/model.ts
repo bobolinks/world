@@ -1,11 +1,11 @@
-import type { HistoryManager, GraphNode } from '../../u3js/types/types';
-import { Graph, } from '../../u3js/extends/graph/graph';
-import { ObjectNode } from "../../u3js/extends/nodes/object";
+import type { HistoryManager, GraphNode } from 'u3js/src/types/types';
+import { Graph, } from 'u3js/src/extends/graph/graph';
+import { ObjectNode } from "u3js/src/extends/nodes/object";
 import { ObjectEditor } from "./object";
 import { NodeEditorParams } from "../NodeEditor";
 import { parseDragParams } from "../../drags";
 import { Input } from "../../../libs/flow";
-import { Character } from '../../u3js';
+import { Character } from 'u3js/src';
 
 export class ModelEditor<T extends Character = Character> extends ObjectEditor<T> {
   constructor(name: string, history: HistoryManager, graph: Graph, node: GraphNode<ObjectNode<T>>, params: NodeEditorParams) {

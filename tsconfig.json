@@ -3,7 +3,7 @@
     "files": true,
   },
   "files": [
-    "./u3js/src/types/types.d.ts",
+    "./u3js/src/types/types.d.ts"
   ],
   "compilerOptions": {
     "resolveJsonModule": true,

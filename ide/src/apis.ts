@@ -65,7 +65,7 @@ export default {
     }
     const set = await Promise.all(paths.map(async (e) => {
       const rs = await Rpc.request({ url: `/fs/ls/${e}` });
-      return rs ? Object.entries(rs).filter((e) => !(e[1] as any).isd).map(([k, i]) => ({ url: `/fs/file/${e}/${k}`, size: (i as any).size })) : [];
+      return rs ? Object.entries(rs).filter((e) => !(e[1] as any).isd && /\.glb|\.fbx$/.test(e[0])).map(([k, i]) => ({ url: `/fs/file/${e}/${k}`, size: (i as any).size })) : [];
     }));
     return set.flat();
   },
@@ -76,7 +76,7 @@ export default {
     }
     const set = await Promise.all(paths.map(async (e) => {
       const rs = await Rpc.request({ url: `/fs/ls/${e}` });
-      return rs ? Object.entries(rs).filter((e) => !(e[1] as any).isd).map(([k]) => `/fs/file/${e}/${k}`) : [];
+      return rs ? Object.entries(rs).filter((e) => !(e[1] as any).isd && /\.ttf$/.test(e[0])).map(([k]) => `/fs/file/${e}/${k}`) : [];
     }));
     return set.flat();
   },
@@ -87,7 +87,7 @@ export default {
     }
     const set = await Promise.all(paths.map(async (e) => {
       const rs = await Rpc.request({ url: `/fs/ls/${e}` });
-      return rs ? Object.entries(rs).filter((e) => !(e[1] as any).isd && /\.js|\.mjs$/.test(e[0])).map(([k, i]) => ({ url: `/fs/file/${e}/${k}`, size: (i as any).size })) : [];
+      return rs ? Object.entries(rs).filter((e) => !(e[1] as any).isd && /\.js|\.mjs|\.cjs$/.test(e[0])).map(([k, i]) => ({ url: `/fs/file/${e}/${k}`, size: (i as any).size })) : [];
     }));
     return set.flat();
   },

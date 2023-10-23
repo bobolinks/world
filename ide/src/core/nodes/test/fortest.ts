@@ -1,4 +1,4 @@
-import { factor } from '../../u3js/extends/accessors/factor';
+import { factor } from 'u3js/src/extends/accessors/factor';
 import nodeList from './Nodes.json';
 
 /// this file is only for test

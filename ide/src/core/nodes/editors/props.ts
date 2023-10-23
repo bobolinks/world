@@ -1,6 +1,6 @@
-import type { ThreeNode, GraphNode, LinkPoint, HistoryManager } from '../../u3js/types/types';
-import { Graph, } from '../../u3js/extends/graph/graph';
-import { getPinsByNode } from '../../u3js/extends/helper/clslib';
+import type { ThreeNode, GraphNode, LinkPoint, HistoryManager } from 'u3js/src/types/types';
+import { Graph, } from 'u3js/src/extends/graph/graph';
+import { getPinsByNode } from 'u3js/src/extends/helper/clslib';
 import { NodeEditor, NodeEditorParams } from '../NodeEditor';
 import { createElementFieldFromNode } from '../elements';
 import { perfectProps } from '../accessors/props';

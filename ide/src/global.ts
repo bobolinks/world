@@ -1,10 +1,10 @@
 import { EventDispatcher, } from "three";
+import type { HistoryEventMap, HistoryEventName, UserEventMap } from "u3js/src/types/types";
 import { Project, ProjectEvent, ProjectEventMap } from "./core/project";
 import { World, WorldEvent, WorldEventMap } from "./core/world";
 import { Dragable } from "./utils/dragable";
 import { GraphEditor, GraphEditorEvent, GraphEditorEventMap } from "./core/nodes/GraphEditor";
 import { HistoryManager } from "./core/history";
-import type { HistoryEventMap, HistoryEventName, UserEventMap } from "./core/u3js/types/types";
 
 export type GlobalEvent = UserEventMap | GraphEditorEvent | ProjectEvent | WorldEvent | HistoryEventName | 'projectDirty' | 'assetsChanged';
 export type GlobalEventMap = GraphEditorEventMap & ProjectEventMap & WorldEventMap & HistoryEventMap & {
