@@ -5,10 +5,11 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     outDir: '../dist',
+    emptyOutDir: false,
     lib: {
       // Could also be a dictionary or array of multiple entry points
       entry: [resolve(__dirname, 'src/example.ts'),],
-      formats: ['cjs'],
+      formats: ['es'],
     },
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled

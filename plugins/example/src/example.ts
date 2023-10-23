@@ -1,9 +1,17 @@
 import type { NodeTypeName } from 'u3js/dist/types';
 import type { ClsInfo, NodeConstructor } from 'u3js/src/types/plugin';
-import { Box } from 'u3js';
+import type { TU3JS } from 'u3js/src/browser';
 import { BoxGeometry, Color, MeshBasicMaterial, MeshStandardMaterial } from 'three';
 
-class BoxTest extends Box {
+declare global {
+  interface Window {
+    U3JS: TU3JS;
+  }
+}
+
+const { U3JS } = window;
+
+class BoxTest extends U3JS.Box {
   readonly isBoxTest = true;
 
   constructor(geometry?: BoxGeometry, material?: MeshBasicMaterial, bodyType?: number, mass?: number) {
@@ -31,7 +39,8 @@ export function pluginInstall(
     members: {
       color: 'Color',
     },
+    proto: 'Box',
     group: 'Entities.Custom Box component from plugin',
-    icon: '',
+    icon: 'box',
   });
 }

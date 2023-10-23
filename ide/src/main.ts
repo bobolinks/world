@@ -3,6 +3,7 @@ import { createApp, openBlock, resolveComponent, createBlock } from 'vue';
 import { createRouter, createWebHashHistory, } from "vue-router";
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
+import 'u3js/src/browser';
 import './assets/app.css';
 import './assets/flow.css';
 import './styles/index.less';
