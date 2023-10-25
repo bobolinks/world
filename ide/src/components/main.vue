@@ -1,6 +1,6 @@
 <template>
   <div ref="root" class="wrap" style="position: relative; height: 100%; height: 100%;">
-    <canvas id="canvas" class="canvas" :width="canvasWidth" :height="canvasHeight" @drop="onDrop" />
+    <canvas id="canvas" class="canvas" @drop="onDrop" />
     <div v-show="!store.state.isWorldView" ref="graph" class="graph" />
     <Selector class="mainLisSelector" :values="store.state.audioListeners" max-width="420px"
       title="Please select audio listener" />
@@ -32,29 +32,31 @@ defineProps({
 const root = ref<HTMLDivElement>();
 const graph = ref<HTMLDivElement>();
 
-const canvasWidth = ref(3840);
-const canvasHeight = ref(2160);
-
 function resizeCanvas() {
-  if (!root.value) {
+  const canvas = document.getElementById('canvas');
+  if (!root.value || !canvas) {
     return;
   }
-  const canvas = root.value.children[0] as HTMLCanvasElement;
   let { width, height } = root.value.getBoundingClientRect();
   global.editor?.setSize(width, height);
   const screen = global.project.world;
-  if (screen.aspect === 'auto') {
+  let pixelRatio = 1;
+  if (screen.resolution === 'auto') {
     // do nothing
-  } else if (screen.aspect > 1) {
-    height = width / screen.aspect;
   } else {
-    width = height * screen.aspect;
+    const [w,h] = screen.resolution.split(':').map(e => Number.parseInt(e));
+    const aspect = w / h;
+    if (aspect > 1) {
+      pixelRatio = Math.max(1, Math.floor(w / width));
+      height = width / aspect;
+    } else {
+      pixelRatio = Math.max(1, Math.floor(h / height));
+      width = height * aspect;
+    }
   }
-  canvasWidth.value = width * window.devicePixelRatio;
-  canvasHeight.value = height * window.devicePixelRatio;
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-  global.world?.resize(canvasWidth.value, canvasHeight.value);
+  global.world?.resize(width, height, pixelRatio);
 }
 
 watch(() => store.state.isFloating, () => {

@@ -33,7 +33,7 @@ interface ProjectOutput extends Output {
 }
 
 const defaultWorldSetting: WorldSettings = {
-  aspect: 'auto',
+  resolution: 'auto',
   toneMapping: ACESFilmicToneMapping,
   toneMappingExposure: 1.0,
   shadowMap: {
@@ -131,8 +131,8 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       emptyObject(this.world);
       Object.assign(this.world, { ...defaultWorldSetting, ...json.project.world });
     }
-    if (!this.world.aspect) {
-      this.world.aspect = 'auto';
+    if (!this.world.resolution) {
+      this.world.resolution = 'auto';
     }
     this._revision = json.project.revision || 0;
 

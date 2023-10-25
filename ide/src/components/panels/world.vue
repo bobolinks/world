@@ -2,12 +2,11 @@
   <div class="props-list">
     <label class="prop-title" data-title="Screen" />
     <div class="prop-item">
-      <label class="text-ellipsis prop-name">Aspect</label>
+      <label class="text-ellipsis prop-name">Resolution</label>
       <p style="flex: 1 1 auto" />
-      <el-input v-model="screen.aspect" size="small" style="flex: 0 0 0%; min-width: 60px;" @change="aspectChanged" />
-      <el-select v-model="screen.aspect" size="small" style="flex: 0 0 0%; min-width: 120px; margin-left: 1em;"
-        @change="aspectChanged">
-        <el-option v-for="item in builtinAspects" :key="item.value" :label="item.label" :value="item.value" />
+      <el-select v-model="screen.resolution" size="small" style="flex: 0 0 0%; min-width: 240px; margin-left: 1em;"
+        @change="resolutionChanged">
+        <el-option v-for="item in builtinResolutions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </div>
     <label class="prop-title" data-title="View" />
@@ -25,23 +24,24 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { global } from '../../global';
 
 const screen = ref({
-  aspect: global.project.world.aspect,
+  resolution: global.project.world.resolution,
 });
 
-const builtinAspects = [
-  { label: '16 : 9', value: 16 / 9 },
-  { label: '16 : 10', value: 1.6 },
-  { label: '3840 :2160', value: 3840 / 2160 },
-  { label: 'auto', value: 'auto' },
+const builtinResolutions = [
+  { label: '4K (3840 X 2160)', value: '3840:2160' },
+  { label: '2K (2560 X 1440)', value: '2560:1440' },
+  { label: '1080p (1920 X 1080)', value: '1920:1080' },
+  { label: '720p (1280 X 720)', value: '1280:720' },
+  { label: 'Auto Resolution', value: 'auto' },
 ];
 
 const isGridShow = ref(global.world?.gridHelper.visible);
 
-function aspectChanged(value: number | 'auto') {
-  screen.value.aspect = value;
-  global.project.world.aspect = value;
+function resolutionChanged(value: string | 'auto') {
+  screen.value.resolution = value;
+  global.project.world.resolution = value;
   global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project } );
-  global.dispatchEvent({ type: 'worldSettingsModified', soure: null as any, settings: { aspect: value } });
+  global.dispatchEvent({ type: 'worldSettingsModified', soure: null as any, settings: { resolution: value } });
 }
 
 function showGrid() {
@@ -52,7 +52,7 @@ function showGrid() {
 }
 
 function reset() {
-  screen.value.aspect = global.project.world.aspect;
+  screen.value.resolution = global.project.world.resolution;
   isGridShow.value = global.world.gridHelper.visible;
 }
 

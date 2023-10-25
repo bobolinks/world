@@ -1,6 +1,6 @@
 {
   "object": {
-    "uuid": "b3ea2801-49c0-48c1-bbd3-a13d9c1b7232",
+    "uuid": "76b35663-ae2a-4640-809e-9423828e2822",
     "type": "Object3D",
     "layers": 1,
     "matrix": [
@@ -39,8 +39,8 @@
                 "name": "object3DRef",
                 "node": "51861f30-af54-4a0d-b321-b4a7a0c99f7a",
                 "anchor": {
-                  "x": 1365,
-                  "y": 447
+                  "x": 1178,
+                  "y": 395
                 },
                 "bounds": {},
                 "outs": {}
@@ -108,15 +108,15 @@
             },
             "layers": 1,
             "matrix": [
-              0.9993598684592777,
-              -1.2143064331837617e-17,
-              -0.03577503756880938,
+              0.999359868459276,
+              -1.5612511283791196e-17,
+              -0.035775037568809336,
               0,
-              -0.013939978411755543,
+              -0.013939978411755545,
               0.9209602368550744,
               -0.38940713801075233,
               0,
-              0.03294738707286995,
+              0.03294738707286996,
               0.3896565694709191,
               0.9203707011597145,
               0,
@@ -674,7 +674,7 @@
               0,
               0,
               2.2868952480984768,
-              0,
+              -4.427332515080034,
               1
             ],
             "up": [
@@ -696,8 +696,8 @@
                         "name": "object3DRef",
                         "node": "f43b34e5-dfeb-486e-a824-00df989bb37d",
                         "anchor": {
-                          "x": 844,
-                          "y": 627
+                          "x": 484,
+                          "y": 566
                         },
                         "bounds": {},
                         "outs": {}
@@ -729,7 +729,7 @@
                   1,
                   0
                 ],
-                "material": "afb95b77-95a0-459f-b3b9-b55157655d65",
+                "material": "f2c5e2fe-1f98-4d0b-bbdb-78482c7bfdd5",
                 "props": {
                   "maxCount": 1000,
                   "texture": "/fs/file/helloworld/images/firetorch_1.jpg",
@@ -993,6 +993,7 @@
             "uuid": "4f6173da-8e1d-49b4-93f2-6e218550f944",
             "type": "SkyBox",
             "name": "sky",
+            "visible": false,
             "userData": {
               "graph": {
                 "isGraph": true,
@@ -1146,6 +1147,230 @@
             ],
             "geometry": "93924b99-45ee-4f4b-a26b-022387ffd7ab",
             "material": "6d1e527e-ef3b-4e16-8cbf-2eae9df04ef7",
+            "mass": 0,
+            "bodyType": 0,
+            "geoMatrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "uuid": "6787d00a-5e18-481b-a5fa-4d232ddc192f",
+            "type": "Box",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              -2.7302345032369937,
+              1.4091246898174739,
+              7.3128656542755825,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "geometry": "cfb6bab1-44f7-4464-a44e-eb87bbfbf63e",
+            "material": "67241eb4-9cb7-4985-becb-ccaeb80c3777",
+            "mass": 0,
+            "bodyType": 0,
+            "geoMatrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "uuid": "86c92433-12b0-47a7-8703-8d1711d0a2b9",
+            "type": "Box",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              -0.8403871151348357,
+              1.4091246898174739,
+              7.3128656542755825,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "geometry": "92dc7fe4-6bef-4dc2-9770-2d6d64d29d9d",
+            "material": "f7ce9577-4d2b-43ff-afcf-953dc26d9990",
+            "mass": 0,
+            "bodyType": 0,
+            "geoMatrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "uuid": "19e7153e-b47a-41f6-a6a4-63fb07345c0e",
+            "type": "Box",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              2.9393076610694804,
+              1.4091246898174739,
+              7.3128656542755825,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "geometry": "816f9f9a-5442-445d-8ebf-a020de471592",
+            "material": "e91e44db-aa72-4737-b36c-b3b6d7260ded",
+            "mass": 0,
+            "bodyType": 0,
+            "geoMatrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "uuid": "4d86a984-abca-4cc1-a66d-c6f65fd76587",
+            "type": "Box",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              1.0494602729673224,
+              1.4091246898174739,
+              7.3128656542755825,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "geometry": "a0012b47-86c9-4d9b-9edc-56b37070f710",
+            "material": "e6224886-1c80-4786-907d-7e882376f51f",
             "mass": 0,
             "bodyType": 0,
             "geoMatrix": [
@@ -1578,6 +1803,46 @@
       "depthSegments": 1
     },
     {
+      "uuid": "cfb6bab1-44f7-4464-a44e-eb87bbfbf63e",
+      "type": "BoxGeometry",
+      "width": 1,
+      "height": 1,
+      "depth": 1,
+      "widthSegments": 1,
+      "heightSegments": 1,
+      "depthSegments": 1
+    },
+    {
+      "uuid": "92dc7fe4-6bef-4dc2-9770-2d6d64d29d9d",
+      "type": "BoxGeometry",
+      "width": 1,
+      "height": 1,
+      "depth": 1,
+      "widthSegments": 1,
+      "heightSegments": 1,
+      "depthSegments": 1
+    },
+    {
+      "uuid": "816f9f9a-5442-445d-8ebf-a020de471592",
+      "type": "BoxGeometry",
+      "width": 1,
+      "height": 1,
+      "depth": 1,
+      "widthSegments": 1,
+      "heightSegments": 1,
+      "depthSegments": 1
+    },
+    {
+      "uuid": "a0012b47-86c9-4d9b-9edc-56b37070f710",
+      "type": "BoxGeometry",
+      "width": 1,
+      "height": 1,
+      "depth": 1,
+      "widthSegments": 1,
+      "heightSegments": 1,
+      "depthSegments": 1
+    },
+    {
       "uuid": "329b3d4a-188d-4ffc-aab1-524323a05ead",
       "type": "ExtrudeGeometry",
       "shapes": [
@@ -1601,7 +1866,7 @@
       "uuid": "03d777d3-45e3-4ad3-a151-33b1591fc5ce"
     },
     {
-      "uuid": "afb95b77-95a0-459f-b3b9-b55157655d65",
+      "uuid": "f2c5e2fe-1f98-4d0b-bbdb-78482c7bfdd5",
       "type": "PointsNodeMaterial",
       "color": 16777215,
       "size": 1,
@@ -1621,9 +1886,9 @@
       "stencilZFail": 7680,
       "stencilZPass": 7680,
       "inputNodes": {
-        "colorNode": "2fa72e67-8162-4ab6-a2f0-f903d4e740a3",
-        "positionNode": "b8f1b8a2-ec89-4af6-be42-4a2bb7f93906",
-        "sizeNode": "c3d97155-b0da-44f8-a99d-bc598c0829e7"
+        "colorNode": "a9f836b9-ba8b-472b-9e56-13fd585466fa",
+        "positionNode": "8a9977b4-5336-4657-8a73-3246d848987d",
+        "sizeNode": "f28e4ec5-1e9a-419a-b7d6-fa44402413fe"
       }
     },
     {
@@ -1685,6 +1950,90 @@
       "uuid": "6d1e527e-ef3b-4e16-8cbf-2eae9df04ef7"
     },
     {
+      "uuid": "67241eb4-9cb7-4985-becb-ccaeb80c3777",
+      "type": "MeshStandardMaterial",
+      "color": 16777215,
+      "roughness": 1,
+      "metalness": 0,
+      "emissive": 0,
+      "envMapIntensity": 1,
+      "depthFunc": 3,
+      "depthTest": true,
+      "depthWrite": true,
+      "colorWrite": true,
+      "stencilWrite": false,
+      "stencilWriteMask": 255,
+      "stencilFunc": 519,
+      "stencilRef": 0,
+      "stencilFuncMask": 255,
+      "stencilFail": 7680,
+      "stencilZFail": 7680,
+      "stencilZPass": 7680
+    },
+    {
+      "uuid": "f7ce9577-4d2b-43ff-afcf-953dc26d9990",
+      "type": "MeshStandardMaterial",
+      "color": 16777215,
+      "roughness": 1,
+      "metalness": 0,
+      "emissive": 0,
+      "envMapIntensity": 1,
+      "depthFunc": 3,
+      "depthTest": true,
+      "depthWrite": true,
+      "colorWrite": true,
+      "stencilWrite": false,
+      "stencilWriteMask": 255,
+      "stencilFunc": 519,
+      "stencilRef": 0,
+      "stencilFuncMask": 255,
+      "stencilFail": 7680,
+      "stencilZFail": 7680,
+      "stencilZPass": 7680
+    },
+    {
+      "uuid": "e91e44db-aa72-4737-b36c-b3b6d7260ded",
+      "type": "MeshStandardMaterial",
+      "color": 16777215,
+      "roughness": 1,
+      "metalness": 0,
+      "emissive": 0,
+      "envMapIntensity": 1,
+      "depthFunc": 3,
+      "depthTest": true,
+      "depthWrite": true,
+      "colorWrite": true,
+      "stencilWrite": false,
+      "stencilWriteMask": 255,
+      "stencilFunc": 519,
+      "stencilRef": 0,
+      "stencilFuncMask": 255,
+      "stencilFail": 7680,
+      "stencilZFail": 7680,
+      "stencilZPass": 7680
+    },
+    {
+      "uuid": "e6224886-1c80-4786-907d-7e882376f51f",
+      "type": "MeshStandardMaterial",
+      "color": 16777215,
+      "roughness": 1,
+      "metalness": 0,
+      "emissive": 0,
+      "envMapIntensity": 1,
+      "depthFunc": 3,
+      "depthTest": true,
+      "depthWrite": true,
+      "colorWrite": true,
+      "stencilWrite": false,
+      "stencilWriteMask": 255,
+      "stencilFunc": 519,
+      "stencilRef": 0,
+      "stencilFuncMask": 255,
+      "stencilFail": 7680,
+      "stencilZFail": 7680,
+      "stencilZPass": 7680
+    },
+    {
       "uuid": "02e523dc-876b-4137-ae1a-99bc247b9519"
     }
   ],
@@ -1692,7 +2041,7 @@
     {
       "uuid": "e0cf19da-27a3-40dc-8df6-650092727295",
       "name": "",
-      "image": "5e98e164-3d52-40c6-8097-6542b23b085d",
+      "image": "6d6d732c-c5c7-4f35-98d1-15f5f348c3ba",
       "mapping": 301,
       "channel": 0,
       "repeat": [
@@ -1730,7 +2079,7 @@
     {
       "uuid": "214ebcf8-ec90-4b21-aaf9-6c4cd15c2c05",
       "name": "",
-      "image": "ba600542-07a0-421c-897e-197aa86c9c32",
+      "image": "cfe40428-cdc9-4074-932f-32b6ca4d4627",
       "mapping": 300,
       "channel": 0,
       "repeat": [
@@ -1763,9 +2112,9 @@
       "unpackAlignment": 4
     },
     {
-      "uuid": "50a26c05-e64e-4470-b859-14c9c808b9dd",
+      "uuid": "5c91cf95-234f-447a-839b-a96ddb49f1f9",
       "name": "",
-      "image": "59026938-e6df-4b16-9533-8ec586331710",
+      "image": "d4673b7e-95d4-41cc-8097-a352e1e48dee",
       "mapping": 300,
       "channel": 0,
       "repeat": [
@@ -1800,7 +2149,7 @@
   ],
   "images": [
     {
-      "uuid": "5e98e164-3d52-40c6-8097-6542b23b085d",
+      "uuid": "6d6d732c-c5c7-4f35-98d1-15f5f348c3ba",
       "url": [
         "http://localhost:5173/fs/file/shared/environments/park/px.jpg",
         "http://localhost:5173/fs/file/shared/environments/park/nx.jpg",
@@ -1811,11 +2160,11 @@
       ]
     },
     {
-      "uuid": "ba600542-07a0-421c-897e-197aa86c9c32",
+      "uuid": "cfe40428-cdc9-4074-932f-32b6ca4d4627",
       "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAdZJREFUeF7t3cERxCAQA8ElN4ia4CCQaWdwKlVb68+t996b8HPOCf/6maUACkCAsAEE8AqwAcIA2ABGoCugDAABCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twHyAuy90/8efu9tC6AACkCAsAGLAAQgAAG6CRiBroBu+2fGBnAG+g5QJoAABCAAAcIJuAJcAeH6uwKGAAQgQDkBAhCg3H9fAglAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTqAvwAVktMl8vy4ffAAAAAElFTkSuQmCC"
     },
     {
-      "uuid": "59026938-e6df-4b16-9533-8ec586331710",
+      "uuid": "d4673b7e-95d4-41cc-8097-a352e1e48dee",
       "url": "http://localhost:5173/fs/file/helloworld/images/firetorch_1.jpg"
     }
   ],
@@ -6000,36 +6349,36 @@
       "stencilZPass": 7680
     },
     {
-      "uuid": "2fa72e67-8162-4ab6-a2f0-f903d4e740a3",
+      "uuid": "a9f836b9-ba8b-472b-9e56-13fd585466fa",
       "type": "OperatorNode",
       "inputNodes": {
-        "aNode": "2ce7826b-0f1e-4e9f-aaf1-0c61dd34f991",
-        "bNode": "40568443-778f-4489-9088-36822bf9739d"
+        "aNode": "9e161da8-b769-42de-aa49-e0a3642ad14f",
+        "bNode": "8e7a858d-395f-452a-8bb6-6cc2e554539b"
       },
       "op": "*"
     },
     {
-      "uuid": "2ce7826b-0f1e-4e9f-aaf1-0c61dd34f991",
+      "uuid": "9e161da8-b769-42de-aa49-e0a3642ad14f",
       "type": "TextureNode",
       "inputNodes": {
-        "uvNode": "92f2806f-9b97-46bb-ab95-5d018b6a49fc"
+        "uvNode": "2a6b5ee6-733b-4eb7-b854-014da0746caa"
       },
-      "value": "50a26c05-e64e-4470-b859-14c9c808b9dd",
+      "value": "5c91cf95-234f-447a-839b-a96ddb49f1f9",
       "valueType": null,
       "nodeType": null,
       "precision": null
     },
     {
-      "uuid": "92f2806f-9b97-46bb-ab95-5d018b6a49fc",
+      "uuid": "2a6b5ee6-733b-4eb7-b854-014da0746caa",
       "type": "SpriteSheetUVNode",
       "inputNodes": {
-        "countNode": "fadd557d-6fb5-4bf0-b3f4-5a97d83d8e8b",
-        "uvNode": "0f7b3a2e-882c-40f7-8f70-f391d2576c8f",
-        "frameNode": "6fbc1d2b-e2ef-4d51-8c64-213cee8ef11a"
+        "countNode": "7d653db7-2ff4-4f6a-b062-a5c5f281d956",
+        "uvNode": "eeeadffc-3b46-41f2-9a15-2de3f348f468",
+        "frameNode": "b71dca48-bc30-4f40-a101-2a986638daeb"
       }
     },
     {
-      "uuid": "fadd557d-6fb5-4bf0-b3f4-5a97d83d8e8b",
+      "uuid": "7d653db7-2ff4-4f6a-b062-a5c5f281d956",
       "type": "ConstNode",
       "value": [
         6,
@@ -6040,22 +6389,22 @@
       "precision": null
     },
     {
-      "uuid": "0f7b3a2e-882c-40f7-8f70-f391d2576c8f",
+      "uuid": "eeeadffc-3b46-41f2-9a15-2de3f348f468",
       "type": "PointUVNode"
     },
     {
-      "uuid": "6fbc1d2b-e2ef-4d51-8c64-213cee8ef11a",
+      "uuid": "b71dca48-bc30-4f40-a101-2a986638daeb",
       "type": "OperatorNode",
       "inputNodes": {
-        "aNode": "a8401a4b-de37-4d39-8eb3-99b572bd4935",
-        "bNode": "e0058926-deac-44f8-97d7-b5153709a776"
+        "aNode": "8788371d-9c37-4e48-af19-7fcd80a01bc5",
+        "bNode": "e70cb4ab-2b85-4dce-aa57-90f0081e993a"
       },
       "op": "*"
     },
     {
-      "uuid": "a8401a4b-de37-4d39-8eb3-99b572bd4935",
+      "uuid": "8788371d-9c37-4e48-af19-7fcd80a01bc5",
       "type": "TimerNode",
-      "value": 10.14019999980926,
+      "value": 7.018300000071531,
       "valueType": "float",
       "nodeType": null,
       "precision": null,
@@ -6063,34 +6412,34 @@
       "scale": 1
     },
     {
-      "uuid": "e0058926-deac-44f8-97d7-b5153709a776",
+      "uuid": "e70cb4ab-2b85-4dce-aa57-90f0081e993a",
       "type": "AttributeNode"
     },
     {
-      "uuid": "40568443-778f-4489-9088-36822bf9739d",
+      "uuid": "8e7a858d-395f-452a-8bb6-6cc2e554539b",
       "type": "AttributeNode"
     },
     {
-      "uuid": "b8f1b8a2-ec89-4af6-be42-4a2bb7f93906",
+      "uuid": "8a9977b4-5336-4657-8a73-3246d848987d",
       "type": "MathNode",
       "inputNodes": {
-        "aNode": "289ab1b3-62a6-4a27-accb-700213403e2c",
-        "bNode": "65114444-2400-4e25-863c-b34224b1def5",
-        "cNode": "e6f9ae4d-1259-4c23-a42b-41dcba828ba2"
+        "aNode": "c945408e-d45c-4509-9a95-9a6abfd9c283",
+        "bNode": "206d4e68-8088-4c66-8387-91ecb533ab50",
+        "cNode": "90ae35f2-6cc0-493a-8a45-a6b8265047c9"
       },
       "method": "mix"
     },
     {
-      "uuid": "289ab1b3-62a6-4a27-accb-700213403e2c",
+      "uuid": "c945408e-d45c-4509-9a95-9a6abfd9c283",
       "type": "PositionNode",
       "scope": "local"
     },
     {
-      "uuid": "65114444-2400-4e25-863c-b34224b1def5",
+      "uuid": "206d4e68-8088-4c66-8387-91ecb533ab50",
       "type": "AttributeNode"
     },
     {
-      "uuid": "e6f9ae4d-1259-4c23-a42b-41dcba828ba2",
+      "uuid": "90ae35f2-6cc0-493a-8a45-a6b8265047c9",
       "type": "UniformNode",
       "value": 0.1,
       "valueType": "float",
@@ -6098,7 +6447,7 @@
       "precision": null
     },
     {
-      "uuid": "c3d97155-b0da-44f8-a99d-bc598c0829e7",
+      "uuid": "f28e4ec5-1e9a-419a-b7d6-fa44402413fe",
       "type": "AttributeNode"
     }
   ],
@@ -6150,15 +6499,16 @@
     }
   ],
   "project": {
-    "revision": 40044,
+    "revision": 40145,
     "world": {
-      "aspect": 1.7777777777777777,
+      "resolution": "2560:1440",
       "toneMapping": 4,
       "toneMappingExposure": 1,
       "shadowMap": {
         "enabled": true,
         "type": 2
       },
+      "aspect": 1.7777777777777777,
       "width": 3840,
       "height": 2160,
       "useLegacyLights": false

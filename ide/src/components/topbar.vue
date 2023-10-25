@@ -3,9 +3,7 @@
     <div class="topbar" style="align-items: stretch; display: flex; flex-direction: row; width: auto">
       <div class="leftside"
         style="align-items: center; display: flex; flex: 1 1 auto; flex-direction: row; font-size: 2rem; padding-left: 0.5rem">
-        <i class="icon-egg" style="cursor: default; font-size: 3rem" />
-        <el-dropdown split-button type="primary" @command="selectProject">
-          <el-input v-model="inputValue" placeholder="Please input" :disabled="!isNameEditable" @change="renameProject" />
+        <el-dropdown type="primary" @command="selectProject">
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item v-for="name in store.state.projects" :key="name" :command="name">
@@ -14,7 +12,9 @@
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
+          <i class="icon-project" style="font-size: 2rem; margin-left: 0.2em; margin-right: 0.5em; outline: none; " />
         </el-dropdown>
+        <el-input v-model="inputValue" class="nameInput" placeholder="Please input" :disabled="!isNameEditable" @change="renameProject" />
         <el-icon style="margin-left: 0.5em; transform: scaleX(-1);">
           <MagicStick @click="newProject" />
         </el-icon>
@@ -41,6 +41,7 @@
           </template>
           <Keyboard />
         </el-popover>
+        <i class="icon-vr" @click="enterVr" />
         <i :class="store.state.isFloating ? 'icon-minimize' : 'icon-maximize'" action="maximize"
           @click="store.state.isFloating = !store.state.isFloating" />
       </div>
@@ -180,6 +181,16 @@ function run() {
   window.open(url, 'simulator');
 }
 
+async function enterVr() {
+  store.state.isFloating = true;
+  await global.world.startVR();
+  store.state.isFloating = false;
+}
+
+function stopVr() {
+  global.world.stopVR();
+}
+
 onMounted(() => {
   global.addEventListener('projectLoaded', reset);
   global.addEventListener('projectDirty', onProjectDirty);
@@ -189,6 +200,7 @@ onMounted(() => {
   global.addKeyDownListener('meta+z', undo, 'Global.Undo');
   global.addKeyDownListener('meta+shift+z', redo, 'Global.Redo');
   global.addKeyDownListener('meta+r', run, 'Global.Run');
+  global.addKeyDownListener('Escape', stopVr, 'Global.Exit VR');
 });
 
 onUnmounted(() => {
@@ -200,6 +212,7 @@ onUnmounted(() => {
   global.removeKeyDownListener('meta+z', undo);
   global.removeKeyDownListener('meta+shift+z', redo);
   global.removeKeyDownListener('meta+r', run);
+  global.removeKeyDownListener('Escape', stopVr);
 });
 
 </script>
@@ -208,6 +221,30 @@ onUnmounted(() => {
 .el-button-group .el-button {
   background-color: unset !important;
 }
+
+.nameInput .el-input__wrapper, 
+.nameInput.is-disabled .el-input__wrapper {
+  background-color: unset !important;
+  border: none;
+  border-radius: 0;
+  border-bottom: 1px dashed #ddd;
+  box-shadow: none;
+}
+
+.nameInput .el-input__wrapper input {
+  font-family: LongCang;
+  color: white;
+  font-size: 2.4rem;
+  font-weight: 500;
+}
+
+.nameInput.is-disabled .el-input__wrapper input {
+  color: #ddd;
+  -webkit-text-fill-color: #ddd;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 </style>
 
 <style scoped='true'>
@@ -284,4 +321,9 @@ i[disabled='true'] {
   color: #ff9900;
   animation: rotate 1s infinite linear;
 }
+
+.icon-maximize {
+  z-index: 9999;
+}
+
 </style>

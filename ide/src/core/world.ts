@@ -5,18 +5,11 @@ import { Camera, Clock, EventDispatcher, PerspectiveCamera, OrthographicCamera, 
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
-import { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';
 import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
-// // @ts-ignore
-// import { nodeFrame } from 'three/examples/jsm/renderers/webgl-legacy/nodes/WebGLNodes.js';
-// // @ts-ignore
-// import WebGPU from 'three/examples/jsm/capabilities/WebGPU.js';
-// // @ts-ignore
-// import WebGPURenderer from 'three/examples/jsm/renderers/webgpu/WebGPURenderer.js';
-import { nodeFrame, WebGPU, WebGPURenderer } from 'u3js/src/libs/three/examples';
+import { nodeFrame, WebGPU, WebGPURenderer, OutlinePass } from 'u3js/src/libs/three/examples';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { ViewHelper } from 'three/examples/jsm/helpers/ViewHelper';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer';
@@ -39,7 +32,7 @@ export type WorldEventMap = {
 
 export interface WorldSettings {
   // screen: 
-  aspect: number | 'auto';
+  resolution: 'auto' | string;
   // render:
   toneMapping?: ToneMapping;
   toneMappingExposure?: number;
@@ -65,6 +58,10 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
   public cameraPersp: PerspectiveCamera;
   public cameraOrtho: OrthographicCamera;
+  public cameraPerspVR: PerspectiveCamera;
+
+  public selectedObjects: Array<THREE.Object3D> = [];
+  public multiSelectEnable = false;
 
   // post processing
   public readonly composer: EffectComposer;
@@ -77,6 +74,9 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   protected controls: TransformControls;
   private beforeTransformedObject?: THREE.Object3D;
   private beforeTransformed = new THREE.Object3D();
+
+  // vr
+  protected vrSession?: XRSession;
 
   // helpers
   public readonly gridHelper: THREE.GridHelper;
@@ -92,6 +92,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   protected working = false;
 
   private keydownListener: any;
+  private keyupListener: any;
 
   constructor(public readonly context: HTMLCanvasElement, public readonly history: HistoryManager) {
     super();
@@ -115,6 +116,8 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
     this.renderer = this.rendererGPU || this.rendererGL as any;
 
+    this.renderer.xr.enabled = true;
+
     // this.renderer.outputEncoding = THREE.sRGBEncoding;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.shadowMap.enabled = true;
@@ -125,6 +128,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     // this.renderer.useLegacyLights = false;
     this.renderer.setClearColor(0xffffff);
     // this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setSize(2048, 2048, false);
 
     worldGlobal.gpuComputeRender = new GPUComputationRenderer(MaxGPUComputeWidth, MaxGPUComputeHeight, this.renderer);
 
@@ -141,8 +145,14 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.cameraOrtho.name = 'Orthographic';
     this.cameraOrtho.position.set(0, 0, 100);
 
+    this.cameraPerspVR = new PerspectiveCamera(50, 1, 0.001, 1000);
+    this.cameraPerspVR.name = 'PerspectiveVr';
+    this.cameraPerspVR.position.set(0, 3, 12);
+    this.cameraPerspVR.lookAt(0, 0, 0);
+
     this.root.add(this.cameraOrtho);
     this.root.add(this.cameraPersp);
+    this.root.add(this.cameraPerspVR);
 
     this.currentCamera = this.cameraPersp;
 
@@ -236,29 +246,39 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
           control.enabled = !control.enabled;
           break;
 
+        case 16: // Shift
+          this.multiSelectEnable = true;
+          break;
       }
     };
 
-    this.resize(this.context.width, this.context.height);
+    this.keyupListener = (event: KeyboardEvent) => {
+      switch (event.keyCode) {
+        case 16: // Shift
+          this.multiSelectEnable = false;
+          break;
+      }
+    };
   }
-  resize(width: number, height: number) {
+  resize(width: number, height: number, pixelRatio?: number) {
     if (!this.context) {
       return;
     }
 
-    this.size.width = width;
-    this.size.height = height;
+    const ratioScale = (pixelRatio ? Math.max(pixelRatio, 1) : 1);
+    const aspect = width / height;
 
-    const aspect = this.size.width / this.size.height;
+    this.size.width = width * ratioScale;
+    this.size.height = height * ratioScale;
 
-    if (this.renderer instanceof WebGPURenderer) {
-      this.renderer.setSize(width, height);
-    } else {
-      this.renderer.setViewport(0, 0, width, height);
-    }
+    // this.context.width = this.size.width;
+    // this.context.height = this.size.height;
+    this.renderer.setSize(this.size.width, this.size.height, false);
+    // this.renderer.setScissor(0, 0, this.size.width, this.size.height);
 
     this.outlinePass.resolution = new THREE.Vector2(this.size.width, this.size.height);
     this.outlinePass.setSize(this.size.width, this.size.height);
+    this.outlinePass.selectedObjects = this.selectedObjects;
     this.effectFXAA.uniforms['resolution'].value.set(1 / this.size.width, 1 / this.size.height);
 
     this.cameraPersp.aspect = aspect;
@@ -346,6 +366,10 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     if (this.controls.object) {
       this.controls.detach();
       window.removeEventListener('keydown', this.keydownListener);
+      window.removeEventListener('keyup', this.keyupListener);
+    }
+    if (!this.multiSelectEnable) {
+      this.selectedObjects.length = 0;
     }
     if (this.lightHelper) {
       this.lightHelper.removeFromParent();
@@ -377,7 +401,11 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
         this.root.add(this.lightHelper);
       }
       this.controls.attach(object);
+      if (this.selectedObjects.indexOf(object) === -1) {
+        this.selectedObjects.push(object);
+      }
       window.addEventListener('keydown', this.keydownListener);
+      window.addEventListener('keyup', this.keyupListener);
     }
 
     this.dispatchEvent({ type: 'objectChanged', soure: this, object });
@@ -393,9 +421,14 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     if (this.currentScene) {
       this.currentScene.update(this.renderer, this.currentCamera, delta, now, true);
     }
+    if (this.vrSession) {
+      this.renderer.xr.updateCamera(this.currentCamera as any);
+    }
     nodeFrame.update();
     this.renderer.autoClear = true;
     if ((this.renderer as any).isWebGPURenderer) {
+      this.renderer.render(this.root, this.currentCamera);
+    } else if (this.vrSession) {
       this.renderer.render(this.root, this.currentCamera);
     } else {
       this.composer.render(delta);
@@ -508,10 +541,59 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     });
   }
 
+  async startVR(): Promise<boolean> {
+    if (!navigator.xr) {
+      return false;
+    }
+    const supported = await navigator.xr.isSessionSupported('immersive-vr');
+    if (!supported) {
+      return false;
+    }
+
+    if (this.vrSession) {
+      return false;
+    }
+
+    let resolve: any;
+
+    const promise = new Promise<boolean>((r) => resolve = r);
+
+    // WebXR's requestReferenceSpace only works if the corresponding feature
+    // was requested at session creation time. For simplicity, just ask for
+    // the interesting ones as optional features, but be aware that the
+    // requestReferenceSpace call will fail if it turns out to be unavailable.
+    // ('local' is always available for immersive sessions and doesn't need to
+    // be requested separately.)
+
+    const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking', 'layers'] };
+    this.vrSession = await navigator.xr.requestSession('immersive-vr', sessionInit);
+    await this.renderer.xr.setSession(this.vrSession);
+    const onSessionEnded = () => {
+      if (this.vrSession) {
+        this.vrSession.removeEventListener('end', onSessionEnded);
+        this.vrSession = null as any;
+        this.currentCamera = this.cameraPersp;
+      }
+      resolve(true);
+    };
+    this.vrSession.addEventListener('end', onSessionEnded);
+
+    this.currentCamera = this.cameraPerspVR;
+
+    return promise;
+  }
+
+  stopVR() {
+    if (this.vrSession) {
+      this.vrSession.end();
+    }
+  }
+
   dispose(): void {
     this.context.removeEventListener('pointerdown', this.fnPointerDown);
     this.context.removeEventListener('pointerup', this.fnPointerUp);
     window.removeEventListener('keydown', this.keydownListener);
+    window.removeEventListener('keyup', this.keyupListener);
 
     this.viewHelper.dispose();
 

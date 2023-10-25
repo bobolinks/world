@@ -11,3 +11,4 @@ export { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRe
 export { Line2 } from 'three/examples/jsm/lines/Line2';
 export { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
 export { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
+export { OutlinePass } from 'three/examples/jsm/postprocessing/OutlinePass.js';

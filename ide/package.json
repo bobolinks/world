@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "3d editor for threejs scene",
   "scripts": {
-    "serve": "vite",
+    "serve": "vite --host",
     "build": "vite build",
     "pre": "vite build --mode development",
     "preview": "vite preview"

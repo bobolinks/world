@@ -2,12 +2,13 @@
   <Menubar :disabled="!idObjectSelected" title="Object Align" :menus="menus" @select="applyUpdate" />
 </template>
 <script setup lang="ts">
-import { Box3, Mesh, Vector3 } from 'three';
+import { Box3, Vector3 } from 'three';
 import { onMounted, onUnmounted, ref } from 'vue';
 import Menubar from '../elements/menubar.vue';
 import { global } from '../../global';
+import { Object3D } from 'three';
 
-type ValueType = 'toFloor' | 'toWorldCenter' | 'toX0' | 'toY0' | 'toZ0';
+type ValueType = 'toFloor' | 'toWorldCenter' | 'toX0' | 'toX+' | 'toX-' | 'toY0' | 'toY+' | 'toY-' | 'toZ0' | 'toZ+' | 'toZ-' | 'disX' | 'disY' | 'disZ';
 
 const idObjectSelected = ref(false);
 const menus = ref<{title: string; value: ValueType}[]>([
@@ -16,38 +17,143 @@ const menus = ref<{title: string; value: ValueType}[]>([
   {value: 'toY0', title: 'Align to Y axis [Meta + Shift + y]'},
   {value: 'toZ0', title: 'Align to Z axis'},
   {value: 'toWorldCenter', title: 'Move to world center [Meta + Shift + c]'},
+  {value: 'toX+', title: 'Objects align to Max(X)'},
+  {value: 'toX-', title: 'Objects align to Min(X)'},
+  {value: 'toY+', title: 'Objects align to Max(Y)'},
+  {value: 'toY-', title: 'Objects align to Min(Y)'},
+  {value: 'toZ+', title: 'Objects align to Max(Z)'},
+  {value: 'toZ-', title: 'Objects align to Min(Z)'},
+  {value: 'disX', title: 'Distribute to X axis'},
+  {value: 'disY', title: 'Distribute to Y axis'},
+  {value: 'disZ', title: 'Distribute to Z axis'},
 ]);
 
 function applyUpdate(action: ValueType) {
-  const object: Mesh = global.world.selected as any;
-  if (!object || !(object instanceof Mesh)) {
+  const objects = [...global.world.selectedObjects];
+  if (!objects.length) {
     return;
   }
 
-  const oldValue = object.position.clone();
-  const newValue = new Vector3();
+  const oldValues = new WeakMap<Object3D, Vector3>();
+  objects.forEach(e => oldValues.set(e, e.position.clone()));
+  const newValues = new WeakMap<Object3D, Vector3>();
   if (action === 'toFloor') {
-    newValue.copy(oldValue);
-    const box3 = new Box3().setFromObject(object, false);
-    newValue.y -= box3.min.y;
+    const box3 = new Box3();
+    objects.forEach(o => {
+      box3.setFromObject(o, false);
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.y -= box3.min.y;
+      newValues.set(o, newValue);
+    });
   } else if (action === 'toX0') {
-    newValue.copy(oldValue);
-    newValue.x = 0;
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.x = 0;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'toX+') {
+    const value = Math.max(...objects.map(e => e.position.x));
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.x = value;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'toX-') {
+    const value = Math.min(...objects.map(e => e.position.x));
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.x = value;
+      newValues.set(o, newValue);
+    });
   } else if (action === 'toY0') {
-    newValue.copy(oldValue);
-    newValue.y = 0;
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.y = 0;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'toY+') {
+    const value = Math.max(...objects.map(e => e.position.y));
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.y = value;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'toY-') {
+    const value = Math.min(...objects.map(e => e.position.y));
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.y = value;
+      newValues.set(o, newValue);
+    });
   } else if (action === 'toZ0') {
-    newValue.copy(oldValue);
-    newValue.z = 0;
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.z = 0;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'toZ+') {
+    const value = Math.max(...objects.map(e => e.position.z));
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.z = value;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'toZ-') {
+    const value = Math.min(...objects.map(e => e.position.z));
+    objects.forEach(o => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.z = value;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'disX') {
+    const max = Math.max(...objects.map(e => e.position.x));
+    const min = Math.min(...objects.map(e => e.position.x));
+    const step = objects.length > 1 ? (max - min) / (objects.length - 1) : 0;
+    objects.forEach((o, i) => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.x = min + step * i;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'disY') {
+    const max = Math.max(...objects.map(e => e.position.y));
+    const min = Math.min(...objects.map(e => e.position.y));
+    const step = objects.length > 1 ? (max - min) / (objects.length - 1) : 0;
+    objects.forEach((o, i) => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.y = min + step * i;
+      newValues.set(o, newValue);
+    });
+  } else if (action === 'disZ') {
+    const max = Math.max(...objects.map(e => e.position.z));
+    const min = Math.min(...objects.map(e => e.position.z));
+    const step = objects.length > 1 ? (max - min) / (objects.length - 1) : 0;
+    objects.forEach((o, i) => {
+      const oldValue = oldValues.get(o);
+      const newValue = oldValue!.clone();
+      newValue.z = min + step * i;
+      newValues.set(o, newValue);
+    });
   }
 
   const redo = () => {
-    object.position.copy(newValue);
-    global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
+    objects.forEach(e => e.position.copy(newValues.get(e) as any));
+    global.dispatchEvent({ type: 'objectModified', soure: null as any, objects });
   };
   const undo = () => {
-    object.position.copy(oldValue);
-    global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
+    objects.forEach(e => e.position.copy(oldValues.get(e) as any));
+    global.dispatchEvent({ type: 'objectModified', soure: null as any, objects });
   };
   redo();
   global.history.push({
@@ -64,7 +170,7 @@ const moveToYAxis = applyUpdate.bind(undefined, 'toY0');
 // const moveToZAxis = applyUpdate.bind(undefined, 'toZ0');
 
 function dectectObjectSelected() {
-  idObjectSelected.value = global.world?.selected ? true : false;
+  idObjectSelected.value = global.world?.selectedObjects.length ? true : false;
 }
 
 onMounted(() => {
