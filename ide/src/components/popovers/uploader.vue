@@ -31,7 +31,7 @@ defineProps({
   },
   tip: {
     type: String,
-    default: 'Accepts all image/audio/font/3dmodel files',
+    default: 'Accepts all image/audio/font/3dmodel/plugin(.js) files',
   },
 });
 

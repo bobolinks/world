@@ -162,7 +162,8 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.composer.addPass(this.renderPass);
     this.outlinePass = new OutlinePass(new THREE.Vector2(this.size.width, this.size.height), this.root, this.currentCamera);
     this.outlinePass.resolution = new THREE.Vector2(this.size.width, this.size.height);
-    this.outlinePass.edgeStrength = 25;
+    this.outlinePass.visibleEdgeColor = new THREE.Color(0x88ff88);
+    this.outlinePass.edgeStrength = 8;
     this.outlinePass.edgeGlow = 1;
     this.outlinePass.pulsePeriod = 3;
     this.outlinePass.edgeThickness = 1;

@@ -49,13 +49,23 @@ onUnmounted(() => {
 });
 </script>
 <script lang="ts">
-export function showPopover(el: HTMLElement) {
+export function showPopover(el: HTMLElement, ev?: Event) {
   document.querySelectorAll('.popover').forEach((e: any) => {
     if (e !== el) {
       e.style.display = 'none';
     }
   });
   el.style.display = 'flex';
+  if (ev) {
+    const container: HTMLElement = el.querySelector('.popover-container') as any;
+    const rtHover = (ev.target as HTMLElement).getBoundingClientRect();
+    const viewScale = Number.parseFloat(document.documentElement.style.getPropertyValue('--view-scale')) || 1;
+    const scrollLeft = (document.documentElement.scrollLeft + rtHover.left) / viewScale;
+    const scrollTop = (document.documentElement.scrollTop + rtHover.top) / viewScale;
+    container.style.position = 'absolute';
+    container.style.top = `${scrollTop}px`;
+    container.style.left = `${scrollLeft}px`;
+  }
 }
 </script>
 
@@ -79,9 +89,10 @@ export function showPopover(el: HTMLElement) {
   min-width: 20px;
   min-height: 20px;
   background: var(--background-color-pane-body);
-  border-radius: 4px;
-  border: 1px solid var(--border-color-default);
+  border-radius: 5px;
+  overflow: hidden;
   pointer-events: all;
+  box-sizing: content-box;
 }
 
 .popover-container .popover-header {
@@ -94,9 +105,10 @@ export function showPopover(el: HTMLElement) {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  background-color: #f2f3f5;
-  color: #222;
+  background: var(--background-color-title);
+  color: var(--color-title-dialog);
   font-size: 1.6rem;
+  padding: 2px;
 }
 
 </style>

@@ -1,6 +1,6 @@
 {
   "object": {
-    "uuid": "76b35663-ae2a-4640-809e-9423828e2822",
+    "uuid": "dd1de6d9-9b6a-4bca-a4b9-88818783ba8f",
     "type": "Object3D",
     "layers": 1,
     "matrix": [
@@ -108,9 +108,9 @@
             },
             "layers": 1,
             "matrix": [
-              0.999359868459276,
-              -1.5612511283791196e-17,
-              -0.035775037568809336,
+              0.9993598684592757,
+              -1.561251128379119e-17,
+              -0.03577503756880932,
               0,
               -0.013939978411755545,
               0.9209602368550744,
@@ -729,7 +729,7 @@
                   1,
                   0
                 ],
-                "material": "f2c5e2fe-1f98-4d0b-bbdb-78482c7bfdd5",
+                "material": "37a6ea3c-77e5-4657-bcbc-2635d8330f8e",
                 "props": {
                   "maxCount": 1000,
                   "texture": "/fs/file/helloworld/images/firetorch_1.jpg",
@@ -1174,7 +1174,18 @@
             "userData": {
               "graph": {
                 "isGraph": true,
-                "nodes": []
+                "nodes": [
+                  {
+                    "name": "object3DRef",
+                    "node": "cc04ffc4-336c-4f27-afcd-ee341ca02f1d",
+                    "anchor": {
+                      "x": 603.0300000000001,
+                      "y": 641.5699999999999
+                    },
+                    "bounds": {},
+                    "outs": {}
+                  }
+                ]
               }
             },
             "layers": 1,
@@ -1191,7 +1202,7 @@
               0,
               1,
               0,
-              -2.7302345032369937,
+              -3,
               1.4091246898174739,
               7.3128656542755825,
               1
@@ -1247,7 +1258,7 @@
               0,
               1,
               0,
-              -0.8403871151348357,
+              -1,
               1.4091246898174739,
               7.3128656542755825,
               1
@@ -1286,7 +1297,18 @@
             "userData": {
               "graph": {
                 "isGraph": true,
-                "nodes": []
+                "nodes": [
+                  {
+                    "name": "object3DRef",
+                    "node": "fa033be0-6f1b-4fac-b153-f89562145808",
+                    "anchor": {
+                      "x": 499,
+                      "y": 867
+                    },
+                    "bounds": {},
+                    "outs": {}
+                  }
+                ]
               }
             },
             "layers": 1,
@@ -1303,7 +1325,7 @@
               0,
               1,
               0,
-              2.9393076610694804,
+              3,
               1.4091246898174739,
               7.3128656542755825,
               1
@@ -1342,7 +1364,18 @@
             "userData": {
               "graph": {
                 "isGraph": true,
-                "nodes": []
+                "nodes": [
+                  {
+                    "name": "object3DRef",
+                    "node": "9f840366-4bdf-44dd-807d-9c5b74e410bc",
+                    "anchor": {
+                      "x": 319.4800000000001,
+                      "y": 630.67
+                    },
+                    "bounds": {},
+                    "outs": {}
+                  }
+                ]
               }
             },
             "layers": 1,
@@ -1359,7 +1392,7 @@
               0,
               1,
               0,
-              1.0494602729673224,
+              1,
               1.4091246898174739,
               7.3128656542755825,
               1
@@ -1866,7 +1899,7 @@
       "uuid": "03d777d3-45e3-4ad3-a151-33b1591fc5ce"
     },
     {
-      "uuid": "f2c5e2fe-1f98-4d0b-bbdb-78482c7bfdd5",
+      "uuid": "37a6ea3c-77e5-4657-bcbc-2635d8330f8e",
       "type": "PointsNodeMaterial",
       "color": 16777215,
       "size": 1,
@@ -1886,9 +1919,9 @@
       "stencilZFail": 7680,
       "stencilZPass": 7680,
       "inputNodes": {
-        "colorNode": "a9f836b9-ba8b-472b-9e56-13fd585466fa",
-        "positionNode": "8a9977b4-5336-4657-8a73-3246d848987d",
-        "sizeNode": "f28e4ec5-1e9a-419a-b7d6-fa44402413fe"
+        "colorNode": "5d759197-40ab-441f-be6a-86f77092b0d0",
+        "positionNode": "b16eb276-993c-42d2-8212-78a5e325d985",
+        "sizeNode": "cc341ecb-433c-44a8-8b47-68858d8d00ea"
       }
     },
     {
@@ -2041,7 +2074,7 @@
     {
       "uuid": "e0cf19da-27a3-40dc-8df6-650092727295",
       "name": "",
-      "image": "6d6d732c-c5c7-4f35-98d1-15f5f348c3ba",
+      "image": "ca6e0c11-8adf-4018-b710-1555939f1187",
       "mapping": 301,
       "channel": 0,
       "repeat": [
@@ -2079,7 +2112,7 @@
     {
       "uuid": "214ebcf8-ec90-4b21-aaf9-6c4cd15c2c05",
       "name": "",
-      "image": "cfe40428-cdc9-4074-932f-32b6ca4d4627",
+      "image": "5e059e7d-bb96-44a7-8ed0-2dddd1756d93",
       "mapping": 300,
       "channel": 0,
       "repeat": [
@@ -2112,9 +2145,9 @@
       "unpackAlignment": 4
     },
     {
-      "uuid": "5c91cf95-234f-447a-839b-a96ddb49f1f9",
+      "uuid": "4a048d05-29f3-4715-82f2-d31112792d8d",
       "name": "",
-      "image": "d4673b7e-95d4-41cc-8097-a352e1e48dee",
+      "image": "414ef7bd-63b3-4d81-8f1b-169bf40587e0",
       "mapping": 300,
       "channel": 0,
       "repeat": [
@@ -2149,7 +2182,7 @@
   ],
   "images": [
     {
-      "uuid": "6d6d732c-c5c7-4f35-98d1-15f5f348c3ba",
+      "uuid": "ca6e0c11-8adf-4018-b710-1555939f1187",
       "url": [
         "http://localhost:5173/fs/file/shared/environments/park/px.jpg",
         "http://localhost:5173/fs/file/shared/environments/park/nx.jpg",
@@ -2160,11 +2193,11 @@
       ]
     },
     {
-      "uuid": "cfe40428-cdc9-4074-932f-32b6ca4d4627",
+      "uuid": "5e059e7d-bb96-44a7-8ed0-2dddd1756d93",
       "url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAdZJREFUeF7t3cERxCAQA8ElN4ia4CCQaWdwKlVb68+t996b8HPOCf/6maUACkCAsAEE8AqwAcIA2ABGoCugDAABCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twHyAuy90/8efu9tC6AACkCAsAGLAAQgAAG6CRiBroBu+2fGBnAG+g5QJoAABCAAAcIJuAJcAeH6uwKGAAQgQDkBAhCg3H9fAglAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTIAAByv23AQhAAAKUEyAAAcr9twEIQAAClBMgAAHK/bcBCEAAApQTqAvwAVktMl8vy4ffAAAAAElFTkSuQmCC"
     },
     {
-      "uuid": "d4673b7e-95d4-41cc-8097-a352e1e48dee",
+      "uuid": "414ef7bd-63b3-4d81-8f1b-169bf40587e0",
       "url": "http://localhost:5173/fs/file/helloworld/images/firetorch_1.jpg"
     }
   ],
@@ -6307,6 +6340,27 @@
       "objectType": "Texture"
     },
     {
+      "uuid": "cc04ffc4-336c-4f27-afcd-ee341ca02f1d",
+      "type": "ObjectNode",
+      "_inst": "object3DRef",
+      "object": "6787d00a-5e18-481b-a5fa-4d232ddc192f",
+      "objectType": "Box"
+    },
+    {
+      "uuid": "fa033be0-6f1b-4fac-b153-f89562145808",
+      "type": "ObjectNode",
+      "_inst": "object3DRef",
+      "object": "19e7153e-b47a-41f6-a6a4-63fb07345c0e",
+      "objectType": "Box"
+    },
+    {
+      "uuid": "9f840366-4bdf-44dd-807d-9c5b74e410bc",
+      "type": "ObjectNode",
+      "_inst": "object3DRef",
+      "object": "4d86a984-abca-4cc1-a66d-c6f65fd76587",
+      "objectType": "Box"
+    },
+    {
       "uuid": "168627ad-34ed-42c5-b661-31b345fd6ad5",
       "type": "ObjectNode",
       "_inst": "object3DRef",
@@ -6349,36 +6403,36 @@
       "stencilZPass": 7680
     },
     {
-      "uuid": "a9f836b9-ba8b-472b-9e56-13fd585466fa",
+      "uuid": "5d759197-40ab-441f-be6a-86f77092b0d0",
       "type": "OperatorNode",
       "inputNodes": {
-        "aNode": "9e161da8-b769-42de-aa49-e0a3642ad14f",
-        "bNode": "8e7a858d-395f-452a-8bb6-6cc2e554539b"
+        "aNode": "659d2a51-7d4d-4b97-ad47-a9105ff53528",
+        "bNode": "5c01f14d-f804-4e9c-8a51-2754e68052bb"
       },
       "op": "*"
     },
     {
-      "uuid": "9e161da8-b769-42de-aa49-e0a3642ad14f",
+      "uuid": "659d2a51-7d4d-4b97-ad47-a9105ff53528",
       "type": "TextureNode",
       "inputNodes": {
-        "uvNode": "2a6b5ee6-733b-4eb7-b854-014da0746caa"
+        "uvNode": "28bcc2ac-ba05-4633-8830-199ba12b8578"
       },
-      "value": "5c91cf95-234f-447a-839b-a96ddb49f1f9",
+      "value": "4a048d05-29f3-4715-82f2-d31112792d8d",
       "valueType": null,
       "nodeType": null,
       "precision": null
     },
     {
-      "uuid": "2a6b5ee6-733b-4eb7-b854-014da0746caa",
+      "uuid": "28bcc2ac-ba05-4633-8830-199ba12b8578",
       "type": "SpriteSheetUVNode",
       "inputNodes": {
-        "countNode": "7d653db7-2ff4-4f6a-b062-a5c5f281d956",
-        "uvNode": "eeeadffc-3b46-41f2-9a15-2de3f348f468",
-        "frameNode": "b71dca48-bc30-4f40-a101-2a986638daeb"
+        "countNode": "c4eef014-ddfe-4227-ab59-fd862e34a2b6",
+        "uvNode": "f0134d8b-1891-451e-ab2f-76409bc63813",
+        "frameNode": "aaf1fbe5-9011-489b-87bb-a0fa46cefb42"
       }
     },
     {
-      "uuid": "7d653db7-2ff4-4f6a-b062-a5c5f281d956",
+      "uuid": "c4eef014-ddfe-4227-ab59-fd862e34a2b6",
       "type": "ConstNode",
       "value": [
         6,
@@ -6389,22 +6443,22 @@
       "precision": null
     },
     {
-      "uuid": "eeeadffc-3b46-41f2-9a15-2de3f348f468",
+      "uuid": "f0134d8b-1891-451e-ab2f-76409bc63813",
       "type": "PointUVNode"
     },
     {
-      "uuid": "b71dca48-bc30-4f40-a101-2a986638daeb",
+      "uuid": "aaf1fbe5-9011-489b-87bb-a0fa46cefb42",
       "type": "OperatorNode",
       "inputNodes": {
-        "aNode": "8788371d-9c37-4e48-af19-7fcd80a01bc5",
-        "bNode": "e70cb4ab-2b85-4dce-aa57-90f0081e993a"
+        "aNode": "57e5cf44-700f-4247-910a-322b63c8da5d",
+        "bNode": "95fd51e8-cc9d-4dde-b1b2-104e7afacdad"
       },
       "op": "*"
     },
     {
-      "uuid": "8788371d-9c37-4e48-af19-7fcd80a01bc5",
+      "uuid": "57e5cf44-700f-4247-910a-322b63c8da5d",
       "type": "TimerNode",
-      "value": 7.018300000071531,
+      "value": 23.988100000001523,
       "valueType": "float",
       "nodeType": null,
       "precision": null,
@@ -6412,34 +6466,34 @@
       "scale": 1
     },
     {
-      "uuid": "e70cb4ab-2b85-4dce-aa57-90f0081e993a",
+      "uuid": "95fd51e8-cc9d-4dde-b1b2-104e7afacdad",
       "type": "AttributeNode"
     },
     {
-      "uuid": "8e7a858d-395f-452a-8bb6-6cc2e554539b",
+      "uuid": "5c01f14d-f804-4e9c-8a51-2754e68052bb",
       "type": "AttributeNode"
     },
     {
-      "uuid": "8a9977b4-5336-4657-8a73-3246d848987d",
+      "uuid": "b16eb276-993c-42d2-8212-78a5e325d985",
       "type": "MathNode",
       "inputNodes": {
-        "aNode": "c945408e-d45c-4509-9a95-9a6abfd9c283",
-        "bNode": "206d4e68-8088-4c66-8387-91ecb533ab50",
-        "cNode": "90ae35f2-6cc0-493a-8a45-a6b8265047c9"
+        "aNode": "52b20c86-0c45-48da-a443-15ee6886b300",
+        "bNode": "faef7688-cfef-42c5-8297-f0ecd0d66541",
+        "cNode": "3ec114f0-4324-4a3b-98f4-32c72bea70e9"
       },
       "method": "mix"
     },
     {
-      "uuid": "c945408e-d45c-4509-9a95-9a6abfd9c283",
+      "uuid": "52b20c86-0c45-48da-a443-15ee6886b300",
       "type": "PositionNode",
       "scope": "local"
     },
     {
-      "uuid": "206d4e68-8088-4c66-8387-91ecb533ab50",
+      "uuid": "faef7688-cfef-42c5-8297-f0ecd0d66541",
       "type": "AttributeNode"
     },
     {
-      "uuid": "90ae35f2-6cc0-493a-8a45-a6b8265047c9",
+      "uuid": "3ec114f0-4324-4a3b-98f4-32c72bea70e9",
       "type": "UniformNode",
       "value": 0.1,
       "valueType": "float",
@@ -6447,7 +6501,7 @@
       "precision": null
     },
     {
-      "uuid": "f28e4ec5-1e9a-419a-b7d6-fa44402413fe",
+      "uuid": "cc341ecb-433c-44a8-8b47-68858d8d00ea",
       "type": "AttributeNode"
     }
   ],
@@ -6499,7 +6553,7 @@
     }
   ],
   "project": {
-    "revision": 40145,
+    "revision": 40188,
     "world": {
       "resolution": "2560:1440",
       "toneMapping": 4,

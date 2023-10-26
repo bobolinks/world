@@ -37,6 +37,7 @@
         <Panels class="frame" style="border-radius: 6px; overflow: hidden;" />
       </div>
     </div>
+    <Contextmenu class="mainContextMenu" max-width="160px" />
     <!-- <canvas id="canvas" class="canvas" width="3840" height="2160"></canvas> -->
   </div>
 </template>
@@ -54,6 +55,7 @@ import { global } from '../global';
 import { Dragable } from '../utils/dragable';
 import Align from '../components/menus/align.vue';
 import Animation from '../components/menus/animation.vue';
+import Contextmenu from '../components/elements/contextmenu.vue';
 
 const currentScene = ref(global.project.scene.name);
 const list = ref<string[]>(global.project.scenes.map(e => e.name));
@@ -141,7 +143,7 @@ onMounted(() => {
   global.addEventListener('treeModified', resetCamers);
   global.addEventListener('objectModified', handleSceneNameChanged);
   global.addEventListener('objectChanged', dectectObjectSelected);
-  global.addKeyDownListener('meta+e', switchViewMode, 'Global.Switch View Mode');
+  global.addKeyDownListener('meta+e', switchViewMode, 'Global.Switch to View/Graph Mode');
 });
 
 onUnmounted(() => {

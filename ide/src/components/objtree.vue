@@ -1,6 +1,6 @@
 <template>
   <el-tree class="otree" :default-expand-all="true" :data="treeData" :props="props" :expand-on-click-node="false"
-    @current-change="change" @node-click="click">
+    @current-change="change" @node-click="click" @node-contextmenu="contextmenu">
     <template #default="{ node, data }">
       <div class="label-round" draggable="true" showTrash="true" :selected="current === data.uuid"
         @dragstart="onItemDragStart(data, $event)" @dragend="onItemDragEnd(data, $event)" @drop="onDrop(data, $event)">
@@ -19,13 +19,14 @@ import { ref, onMounted, onUnmounted, } from 'vue';
 import { ElNotification } from 'element-plus';
 import type { TreeNode, TreeNodeData } from 'element-plus/es/components/tree-v2/src/types';
 import { Object3D, Scene } from 'three';
-import { BuiltinObjectKeyHidden } from 'u3js/src/index';
+import { BuiltinObjectKeyHidden, clone } from 'u3js/src/index';
 import { global } from '../global';
 import { store } from '../store';
 import icons from '../assets/font/iconfont.json';
 import { local } from '../lang';
 import { fillDragParams, parseDragParams } from '../core/drags';
 import { showSelector } from './elements/selector.vue';
+import { showMenu } from './elements/contextmenu.vue';
 
 const props = {
   value: 'id',
@@ -176,6 +177,29 @@ function click(data: TreeNodeData, node: TreeNode, e: MouseEvent) {
     clickEventSave.offsetY = e.offsetY;
     clickEventSave.timeStamp = e.timeStamp;
   }
+}
+
+async function contextmenu(e: PointerEvent, data: TreeNodeData) {
+  const object: Object3D = global.project.scene.getObjectById(data.id) as any;
+  if ((object as any).isScene) {
+    return;
+  }
+  const action: 'DeeplyClone' | 'Clone' = await showMenu(document.querySelector('.mainContextMenu') as any, e, [
+    {name: 'Clone Deeply', value: 'DeeplyClone'},
+    {name: 'Clone', value: 'Clone'},
+  ]) as any;
+  const parent = object.parent as Object3D;
+  const cloned: Object3D = action === 'DeeplyClone' ? clone(object, true) : object.clone(false) ;
+  global.history.push({
+    tip: `Duplicate object from [uuid=${object.uuid}]`,
+    undo: () => {
+      global.project.removeObject(cloned);
+    },
+    redo: () => {
+      global.project.addObject(cloned, parent);
+    },
+  });
+  global.project.addObject(cloned, parent);
 }
 
 function onItemDragStart(data: TreeNodeData, ev: DragEvent) {

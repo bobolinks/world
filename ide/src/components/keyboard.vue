@@ -37,7 +37,7 @@ const worldViewEdit: KeyGroup = {
 };
 
 export function updateKeys() {
-  keys.value = { 'World Editor': worldViewEdit, ...global.keyGroups };
+  keys.value = { ...global.keyGroups, 'World Editor': worldViewEdit, };
 }
 
 </script>

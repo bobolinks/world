@@ -1,43 +1,26 @@
 <template>
-  <Popover body-class="popover-selector" :show-header="showHeader" :max-width="maxWidth" @on-blur="onBlur">
-    <template #header>
-      <label>{{ title }}</label>
-    </template>
-    <div class="popover-selector-body">
-      <div v-for="it of values" :key="it.value" class="popover-selector-item" @click="select(it)">
-        <label class="popover-selector-item-name">{{ it.name || 'unamed' }}</label>
-        <label class="popover-selector-item-value">{{ it.value }}</label>
-      </div>
+  <Popover body-class="popover-context-menu" :show-header="false" :max-width="maxWidth" @on-blur="onBlur">
+    <div v-for="it of menus" :key="it.value" class="popover-context-menu-item" @click="select(it)">
+      <label class="popover-context-menu-item-label">{{ it.name || 'unamed' }}</label>
     </div>
   </Popover>
 </template>
 <script setup lang="ts">
 defineProps({
-  icon: {
-    type: String,
-    default: "icon-egg",
-  },
-  showHeader: {
-    type: Boolean,
-    default: true
-  },
-  title: {
-    type: String,
-    default: "",
-  },
   maxWidth: {
     type: String,
     default: "320px",
-  },
-  values: {
-    type: Array<{ name: string; value: string }>,
-    default: [],
   },
 });
 
 </script>
 <script lang="ts">
+import { ref } from 'vue';
 import Popover, { showPopover } from './popover.vue';
+
+type MenuItem = { name: string; value: string };
+
+const menus = ref<Array<MenuItem>>([]);
 
 const wrap = {
   element: null as any as HTMLElement,
@@ -62,10 +45,12 @@ function select(it: any) {
   wrap.element = null as any;
 }
 
-export async function showSelector(el: HTMLElement, ev?: Event) {
+export async function showMenu(el: HTMLElement, ev: Event, items: Array<MenuItem>) {
   if (wrap.element) {
     return;
   }
+  menus.value.length = 0;
+  menus.value.push(...items);
   wrap.element = el;
   const promise = new Promise((resolve, reject) => {
     wrap.resolve = resolve;
@@ -76,25 +61,34 @@ export async function showSelector(el: HTMLElement, ev?: Event) {
 }
 </script>
 <style>
-.popover-selector {
+.popover-context-menu {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  padding: 4px;
+  background-color: var(--background-color-toolbar) !important;
 }
 
-.popover-selector-item {
+.popover-context-menu-item {
   display: flex;
   flex-direction: row;
   height: 3em;
   align-items: center;
+  background-color: #dddddd;
+  overflow: hidden;
+  /* border-radius: 4px; */
 }
 
-.popover-selector-item:hover {
+.popover-context-menu-item:nth-child(2) {
+  background-color: #d0d0d0;
+}
+
+.popover-context-menu-item:hover {
   background-color: #e1f3d8;
   cursor: pointer;
 }
 
-.popover-selector-item-name {
+.popover-context-menu-item-label {
   flex: 0 0 0%;
   min-width: 80px;
   width: 80px;
@@ -102,9 +96,4 @@ export async function showSelector(el: HTMLElement, ev?: Event) {
   pointer-events: none;
 }
 
-.popover-selector-item-value {
-  flex: 1 1 auto;
-  padding: 0 0.5em;
-  pointer-events: none;
-}
 </style>
