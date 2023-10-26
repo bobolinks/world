@@ -18,6 +18,7 @@ import { jsImport } from 'u3js/src/extends/helper/import';
 import type { pluginInstall } from 'u3js/src/types/plugin';
 import { addConstructor, addNodeClass } from 'u3js/src/extends/helper/clslib';
 import { addEffectClass } from 'u3js/src/extends/three/effect';
+import { logger } from 'u3js/src/extends/helper/logger';
 
 // disable script in editor mode
 ScriptNode.prototype.exec = function () { } as any;
@@ -324,7 +325,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       if (!e.__disp) {
         e.__disp = e.dispatchEvent;
         e.dispatchEvent = (event: any) => {
-          console.log(`Receive event[${event.type}] from object[${e.uuid}] in editor mode!`);
+          logger.debug(`Receive event[${event.type}] from object[${e.uuid}] in editor mode!`);
           e.__disp.call(e, event);
         };
       }

@@ -1,6 +1,7 @@
 import { watch, } from "vue";
 import { createStore } from "vuex";
 import Theme from './utils/theme';
+import type { UserNoticeLevel } from "u3js/src/types/types";
 
 const state = {
   theme: localStorage.getItem('theme') || 'dark' as 'dark' | 'light',
@@ -12,6 +13,7 @@ const state = {
   projectName: localStorage.getItem('projectName') || 'shared',
   audioListeners: [] as Array<{ name: string; value: string }>,
   pluginsChanged: false,
+  messages: [] as Array<{ type: UserNoticeLevel; time: Date, title: string; content: string; }>,
 };
 
 export const store = createStore({

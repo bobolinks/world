@@ -25,16 +25,17 @@
         <i class="icon-redo" action="redo" :disabled="!canRedo" @click="redo" />
         <i class="icon-save" action="save" :disabled="!isDirty" @click="save" />
         <el-icon>
-          <UploadFilled @click="uploaderModel.visible = !uploaderModel.visible" />
+          <UploadFilled @click="uploaderVisible = !uploaderVisible" />
         </el-icon>
       </div>
       <div class="rightside topbtns" style="align-items: center; display: flex; flex-direction: row">
         <i class="icon-start" @click="run" />
         <p style="flex: 1 1 auto" />
-        <i class="icon-chip" @click="pluginsModel.visible = !pluginsModel.visible" />
+        <i class="icon-chip" @click="pluginsVisible = !pluginsVisible" />
         <el-icon>
-          <Setting @click="settingsModel.visible = !settingsModel.visible" />
+          <Setting @click="settingsVisible = !settingsVisible" />
         </el-icon>
+        <i class="icon-alert" @click="outputVisible = !outputVisible" />
         <el-popover trigger="click" :width="320" @show="updateKeys">
           <template #reference>
             <i class="icon-keyboard" />
@@ -46,9 +47,10 @@
           @click="store.state.isFloating = !store.state.isFloating" />
       </div>
     </div>
-    <Uploader v-model="uploaderModel.visible" title="Upload files" />
-    <Settings v-model="settingsModel.visible" title="World settings" />
-    <Plugings v-model="pluginsModel.visible" title="Plugins" />
+    <Uploader v-model="uploaderVisible" title="Upload files" />
+    <Settings v-model="settingsVisible" title="World settings" />
+    <Plugings v-model="pluginsVisible" title="Plugins" />
+    <Output v-model="outputVisible" title="Log" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -59,6 +61,7 @@ import Keyboard, { updateKeys } from './keyboard.vue';
 import Uploader from './popovers/uploader.vue';
 import Settings from './popovers/settings.vue';
 import Plugings from './popovers/plugings.vue';
+import Output from './popovers/output.vue';
 import { store } from '../store';
 import { local } from '../lang';
 import apis from '../apis';
@@ -73,15 +76,10 @@ const isNameEditable = ref(store.state.projectName !== 'shared');
 const isDirty = ref(false);
 const canUndo = ref(false);
 const canRedo = ref(false);
-const uploaderModel = ref({
-  visible: false,
-});
-const settingsModel = ref({
-  visible: false,
-});
-const pluginsModel = ref({
-  visible: false,
-});
+const uploaderVisible = ref(false);
+const settingsVisible = ref(false);
+const pluginsVisible = ref(false);
+const outputVisible = ref(false);
 
 function reset() {
   revision.value = global.project.revision;

@@ -188,6 +188,9 @@ async function contextmenu(e: PointerEvent, data: TreeNodeData) {
     {name: 'Clone Deeply', value: 'DeeplyClone'},
     {name: 'Clone', value: 'Clone'},
   ]) as any;
+  if (!action) {
+    return;
+  }
   const parent = object.parent as Object3D;
   const cloned: Object3D = action === 'DeeplyClone' ? clone(object, true) : object.clone(false) ;
   global.history.push({
