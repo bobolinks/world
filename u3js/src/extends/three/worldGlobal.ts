@@ -1,4 +1,4 @@
-import { BufferAttribute, Mesh, Vector3 } from "three";
+import { BufferAttribute, Mesh, Scene, Vector3 } from "three";
 import type { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer';
 
 export const MaxGPUComputeWidth = 1024;
@@ -15,6 +15,7 @@ export default {
   /** to y axis */
   gravity: new Vector3(0, -9.8, 0),
   windForce: new Vector3(),
+  scene: null as any as Scene,
   gpuComputeRender: null as any as GPUComputationRenderer,
   /** wait for x miliseconds */
   wait(ms: number) {

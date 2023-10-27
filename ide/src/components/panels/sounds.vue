@@ -21,7 +21,7 @@ type ItemInfo = { url: string; name: string; size: number; };
 const items = ref<Array<ItemInfo>>([]);
 
 async function loadFiles() {
-  const filter = /\.wav|\.mp3|\.acc$/i;
+  const filter = /\.wav|\.mp3|\.acc|\.ogg$/i;
   const ls = (await apis.getMediaFiles(global.project.name)).filter(e => filter.test(e.url));
   items.value.length = 0;
   items.value.push(...defaultImages);

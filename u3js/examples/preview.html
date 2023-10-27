@@ -49,7 +49,7 @@
       const qs = location.search ? location.search.replace(/^\?/, '') : '';
       const query = Object.fromEntries(qs.split('&').map(kv => kv.split('=')));
       if (query.url) {
-        app.resize(cavans.width, cavans.height);
+        resize(canvas, app);
         app.run();
 
         await app.load(decodeURIComponent(query.url));
@@ -62,18 +62,24 @@
 
     function resize(cavans, app) {
       let { width, height } = document.body.getBoundingClientRect();
-      if (app.settings.aspect === 'auto') {
+      let aspect = 1;
+      let pixelRatio = 1;
+      if (app.settings.resolution === 'auto') {
         // do nothing
-      } else if (app.settings.aspect > 1) {
-        height = width / app.settings.aspect;
       } else {
-        width = height * app.settings.aspect;
+        const [w,h] = screen.resolution.split(':').map(e => Number.parseInt(e));
+        const aspect = w / h;
+        if (aspect > 1) {
+          pixelRatio = Math.max(1, Math.floor(w / width));
+          height = width / aspect;
+        } else {
+          pixelRatio = Math.max(1, Math.floor(h / height));
+          width = height * aspect;
+        }
       }
-      cavans.width = width * window.devicePixelRatio;
-      cavans.height = height * window.devicePixelRatio;
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
-      app.resize(cavans.width, cavans.height);
+      app.resize(width, height, pixelRatio);
     }
 
   </script>

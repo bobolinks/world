@@ -1,6 +1,6 @@
 <template>
   <div class="props-list">
-    <label class="prop-title" data-title="Screen" />
+    <!-- <label class="prop-title" data-title="Screen" /> -->
     <div class="prop-item">
       <label class="text-ellipsis prop-name">Resolution</label>
       <p style="flex: 1 1 auto" />
@@ -9,13 +9,16 @@
         <el-option v-for="item in builtinResolutions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </div>
-    <label class="prop-title" data-title="View" />
-    <div class="props">
-      <div class="prop-item">
-        <label class="text-ellipsis prop-name">Show grid</label>
-        <p style="flex: 1 1 auto" />
-        <el-switch v-model="isGridShow" class="prop-value" @change="showGrid" />
-      </div>
+    <!-- <label class="prop-title" data-title="View" /> -->
+    <div class="prop-item">
+      <label class="text-ellipsis prop-name">Show grid</label>
+      <p style="flex: 1 1 auto" />
+      <el-switch v-model="isGridShow" class="prop-value" @change="showGrid" />
+    </div>
+    <div class="prop-item">
+      <label class="text-ellipsis prop-name">VR Enable</label>
+      <p style="flex: 1 1 auto" />
+      <el-switch v-model="isVREnable" class="prop-value" @change="switchVR" />
     </div>
   </div>
 </template>
@@ -51,9 +54,17 @@ function showGrid() {
   }
 }
 
+const isVREnable = ref(global.project.world.vrEnable);
+
+function switchVR() {
+  global.project.world.vrEnable = isVREnable.value;
+  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project } );
+}
+
 function reset() {
   screen.value.resolution = global.project.world.resolution;
   isGridShow.value = global.world.gridHelper.visible;
+  isVREnable.value = global.project.world.vrEnable;
 }
 
 onMounted(() => {

@@ -30,6 +30,7 @@
     "@types/three": "^0.157.2",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
+    "@vitejs/plugin-basic-ssl": "^1.0.1",
     "@vitejs/plugin-vue": "^4.2.3",
     "eslint": "^8.50.0",
     "eslint-config-standard": "^17.1.0",

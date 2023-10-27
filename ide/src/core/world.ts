@@ -13,9 +13,14 @@ import { nodeFrame, WebGPU, WebGPURenderer, OutlinePass } from 'u3js/src/libs/th
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { ViewHelper } from 'three/examples/jsm/helpers/ViewHelper';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer';
+import { OculusHandModel } from 'three/examples/jsm/webxr/OculusHandModel';
+import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory';
 import { PhysicalScene } from 'u3js/src/extends/three/scene';
 import type { HistoryManager, UserEventMap } from 'u3js/src/types/types';
 import worldGlobal, { MaxGPUComputeWidth, MaxGPUComputeHeight } from 'u3js/src/extends/three/worldGlobal';
+import { logger } from 'u3js/src/extends/helper/logger';
+import { WorldSettings } from 'u3js/src/runtime';
+import { BodyType, Entity } from 'u3js/src/extends/three/entity';
 
 const stats = new Stats();
 stats.dom.style.top = 'unset';
@@ -29,18 +34,6 @@ export type WorldEventMap = {
   objectChanged: { type: WorldEvent; soure: EventDispatcher; object: THREE.Object3D | undefined };
   objectModified: { type: WorldEvent; soure: EventDispatcher; objects: THREE.Object3D[]; };
 };
-
-export interface WorldSettings {
-  // screen: 
-  resolution: 'auto' | string;
-  // render:
-  toneMapping?: ToneMapping;
-  toneMappingExposure?: number;
-  shadowMap?: {
-    enabled: boolean;
-    type: ShadowMapType;
-  };
-}
 
 const useGPU = false;
 
@@ -77,6 +70,9 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
   // vr
   protected vrSession?: XRSession;
+  /** left, right */
+  protected hands: [OculusHandModel?, OculusHandModel?] = [];
+  protected handsConllisionMap = new Set<string>();
 
   // helpers
   public readonly gridHelper: THREE.GridHelper;
@@ -174,6 +170,9 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.effectFXAA = new ShaderPass(FXAAShader);
     this.effectFXAA.uniforms['resolution'].value.set(1 / this.size.width, 1 / this.size.height);
     this.composer.addPass(this.effectFXAA);
+
+    // vr
+    this.setupVr(this.root);
 
     // controls
     const orbit = new OrbitControls(this.currentCamera, this.renderer.domElement);
@@ -423,7 +422,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
       this.currentScene.update(this.renderer, this.currentCamera, delta, now, true);
     }
     if (this.vrSession) {
-      this.renderer.xr.updateCamera(this.currentCamera as any);
+      this.updateVR();
     }
     nodeFrame.update();
     this.renderer.autoClear = true;
@@ -542,16 +541,60 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     });
   }
 
+  private setupVr(scene: THREE.Scene) {
+    const controller0 = this.renderer.xr.getController(0);
+    controller0.name = 'vr-controller0';
+    scene.add(controller0);
+
+    const controller1 = this.renderer.xr.getController(1);
+    scene.add(controller1);
+
+    const controllerModelFactory = new XRControllerModelFactory();
+    // const handModelFactory = new XRHandModelFactory();
+
+    // Hand 1
+    const controllerGrip10 = this.renderer.xr.getControllerGrip(0);
+    controllerGrip10.add(controllerModelFactory.createControllerModel(controllerGrip10));
+    scene.add(controllerGrip10);
+
+    const hand0 = this.renderer.xr.getHand(0);
+    if (!this.hands[0]) {
+      this.hands[0] = new OculusHandModel(hand0);
+      this.hands[0].name = 'left';
+    }
+    hand0.add(this.hands[0]);
+    // hand0.add(handModelFactory.createHandModel(hand0));
+
+    scene.add(hand0);
+
+    // Hand 2
+    const controllerGrip1 = this.renderer.xr.getControllerGrip(1);
+    controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
+    scene.add(controllerGrip1);
+
+    const hand1 = this.renderer.xr.getHand(1);
+    if (!this.hands[1]) {
+      this.hands[1] = new OculusHandModel(hand1);
+      this.hands[1].name = 'right';
+    }
+    hand1.add(this.hands[1]);
+    // hand1.add(handModelFactory.createHandModel(hand1));
+    scene.add(hand1);
+  }
+
   async startVR(): Promise<boolean> {
     if (!navigator.xr) {
+      logger.error(`Your browser is not currently supported VR!`);
       return false;
     }
     const supported = await navigator.xr.isSessionSupported('immersive-vr');
     if (!supported) {
+      logger.error(`Your browser is not currently supported VR!`);
       return false;
     }
 
     if (this.vrSession) {
+      logger.warn(`VR has already been started!`);
       return false;
     }
 
@@ -574,6 +617,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
         this.vrSession.removeEventListener('end', onSessionEnded);
         this.vrSession = null as any;
         this.currentCamera = this.cameraPersp;
+        logger.debug(`VR has been exited successfully!`);
       }
       resolve(true);
     };
@@ -587,6 +631,33 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   stopVR() {
     if (this.vrSession) {
       this.vrSession.end();
+    }
+  }
+
+  isRunningVR() {
+    return this.vrSession ? true : false;
+  }
+
+  protected updateVR() {
+    this.renderer.xr.updateCamera(this.currentCamera as any);
+    if (!this.currentScene) {
+      return;
+    }
+    for (const hand of this.hands) {
+      if (!hand) continue;
+      for (const it of this.currentScene.children as Entity[]) {
+        if (it.bodyType === BodyType.Ghost) {
+          continue;
+        }
+        const key = `${hand.name}:${it.uuid}`;
+        if (hand.intersectBoxObject(it)) {
+          this.handsConllisionMap.add(key);
+          it.dispatchEvent({ type: 'onCollisionEnter', target: hand } as any);
+        } else if (this.handsConllisionMap.has(key)) {
+          this.handsConllisionMap.delete(key);
+          it.dispatchEvent({ type: 'onCollisionLeave', target: hand } as any);
+        }
+      }
     }
   }
 

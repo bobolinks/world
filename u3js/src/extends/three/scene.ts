@@ -35,6 +35,7 @@ export class PhysicalScene extends Scene {
   }
 
   update(renderer: WebGLRenderer, camera: Camera, delta: number, now: number, globalOnly = false) {
+    worldGlobal.scene = this;
     worldGlobal.gravity.y = this._gravity;
     const force = this.windForce.clone().multiplyScalar(0.5 + 0.5 * Math.sin(now / 2000))
     worldGlobal.windForce.copy(force);

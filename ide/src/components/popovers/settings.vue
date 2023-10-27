@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="modelVisibleValue" :title="title" width="30%" draggable align-center @close="modelVisibleValue = false">
+  <el-dialog v-model="modelVisibleValue" :title="title" width="500px" draggable align-center @close="modelVisibleValue = false">
     <World />
   </el-dialog>
 </template>

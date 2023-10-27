@@ -186,7 +186,11 @@ async function enterVr() {
 }
 
 function stopVr() {
-  global.world.stopVR();
+  if (global.world.isRunningVR()) {
+    global.world.stopVR();
+  } else {
+    store.state.isFloating = false;
+  }
 }
 
 onMounted(() => {

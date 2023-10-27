@@ -1,8 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as THREE from "three";
+import { ACESFilmicToneMapping, PCFSoftShadowMap, ShadowMapType, ToneMapping } from "three";
 // @ts-ignore
 import { nodeFrame } from 'three/examples/jsm/renderers/webgl-legacy/nodes/WebGLNodes.js';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer';
+import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
+import { OculusHandModel } from 'three/examples/jsm/webxr/OculusHandModel.js';
+// import { XRHandModelFactory } from 'three/examples/jsm/webxr/XRHandModelFactory.js';
 import { PhysicalScene } from "./extends/three/scene";
 import { LoadingScene } from "./loading";
 import { ObjectLoader } from "./loader";
@@ -10,6 +14,7 @@ import { emptyObject } from "./extends/three/utils";
 import { clone } from "./clone";
 import { logger } from "./extends/helper/logger";
 import worldGlobal, { MaxGPUComputeWidth, MaxGPUComputeHeight } from "./extends/three/worldGlobal";
+import { BodyType, Entity } from "./extends/three/entity";
 
 declare global {
   interface Window {
@@ -19,36 +24,44 @@ declare global {
 
 export interface WorldSettings {
   // screen: 
-  aspect: number | 'auto';
+  resolution: 'auto' | string;
   // render:
-  toneMapping?: THREE.ToneMapping;
+  toneMapping?: ToneMapping;
   toneMappingExposure?: number;
   shadowMap?: {
     enabled: boolean;
-    type: THREE.ShadowMapType;
+    type: ShadowMapType;
   };
+  vrEnable: boolean;
 }
 
 const defaultWorldSetting: WorldSettings = {
-  aspect: 'auto',
-  toneMapping: THREE.ACESFilmicToneMapping,
+  resolution: 'auto',
+  toneMapping: ACESFilmicToneMapping,
   toneMappingExposure: 1.0,
   shadowMap: {
     enabled: true,
-    type: THREE.PCFSoftShadowMap,
+    type: PCFSoftShadowMap,
   },
+  vrEnable: false,
 };
 
 export class U3JsRuntime extends THREE.EventDispatcher {
   public readonly renderer: THREE.WebGLRenderer;
   public readonly clock: THREE.Clock;
-  public readonly size: { width: number; height: number } = { width: 640, height: 480 };
+  public readonly size: { width: number; height: number } = { width: 2048, height: 2048 };
   public readonly uuid = THREE.MathUtils.generateUUID();
 
   protected defaultScene: PhysicalScene = new LoadingScene();
   protected currentScene: PhysicalScene;
   protected currentCamera: THREE.Camera;
   protected defaultCamera: THREE.PerspectiveCamera;
+
+  // vr
+  protected vrSession?: XRSession;
+  /** left, right */
+  protected hands: [OculusHandModel?, OculusHandModel?] = [];
+  protected handsConllisionMap = new Set<string>();
 
   protected working = false;
 
@@ -96,20 +109,21 @@ export class U3JsRuntime extends THREE.EventDispatcher {
     const camera: THREE.Camera = this.currentScene.getObjectByProperty('isCamera', true) as any || this.defaultCamera;
     this.currentCamera = camera;
 
-    this.resize(this.context.width, this.context.height);
+    this.resize(this.size.width, this.size.height, 1);
   }
 
-  resize(width: number, height: number) {
+  resize(width: number, height: number, pixelRatio: number) {
     if (!this.context) {
       return;
     }
 
-    this.size.width = width;
-    this.size.height = height;
+    const ratioScale = Math.max(pixelRatio, 1);
+    const aspect = width / height;
 
-    const aspect = this.size.width / this.size.height;
+    this.size.width = width * ratioScale;
+    this.size.height = height * ratioScale;
 
-    this.renderer.setViewport(0, 0, width, height);
+    this.renderer.setSize(this.size.width, this.size.height, false);
 
     if (this.currentCamera) {
       if (this.currentCamera instanceof THREE.PerspectiveCamera) {
@@ -142,6 +156,15 @@ export class U3JsRuntime extends THREE.EventDispatcher {
 
     const camera: THREE.Camera = scene.getObjectByProperty('isCamera', true) as any || this.defaultCamera;
     this.setCamera(camera);
+
+    if (this.settings.vrEnable) {
+      if (!this.currentScene.getObjectByName('vr-controller0')) {
+        this.setupVr(scene);
+      }
+      if (!this.vrSession) {
+        this.startVR();
+      }
+    }
   }
 
   createObjectFromSpawn(name: string) {
@@ -182,13 +205,16 @@ export class U3JsRuntime extends THREE.EventDispatcher {
     const root = await loader.parseAsync(json);
 
     // load global settings
-    const { object } = json;
-    if ((object as any).world) {
+    const { project } = json;
+    if (project.world) {
       emptyObject(this.settings);
-      Object.assign(this.settings, { ...defaultWorldSetting, ...(object as any).world });
+      Object.assign(this.settings, { ...defaultWorldSetting, ...project.world });
     }
-    if (!this.settings.aspect) {
-      this.settings.aspect = 'auto';
+    if (!this.settings.resolution) {
+      this.settings.resolution = 'auto';
+    }
+    if (this.settings.vrEnable) {
+      this.renderer.xr.enabled = true;
     }
 
     // load scenes
@@ -206,11 +232,127 @@ export class U3JsRuntime extends THREE.EventDispatcher {
     this.navigateTo(scene.uuid);
   }
 
+  private setupVr(scene: THREE.Scene) {
+    const controller0 = this.renderer.xr.getController(0);
+    controller0.name = 'vr-controller0';
+    scene.add(controller0);
+
+    const controller1 = this.renderer.xr.getController(1);
+    scene.add(controller1);
+
+    const controllerModelFactory = new XRControllerModelFactory();
+    // const handModelFactory = new XRHandModelFactory();
+
+    // Hand 1
+    const controllerGrip10 = this.renderer.xr.getControllerGrip(0);
+    controllerGrip10.add(controllerModelFactory.createControllerModel(controllerGrip10));
+    scene.add(controllerGrip10);
+
+    const hand0 = this.renderer.xr.getHand(0);
+    if (!this.hands[0]) {
+      this.hands[0] = new OculusHandModel(hand0);
+      this.hands[0].name = 'left';
+    }
+    hand0.add(this.hands[0]);
+    // hand0.add(handModelFactory.createHandModel(hand0));
+
+    scene.add(hand0);
+
+    // Hand 2
+    const controllerGrip1 = this.renderer.xr.getControllerGrip(1);
+    controllerGrip1.add(controllerModelFactory.createControllerModel(controllerGrip1));
+    scene.add(controllerGrip1);
+
+    const hand1 = this.renderer.xr.getHand(1);
+    if (!this.hands[1]) {
+      this.hands[1] = new OculusHandModel(hand1);
+      this.hands[1].name = 'right';
+    }
+    hand1.add(this.hands[1]);
+    // hand1.add(handModelFactory.createHandModel(hand1));
+    scene.add(hand1);
+  }
+
+  protected async startVR(): Promise<boolean> {
+    if (!navigator.xr) {
+      logger.error(`Your browser is not currently supported VR!`);
+      return false;
+    }
+    const supported = await navigator.xr.isSessionSupported('immersive-vr');
+    if (!supported) {
+      logger.error(`Your browser is not currently supported VR!`);
+      return false;
+    }
+
+    if (this.vrSession) {
+      logger.warn(`VR has already been started!`);
+      return false;
+    }
+
+    let resolve: any;
+
+    const promise = new Promise<boolean>((r) => resolve = r);
+
+    // WebXR's requestReferenceSpace only works if the corresponding feature
+    // was requested at session creation time. For simplicity, just ask for
+    // the interesting ones as optional features, but be aware that the
+    // requestReferenceSpace call will fail if it turns out to be unavailable.
+    // ('local' is always available for immersive sessions and doesn't need to
+    // be requested separately.)
+
+    const sessionInit = { optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking', 'layers'] };
+    this.vrSession = await navigator.xr.requestSession('immersive-vr', sessionInit);
+    await this.renderer.xr.setSession(this.vrSession);
+    const onSessionEnded = () => {
+      if (this.vrSession) {
+        this.vrSession.removeEventListener('end', onSessionEnded);
+        this.vrSession = null as any;
+        this.currentCamera = this.defaultCamera;
+        logger.debug(`VR has been exited successfully!`);
+      }
+      resolve(true);
+    };
+    this.vrSession.addEventListener('end', onSessionEnded);
+
+    this.currentCamera = this.defaultCamera;
+
+    return promise;
+  }
+
+  protected stopVR() {
+    if (this.vrSession) {
+      this.vrSession.end();
+    }
+  }
+
+  protected updateVR() {
+    this.renderer.xr.updateCamera(this.currentCamera as any);
+    for (const hand of this.hands) {
+      if (!hand) continue;
+      for (const it of this.currentScene.children as Entity[]) {
+        if (it.bodyType === BodyType.Ghost) {
+          continue;
+        }
+        const key = `${hand.name}:${it.uuid}`;
+        if (hand.intersectBoxObject(it)) {
+          this.handsConllisionMap.add(key);
+          it.dispatchEvent({ type: 'onCollisionEnter', target: hand } as any);
+        } else if (this.handsConllisionMap.has(key)) {
+          this.handsConllisionMap.delete(key);
+          it.dispatchEvent({ type: 'onCollisionLeave', target: hand } as any);
+        }
+      }
+    }
+  }
+
   private render(delta: number, now: number) {
     worldGlobal.delta = delta;
     worldGlobal.now = now;
     this.currentScene.update(this.renderer, this.currentCamera, delta, now);
     nodeFrame.update();
+    if (this.renderer.xr.enabled) {
+      this.updateVR();
+    }
     this.renderer.render(this.currentScene, this.currentCamera);
   }
 

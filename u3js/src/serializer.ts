@@ -12,7 +12,11 @@ declare module 'three' {
 const getDataURL = ImageUtils.getDataURL;
 ImageUtils.getDataURL = function (image: HTMLImageElement | HTMLCanvasElement | CanvasImageSource | ImageBitmap | ImageData): string {
   if ((image as any).src) {
-    return (image as any).src;
+    const src: string = (image as any).src;
+    if (src.indexOf(location.origin) === 0) {
+      return src.replace(location.origin, '');
+    }
+    return src;
   }
   return getDataURL(image);
 }

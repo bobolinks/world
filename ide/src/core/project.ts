@@ -9,9 +9,8 @@ import { ObjectLoader } from 'u3js/src/loader';
 import { PhysicalScene } from 'u3js/src/extends/three/scene';
 import { addThreeClass, createObject, emptyObject } from 'u3js/src/extends/three/utils';
 import { Graph } from 'u3js/src/extends/graph/graph';
-import { WorldSettings } from "./world";
 import { SpawnsScene } from './spawns';
-import { BuiltinSceneSpawns, } from 'u3js/src';
+import { BuiltinSceneSpawns, WorldSettings, } from 'u3js/src';
 import { ScriptNode } from 'u3js/src/extends/nodes/script';
 import { ScriptBlockNode } from 'u3js/src/extends/nodes/block';
 import { jsImport } from 'u3js/src/extends/helper/import';
@@ -41,6 +40,7 @@ const defaultWorldSetting: WorldSettings = {
     enabled: true,
     type: PCFSoftShadowMap,
   },
+  vrEnable: false,
 };
 
 function defaultCamera() {
@@ -118,7 +118,13 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       }
     }
 
-    const root = await loader.parseAsync(json);
+    let root: any;
+    try {
+      root = await loader.parseAsync(json);
+    } catch (e) {
+      logger.error(e);
+      throw e;
+    }
 
     emptyObject(this.textures);
     for (const txt of Object.values((loader as any)._textures) as any) {
@@ -325,7 +331,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       if (!e.__disp) {
         e.__disp = e.dispatchEvent;
         e.dispatchEvent = (event: any) => {
-          logger.debug(`Receive event[${event.type}] from object[${e.uuid}] in editor mode!`);
+          logger.debug(`Received event[${event.type}] from object[${e.uuid}] in editor mode!`);
           e.__disp.call(e, event);
         };
       }

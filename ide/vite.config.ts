@@ -1,6 +1,8 @@
 import { defineConfig, } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 import topLevelAwait from "vite-plugin-top-level-await";
+
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,6 +22,7 @@ export default defineConfig({
         }
       }
     }),
+    basicSsl(),
     topLevelAwait({
       // The export name of top-level await promise for each chunk module
       promiseExportName: "__tla",
