@@ -10,11 +10,15 @@ import { OculusHandModel } from 'three/examples/jsm/webxr/OculusHandModel.js';
 import { PhysicalScene } from "./extends/three/scene";
 import { LoadingScene } from "./loading";
 import { ObjectLoader } from "./loader";
-import { emptyObject } from "./extends/three/utils";
+import { addThreeClass, emptyObject } from "./extends/three/utils";
 import { clone } from "./clone";
 import { logger } from "./extends/helper/logger";
 import worldGlobal, { MaxGPUComputeWidth, MaxGPUComputeHeight } from "./extends/three/worldGlobal";
 import { BodyType, Entity } from "./extends/three/entity";
+import type { pluginInstall } from "./types/plugin";
+import { addEffectClass } from "./extends/three/effect";
+import { addConstructor, addNodeClass } from "./extends/helper/clslib";
+import { jsImport } from "./extends/helper/import";
 
 declare global {
   interface Window {
@@ -201,7 +205,28 @@ export class U3JsRuntime extends THREE.EventDispatcher {
   async load(url: string) {
     const loader = new ObjectLoader();
     const response = await fetch(url);
-    const json = await response.json()
+    const json = await response.json();
+
+    // install plugins first
+    if (json.project.plugins) {
+      try {
+        const plugins: Array<{ pluginInstall: typeof pluginInstall }> = await Promise.all(json.project.plugins.map((e: string) => jsImport(e)));
+        for (const i in plugins) {
+          const plugin = plugins[i];
+          plugin.pluginInstall(
+            addThreeClass,
+            addEffectClass,
+            addNodeClass,
+            addConstructor,
+          );
+          const name = json.project.plugins[i].split('/').pop();
+          logger.notice(`Plugin ${name} has been installed successfully!`);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
     const root = await loader.parseAsync(json);
 
     // load global settings

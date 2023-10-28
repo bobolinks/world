@@ -1,6 +1,6 @@
 {
   "object": {
-    "uuid": "a3cde29f-4ef9-42d8-a507-cd955ffc227d",
+    "uuid": "d5950cd4-c43e-49ad-adcb-c1cff7e63319",
     "type": "Object3D",
     "layers": 1,
     "matrix": [
@@ -6367,7 +6367,7 @@
     {
       "uuid": "59a90255-13cd-448f-b7f4-11e6fa0c6c14",
       "type": "TimerNode",
-      "value": 21.32919999997326,
+      "value": 64.27929999995223,
       "valueType": "float",
       "nodeType": null,
       "precision": null,
@@ -6451,7 +6451,7 @@
     }
   ],
   "project": {
-    "revision": 279,
+    "revision": 280,
     "world": {
       "resolution": "2560:1440",
       "toneMapping": 4,

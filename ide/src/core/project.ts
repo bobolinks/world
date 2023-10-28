@@ -105,13 +105,16 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       try {
         json.project.plugins.forEach(e => this.plugins.add(e));
         const plugins: Array<{ pluginInstall: typeof pluginInstall }> = await Promise.all(json.project.plugins.map(e => jsImport(e)));
-        for (const plugin of plugins) {
+        for (const i in plugins) {
+          const plugin = plugins[i];
           plugin.pluginInstall(
             addThreeClass,
             addEffectClass,
             addNodeClass,
             addConstructor,
           );
+          const name = json.project.plugins[i].split('/').pop();
+          logger.notice(`Plugin ${name} has been installed successfully!`);
         }
       } catch (e) {
         console.error(e);
