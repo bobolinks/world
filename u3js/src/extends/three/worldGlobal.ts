@@ -23,6 +23,19 @@ export default {
       setTimeout(resolve, ms, true);
     });
   },
+  random(start: number, end: number) {
+    return start + Math.floor(Math.random() * (end - start + 1));
+  },
+  randomChoice(obj: any[]): any {
+    if (Array.isArray(obj)) {
+      const i = Math.floor(Math.random() * obj.length);
+      return obj[i];
+    } else {
+      const list = Object.keys(obj);
+      const key = Math.floor(Math.random() * list.length);
+      return obj[key];
+    }
+  },
   calcObjectPosition(position: Vector3, velocity: Vector3, mass: number, airResCoe: number): [Vector3 /** pos */, Vector3 /** vel */] {
     if (mass <= 0) {
       return [position, velocity];

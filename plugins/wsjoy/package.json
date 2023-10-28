@@ -1,0 +1,26 @@
+{
+  "name": "@u3js/wsjoy",
+  "description": "websocket joystick plugin for u3js",
+  "version": "0.0.1",
+  "author": "bobolinks",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "reconnecting-websocket": "^4.4.0",
+    "three": "^0.157.0",
+    "u3js": "file:../../u3js",
+    "vscode-jsonrpc": "^8.2.0",
+    "vscode-ws-jsonrpc": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.3.2",
+    "@types/three": "^0.156.0",
+    "@typescript-eslint/eslint-plugin": "^6.8.0",
+    "@typescript-eslint/parser": "^6.8.0",
+    "typescript": "^5.1.6",
+    "vite": "^4.5.0"
+  },
+  "scripts": {
+    "build": "vite build"
+  }
+}

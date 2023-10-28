@@ -8,13 +8,15 @@ type Props = {
   maxCount: number;
   texture: string;
   lerpPosition: number;
+  intensity: number;
+  size: number;
 };
 
 export class EffectBurning extends Effect<BufferGeometry, PointsNodeMaterial, Props> {
   public readonly isEffectBurning = true;
 
   constructor() {
-    super(undefined, undefined, { maxCount: 1000, texture: '', lerpPosition: 0 });
+    super(undefined, undefined, { maxCount: 1000, texture: '', lerpPosition: 0, intensity: 0.04, size: 4 });
 
     (this as any).type = 'EffectBurning';
   }
@@ -125,8 +127,8 @@ export class EffectBurning extends Effect<BufferGeometry, PointsNodeMaterial, Pr
 
     for (let i = 0; i < particleCount; i++) {
       speed.push(20 + Math.random() * 50);
-      intensity.push(Math.random() * .04);
-      size.push(30 + Math.random() * 230);
+      intensity.push(Math.random() * this.props.intensity);
+      size.push(this.props.size + Math.random() * this.props.size);
     }
 
     geometry.setAttribute('position', positionAttribute);
@@ -176,6 +178,8 @@ addEffectClass('EffectBurning',
       'props.maxCount': 'Number',
       'props.texture': 'Url',
       'props.lerpPosition': 'Number',
+      'props.intensity': 'Number',
+      'props.size': 'Number',
     },
     proto: 'Effect',
     group: 'Effects.Burning Effect',

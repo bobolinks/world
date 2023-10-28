@@ -335,8 +335,10 @@ export class U3JsRuntime extends THREE.EventDispatcher {
         }
         const key = `${hand.name}:${it.uuid}`;
         if (hand.intersectBoxObject(it)) {
-          this.handsConllisionMap.add(key);
-          it.dispatchEvent({ type: 'onCollisionEnter', target: hand } as any);
+          if (!this.handsConllisionMap.has(key)) {
+            this.handsConllisionMap.add(key);
+            it.dispatchEvent({ type: 'onCollisionEnter', target: hand } as any);
+          }
         } else if (this.handsConllisionMap.has(key)) {
           this.handsConllisionMap.delete(key);
           it.dispatchEvent({ type: 'onCollisionLeave', target: hand } as any);

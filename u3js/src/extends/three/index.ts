@@ -1,3 +1,4 @@
+export { EventDispatcher } from 'three';
 import './object';
 export * from './scene';
 export * from './line';
@@ -5,6 +6,7 @@ import './cameras';
 export * from './entities';
 export * from './shapes';
 import './lights';
+import { EventDispatcher } from 'three';
 export * from './text';
 export * from './text3d';
 export * from './audio';

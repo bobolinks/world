@@ -80,7 +80,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     this.world = { ...defaultWorldSetting };
 
     this.scene = new PhysicalScene();
-    this.scene.name = 'defaultScene';
+    this.scene.name = 'index';
     this.scenes.push(this.scene, new SpawnsScene);
 
     const camera = defaultCamera();

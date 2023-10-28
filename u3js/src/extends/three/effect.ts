@@ -19,23 +19,15 @@ export class Effect<
 
     (this as any).type = 'Effect';
 
-    this.visible = false;
-
     this.props = objectPathAccessible({ ...props }, (p: string, v: any) => {
       this.onPropsChanged([p], [v]);
     });
 
     this.addEventListener('added', async () => {
       await this.onAttached();
-      if (this.geometry && this.material) {
-        // yes, tell renderer we are ready
-        this.visible = true;
-      }
     });
     this.addEventListener('removed', async () => {
       await this.onDetached();
-      // yes, tell renderer we have gone
-      this.visible = false;
     });
   }
 
