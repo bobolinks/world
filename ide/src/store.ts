@@ -3,11 +3,13 @@ import { createStore } from "vuex";
 import Theme from './utils/theme';
 import type { UserNoticeLevel } from "u3js/src/types/types";
 
+type EditorType = 'Scene' | 'Graph' | 'Geometry';
+
 const state = {
   theme: localStorage.getItem('theme') || 'dark' as 'dark' | 'light',
   isLoading: true,
   isNetBusy: false,
-  isWorldView: true,
+  editorType: 'Scene' as EditorType,
   isFloating: false,
   projects: [] as Array<string>,
   projectName: localStorage.getItem('projectName') || 'shared',
@@ -21,14 +23,14 @@ export const store = createStore({
   mutations: {
     selectProject(st, name: string) {
       st.projectName = name;
-      st.isWorldView = true;
+      st.editorType = 'Scene';
       localStorage.setItem('projectName', name);
     },
     createProject(st, name: string) {
       st.projects.push(name);
       st.projects = [...st.projects];
       st.projectName = name;
-      st.isWorldView = true;
+      st.editorType = 'Scene';
       localStorage.setItem('projectName', name);
     },
     renameProject(st, name: string) {

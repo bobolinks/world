@@ -86,7 +86,7 @@ function change(data: TreeNodeData) {
   }
   const object: Object3D = global.project.scene.getObjectById(data.id) as any;
   global.world.selectObject(object);
-  if (!store.state.isWorldView) {
+  if (store.state.editorType ==='Graph') {
     global.editor.setObject(object);
   }
 }
@@ -165,7 +165,7 @@ function click(data: TreeNodeData, node: TreeNode, e: MouseEvent) {
   const diff = e.timeStamp - clickEventSave.timeStamp;
   if (clickEventSave.offsetX === e.offsetX && clickEventSave.offsetY === e.offsetY && diff <= 300) {
     // double click
-    store.state.isWorldView = false;
+    store.state.editorType = 'Graph';
     if (global.world.selected) {
       global.editor.setObject(global.world.selected);
     }

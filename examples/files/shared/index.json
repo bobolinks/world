@@ -1,22 +1,6 @@
 {
-  "project": {
-    "revision": 26,
-    "world": {
-      "aspect": 1.7777777777777777,
-      "toneMapping": 4,
-      "toneMappingExposure": 1,
-      "shadowMap": {
-        "enabled": true,
-        "type": 2
-      },
-      "width": 3840,
-      "height": 2160,
-      "useLegacyLights": false
-    },
-    "scene": "default"
-  },
   "object": {
-    "uuid": "ff892429-3da1-455f-a7c4-fe25b169c9a3",
+    "uuid": "4f569858-04b7-4005-b514-a3274f4fa985",
     "type": "Object3D",
     "layers": 1,
     "matrix": [
@@ -44,9 +28,9 @@
     ],
     "children": [
       {
-        "uuid": "d4c3cedc-d729-4d87-8d36-2b0cbe242b91",
+        "uuid": "2d431bb3-8b3f-41e4-ab43-2881e60d9196",
         "type": "PhysicalScene",
-        "name": "default",
+        "name": "index",
         "layers": 1,
         "matrix": [
           1,
@@ -73,21 +57,27 @@
         ],
         "children": [
           {
-            "uuid": "bd310b42-c053-4033-a17b-c7e0dafaafbe",
+            "uuid": "78839169-ca1a-4848-bfd8-89a18aca78ac",
             "type": "PerspectiveCamera",
             "name": "defaultCamera",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
             "layers": 1,
             "matrix": [
               0.7071067811865475,
-              8.326672684688674e-17,
-              -0.7071067811865477,
+              -2.7755575615628914e-17,
+              -0.7071067811865476,
               0,
-              -0.4082482904638631,
-              0.8164965809277259,
-              -0.4082482904638629,
+              -0.408248290463863,
+              0.816496580927726,
+              -0.408248290463863,
               0,
-              0.5773502691896257,
               0.5773502691896258,
+              0.5773502691896257,
               0.5773502691896257,
               0,
               1,
@@ -110,8 +100,8 @@
             "filmOffset": 0
           },
           {
-            "uuid": "3efed862-9a7f-4734-b966-586b5386d575",
-            "type": "PointLight",
+            "uuid": "2de275db-9353-479b-b7a6-57f96b574067",
+            "type": "Box",
             "userData": {
               "graph": {
                 "isGraph": true,
@@ -132,9 +122,65 @@
               0,
               1,
               0,
-              0.7274878407638519,
-              0.8164824496424237,
-              -0.7411325717419116,
+              0,
+              0,
+              0,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "geometry": "b15a2b5a-e182-4d70-987c-1d4677017a8a",
+            "material": "6598af92-f0e4-4f30-b45b-4f5867e44f5b",
+            "mass": 0,
+            "bodyType": 0,
+            "geoMatrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          {
+            "uuid": "2117160f-78ef-4dd4-a37a-8fc99873c9d1",
+            "type": "HemisphereLight",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              1,
+              0,
               1
             ],
             "up": [
@@ -144,37 +190,78 @@
             ],
             "color": 16777215,
             "intensity": 1,
-            "distance": 0,
-            "decay": 2,
+            "groundColor": 16777215
+          },
+          {
+            "uuid": "9a460155-7ea8-45bb-9594-8ea559848732",
+            "type": "DirectionalLight",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              2.657359081998739,
+              2.6861673630240537,
+              0,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "color": 16777215,
+            "intensity": 1,
             "shadow": {
+              "bias": -0.1,
               "mapSize": [
                 2048,
                 2048
               ],
               "camera": {
-                "uuid": "653e592c-58ad-4df5-9300-49f3acc46450",
-                "type": "PerspectiveCamera",
+                "uuid": "018ea175-b175-4113-9fa0-3b4953815ff0",
+                "type": "OrthographicCamera",
                 "layers": 1,
                 "up": [
                   0,
                   1,
                   0
                 ],
-                "fov": 90,
                 "zoom": 1,
+                "left": -5,
+                "right": 5,
+                "top": 5,
+                "bottom": -5,
                 "near": 0.5,
-                "far": 500,
-                "focus": 10,
-                "aspect": 1,
-                "filmGauge": 35,
-                "filmOffset": 0
+                "far": 500
               }
             }
           }
+        ],
+        "gravity": -9.8,
+        "windForce": [
+          0,
+          0,
+          0
         ]
       },
       {
-        "uuid": "816ae50e-f7c1-4819-a345-a6a558cb9010",
+        "uuid": "425f73b6-844e-4f62-89a8-ef916e573e44",
         "type": "PhysicalScene",
         "name": "[Spawns]",
         "layers": 1,
@@ -200,6 +287,12 @@
           0,
           1,
           0
+        ],
+        "gravity": -9.8,
+        "windForce": [
+          0,
+          0,
+          0
         ]
       }
     ]
@@ -209,13 +302,61 @@
     "type": "Object",
     "generator": "Object3D.toJSON"
   },
-  "geometries": [],
-  "materials": [],
+  "geometries": [
+    {
+      "uuid": "b15a2b5a-e182-4d70-987c-1d4677017a8a",
+      "type": "BoxGeometry",
+      "width": 1,
+      "height": 1,
+      "depth": 1,
+      "widthSegments": 1,
+      "heightSegments": 1,
+      "depthSegments": 1
+    }
+  ],
+  "materials": [
+    {
+      "uuid": "6598af92-f0e4-4f30-b45b-4f5867e44f5b",
+      "type": "MeshStandardMaterial",
+      "color": 16777215,
+      "roughness": 1,
+      "metalness": 0,
+      "emissive": 0,
+      "envMapIntensity": 1,
+      "depthFunc": 3,
+      "depthTest": true,
+      "depthWrite": true,
+      "colorWrite": true,
+      "stencilWrite": false,
+      "stencilWriteMask": 255,
+      "stencilFunc": 519,
+      "stencilRef": 0,
+      "stencilFuncMask": 255,
+      "stencilFail": 7680,
+      "stencilZFail": 7680,
+      "stencilZPass": 7680
+    }
+  ],
   "textures": [],
   "images": [],
   "shapes": [],
   "skeletons": [],
   "animations": [],
   "nodes": [],
-  "listeners": []
+  "listeners": [],
+  "project": {
+    "revision": 9,
+    "world": {
+      "resolution": "auto",
+      "toneMapping": 4,
+      "toneMappingExposure": 1,
+      "shadowMap": {
+        "enabled": true,
+        "type": 2
+      },
+      "vrEnable": false
+    },
+    "scene": "index",
+    "plugins": []
+  }
 }

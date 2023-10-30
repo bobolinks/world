@@ -4,7 +4,7 @@
     <div class="body-panels">
       <Panel class="frame main" icon="icon-vec3" :floating="store.state.isFloating">
         <template #header>
-          <div class="hd-row">
+          <div v-if="store.state.editorType !== 'Geometry'" class="hd-row">
             <Align />
             <Geo />
             <Animation />
@@ -14,10 +14,13 @@
             </el-select>
             <i class="icon-video-camera" style="margin-left: 0.5em; margin-right:0.5em;" @click="reposCamera" />
             <div style="align-items: center; display: flex; flex-direction: row; justify-content: center; margin: 0 4px;">
-              <el-switch v-model="store.state.isWorldView" size="large" width="60" inline-prompt
+              <el-switch v-model="editorSwitch" size="large" width="60" inline-prompt
                 :active-action-icon="DataBoard" :inactive-action-icon="SetUp"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff9900" :disabled="isViewTypeDisabled" />
             </div>
+          </div>
+          <div v-else>
+            <label>asd</label>
           </div>
         </template>
         <Main />
@@ -62,9 +65,14 @@ const list = ref<string[]>(global.project.scenes.map(e => e.name));
 const currentCamera = ref('Perspective');
 const cameras = ref<Array<string>>(['Perspective', 'Orthographic']);
 const isViewTypeDisabled = ref(true);
+const editorSwitch = ref(true);
+
+watch(editorSwitch, ()=> {
+  store.state.editorType = editorSwitch.value ? 'Scene' : 'Graph';
+});
 
 watch(currentScene, () => {
-  store.state.isWorldView = true;
+  store.state.editorType = 'Scene';
   global.project.setScene(currentScene.value);
   resetCamers();
 });
@@ -84,7 +92,7 @@ function newScene() {
   global.project.newScene();
   currentScene.value = global.project.scene.name;
   list.value = global.project.scenes.map(e => e.name);
-  store.state.isWorldView = true;
+  store.state.editorType = 'Scene';
   reset();
 }
 
@@ -128,8 +136,8 @@ function switchViewMode() {
   if (!global.world?.selected) {
     return;
   }
-  store.state.isWorldView = !store.state.isWorldView;
-  if (!store.state.isWorldView) {
+  editorSwitch.value = !editorSwitch.value;
+  if (store.state.editorType === 'Graph') {
     global.editor.setObject(global.world.selected);
   }
 }

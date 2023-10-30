@@ -415,6 +415,11 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     return this.controls.object;
   }
 
+  setSelectedObjects(ar: Array<THREE.Object3D>) {
+    this.selectedObjects = ar;
+    this.outlinePass.selectedObjects = ar;
+  }
+
   private render(delta: number, now: number) {
     worldGlobal.delta = delta;
     worldGlobal.now = now;

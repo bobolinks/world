@@ -1,7 +1,7 @@
 <template>
   <div ref="root" class="wrap" style="position: relative; height: 100%; height: 100%;">
     <canvas id="canvas" class="canvas" @drop="onDrop" />
-    <div v-show="!store.state.isWorldView" ref="graph" class="graph" />
+    <div v-show="store.state.editorType==='Graph'" ref="graph" class="graph" />
     <Selector class="mainLisSelector" :values="store.state.audioListeners" max-width="420px"
       title="Please select audio listener" />
   </div>
@@ -64,6 +64,7 @@ watch(() => store.state.isFloating, () => {
 });
 
 function onProjectLoaded() {
+  global.world.setSelectedObjects(global.project.selectedObjects);
   resizeCanvas();
   updateScene();
 }
@@ -77,7 +78,7 @@ function updateScene() {
   global.history.setScene(global.project.scene);
 }
 
-watch(() => store.state.isWorldView, () => {
+watch(() => store.state.editorType, () => {
   updateScene();
 });
 

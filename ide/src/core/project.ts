@@ -68,9 +68,10 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
   public readonly textures: Record<string, THREE.Texture> = {};
   public readonly plugins = new Set<string>;
 
-  scene: PhysicalScene;
+  public scene: PhysicalScene;
   readonly scenes: Array<PhysicalScene> = [];
   readonly cameras: Array<Camera> = [];
+  readonly selectedObjects: Array<THREE.Object3D> = [];
 
   private _revision = 0;
 

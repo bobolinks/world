@@ -1,0 +1,178 @@
+{
+  "object": {
+    "uuid": "d1bcb3ac-7b89-4545-9f4f-910614887a49",
+    "type": "Object3D",
+    "layers": 1,
+    "matrix": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1
+    ],
+    "up": [
+      0,
+      1,
+      0
+    ],
+    "children": [
+      {
+        "uuid": "e021d6f2-205b-4b5d-8691-c74c8e42c056",
+        "type": "PhysicalScene",
+        "name": "index",
+        "layers": 1,
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "children": [
+          {
+            "uuid": "c2dff47d-a4fe-44f9-abc3-df11441cc1ca",
+            "type": "PerspectiveCamera",
+            "name": "defaultCamera",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              0.7071067811865475,
+              -2.7755575615628914e-17,
+              -0.7071067811865476,
+              0,
+              -0.408248290463863,
+              0.816496580927726,
+              -0.408248290463863,
+              0,
+              0.5773502691896258,
+              0.5773502691896257,
+              0.5773502691896257,
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "fov": 50,
+            "zoom": 1,
+            "near": 0.001,
+            "far": 1000,
+            "focus": 10,
+            "aspect": 1,
+            "filmGauge": 35,
+            "filmOffset": 0
+          }
+        ],
+        "gravity": -9.8,
+        "windForce": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "uuid": "f13df4e2-8416-4df6-bc80-6e4ad3d2c3d6",
+        "type": "PhysicalScene",
+        "name": "[Spawns]",
+        "layers": 1,
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "gravity": -9.8,
+        "windForce": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "metadata": {
+    "version": 4.6,
+    "type": "Object",
+    "generator": "Object3D.toJSON"
+  },
+  "geometries": [],
+  "materials": [],
+  "textures": [],
+  "images": [],
+  "shapes": [],
+  "skeletons": [],
+  "animations": [],
+  "nodes": [],
+  "listeners": [],
+  "project": {
+    "revision": 3,
+    "world": {
+      "resolution": "2560:1440",
+      "toneMapping": 4,
+      "toneMappingExposure": 1,
+      "shadowMap": {
+        "enabled": true,
+        "type": 2
+      },
+      "vrEnable": false
+    },
+    "scene": "index",
+    "plugins": [
+      "/fs/file/shared/plugins/wsjoy.js"
+    ]
+  }
+}

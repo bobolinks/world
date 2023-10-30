@@ -7,15 +7,20 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import Menubar from '../elements/menubar.vue';
 import { global } from '../../global';
 import { Entity } from 'u3js/src/extends/three/entity';
+import store from '../../store';
+
+type GeoOp = 'position' | 'rotation' | 'scale' | 'convert' | 'edit';
 
 const isEnabled = ref(false);
-const menus = ref<{title: string; value: string}[]>([
+const menus = ref<{title: string; value: GeoOp}[]>([
   {value: 'position', title: 'Apply Position [Meta + Shift + p]'},
   {value: 'rotation', title: 'Apply Rotation [Meta + Shift + r]'},
   {value: 'scale', title: 'Apply Scale [Meta + Shift + s]'},
+  {value: 'convert', title: 'Convert to Entity and edit'},
+  {value: 'edit', title: 'Geometry edit'},
 ]);
 
-function applyUpdate(names: Array<'position' | 'rotation' | 'scale'>) {
+function applyUpdate(names: Array<GeoOp>) {
   const object: Mesh = global.world.selected as any;
   const old: Pick<Object3D, 'position' | 'rotation' | 'scale'> = {
     position: object.position.clone(),
@@ -67,12 +72,18 @@ function applyUpdate(names: Array<'position' | 'rotation' | 'scale'>) {
   });
 }
 
-function onSelect(value: 'position' | 'rotation' | 'scale') {
+function onSelect(value: GeoOp) {
   const object = global.world.selected;
   if (!object || !(object instanceof Mesh)) {
     return;
   }
-  applyUpdate([value]);
+  if (['position' , 'rotation', 'scale'].includes(value)) {
+    applyUpdate([value]);
+  } else if (value === 'convert') {
+    store.editorType = 'Geometry';
+  } else {
+    store.editorType = 'Geometry';
+  }
 }
 
 const applyPosition = () => {

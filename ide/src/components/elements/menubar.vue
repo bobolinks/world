@@ -14,6 +14,8 @@
 </template>
 <script setup lang="ts">
 
+type MenuItem = {value: string; title: string; disabled?: boolean;};
+
 defineProps({
   title: {
     type: String,
@@ -24,14 +26,14 @@ defineProps({
     default: false,
   },
   menus: {
-    type: Array<{value: string; title: string;}>,
+    type: Array<MenuItem>,
     default: [],
   },
 });
 
 const emit = defineEmits(['select'])
 
-function select(item: {value: string; title: string;}) {
+function select(item: MenuItem) {
   emit('select', item.value);
 }
 
