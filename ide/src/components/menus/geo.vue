@@ -80,9 +80,9 @@ function onSelect(value: GeoOp) {
   if (['position' , 'rotation', 'scale'].includes(value)) {
     applyUpdate([value]);
   } else if (value === 'convert') {
-    store.editorType = 'Geometry';
+    store.editorType = 'Sculptor';
   } else {
-    store.editorType = 'Geometry';
+    store.editorType = 'Sculptor';
   }
 }
 

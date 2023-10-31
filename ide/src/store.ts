@@ -3,7 +3,7 @@ import { createStore } from "vuex";
 import Theme from './utils/theme';
 import type { UserNoticeLevel } from "u3js/src/types/types";
 
-type EditorType = 'Scene' | 'Graph' | 'Geometry';
+type EditorType = 'Scene' | 'Graph' | 'Sculptor';
 
 const state = {
   theme: localStorage.getItem('theme') || 'dark' as 'dark' | 'light',

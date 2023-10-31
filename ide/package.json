@@ -18,6 +18,7 @@
     "md5": "^2.3.0",
     "normalize-url": "^8.0.0",
     "three": "^0.157.0",
+    "three-mesh-bvh": "^0.6.8",
     "troika-three-text": "^0.48.0-unicode.1",
     "u3js": "file:../u3js",
     "vue": "^3.3.4",

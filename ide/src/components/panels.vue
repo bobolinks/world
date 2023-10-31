@@ -9,7 +9,7 @@
       </template>
       <Units />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType==='Scene'">
+    <el-tab-pane v-if="store.state.editorType!=='Graph'">
       <template #label>
         <div class="picker-label">
           <i class="icon-model3d" />

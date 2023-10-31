@@ -4,7 +4,7 @@
     <div class="body-panels">
       <Panel class="frame main" icon="icon-vec3" :floating="store.state.isFloating">
         <template #header>
-          <div v-if="store.state.editorType !== 'Geometry'" class="hd-row">
+          <div v-if="store.state.editorType !== 'Sculptor'" class="hd-row">
             <Align />
             <Geo />
             <Animation />
@@ -28,7 +28,7 @@
       <div class="ctrl-bar rightside">
         <Panel class="objtree frame" icon="icon-logic">
           <template #header>
-            <div class="hd-row">
+            <div v-if="store.state.editorType !== 'Sculptor'" class="hd-row">
               <el-select v-model="currentScene" placeholder="Select" size="small">
                 <el-option v-for="item in list" :key="item" :label="item" :value="item" />
               </el-select>
@@ -133,7 +133,7 @@ function handleSceneNameChanged({ objects }: any) {
 }
 
 function switchViewMode() {
-  if (!global.world?.selected) {
+  if (!global.world?.selected || store.state.editorType === 'Sculptor') {
     return;
   }
   editorSwitch.value = !editorSwitch.value;

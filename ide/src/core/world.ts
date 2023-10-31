@@ -1,15 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as THREE from 'three';
-import { Camera, Clock, EventDispatcher, PerspectiveCamera, OrthographicCamera, Scene, ShadowMapType, ToneMapping, Raycaster, Material } from "three";
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
-import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader.js';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
-import { nodeFrame, WebGPU, WebGPURenderer, OutlinePass } from 'u3js/src/libs/three/examples';
+import { Camera, Clock, EventDispatcher, PerspectiveCamera, OrthographicCamera } from "three";
+import { nodeFrame, WebGPU, WebGPURenderer } from 'u3js/src/libs/three/examples';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { ViewHelper } from 'three/examples/jsm/helpers/ViewHelper';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer';
@@ -21,6 +13,7 @@ import worldGlobal, { MaxGPUComputeWidth, MaxGPUComputeHeight } from 'u3js/src/e
 import { logger } from 'u3js/src/extends/helper/logger';
 import { WorldSettings } from 'u3js/src/runtime';
 import { BodyType, Entity } from 'u3js/src/extends/three/entity';
+import { WorldEditor } from './editors/world';
 
 const stats = new Stats();
 stats.dom.style.top = 'unset';
@@ -45,8 +38,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   public readonly size: { width: number; height: number } = { width: 640, height: 480 };
   public readonly uuid = THREE.MathUtils.generateUUID();
 
-  public readonly root: Scene;
-  protected currentScene?: PhysicalScene;
+  public readonly root: WorldEditor;
   protected currentCamera: Camera;
 
   public cameraPersp: PerspectiveCamera;
@@ -54,19 +46,6 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   public cameraPerspVR: PerspectiveCamera;
 
   public selectedObjects: Array<THREE.Object3D> = [];
-  public multiSelectEnable = false;
-
-  // post processing
-  public readonly composer: EffectComposer;
-  protected renderPass: RenderPass;
-  protected outlinePass: OutlinePass;
-  protected outputPass: OutputPass;
-  protected effectFXAA: ShaderPass;
-
-  protected orbit: OrbitControls;
-  protected controls: TransformControls;
-  private beforeTransformedObject?: THREE.Object3D;
-  private beforeTransformed = new THREE.Object3D();
 
   // vr
   protected vrSession?: XRSession;
@@ -80,15 +59,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   protected cameraHelper: THREE.CameraHelper;
   protected lightHelper: THREE.PointLightHelper | THREE.SpotLightHelper | THREE.DirectionalLightHelper | THREE.HemisphereLightHelper | null = null;
 
-  protected raycaster: Raycaster;
-  private fnPointerDown: any;
-  private fnPointerUp: any;
-  private positionDown = new THREE.Vector2();
-
   protected working = false;
-
-  private keydownListener: any;
-  private keyupListener: any;
 
   constructor(public readonly context: HTMLCanvasElement, public readonly history: HistoryManager) {
     super();
@@ -128,9 +99,6 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
     worldGlobal.gpuComputeRender = new GPUComputationRenderer(MaxGPUComputeWidth, MaxGPUComputeHeight, this.renderer);
 
-    // scene
-    this.root = new Scene();
-
     // camera
     this.cameraPersp = new PerspectiveCamera(50, 1, 0.001, 1000);
     this.cameraPersp.name = 'Perspective';
@@ -146,48 +114,18 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.cameraPerspVR.position.set(0, 3, 12);
     this.cameraPerspVR.lookAt(0, 0, 0);
 
+    // scene
+    this.root = new WorldEditor(this.renderer, this.size, this.cameraPersp, this.selectedObjects, history, this);
+    this.root.actived = true;
+
     this.root.add(this.cameraOrtho);
     this.root.add(this.cameraPersp);
     this.root.add(this.cameraPerspVR);
 
     this.currentCamera = this.cameraPersp;
 
-    // composer
-    this.composer = new EffectComposer(this.renderer);
-    this.renderPass = new RenderPass(this.root, this.currentCamera);
-    this.composer.addPass(this.renderPass);
-    this.outlinePass = new OutlinePass(new THREE.Vector2(this.size.width, this.size.height), this.root, this.currentCamera);
-    this.outlinePass.resolution = new THREE.Vector2(this.size.width, this.size.height);
-    this.outlinePass.visibleEdgeColor = new THREE.Color(0x88ff88);
-    this.outlinePass.edgeStrength = 8;
-    this.outlinePass.edgeGlow = 1;
-    this.outlinePass.pulsePeriod = 3;
-    this.outlinePass.edgeThickness = 1;
-    this.outlinePass.usePatternTexture = false;
-    this.composer.addPass(this.outlinePass);
-    this.outputPass = new OutputPass();
-    this.composer.addPass(this.outputPass);
-    this.effectFXAA = new ShaderPass(FXAAShader);
-    this.effectFXAA.uniforms['resolution'].value.set(1 / this.size.width, 1 / this.size.height);
-    this.composer.addPass(this.effectFXAA);
-
     // vr
     this.setupVr(this.root);
-
-    // controls
-    const orbit = new OrbitControls(this.currentCamera, this.renderer.domElement);
-    orbit.minDistance = 1;
-    orbit.maxDistance = 100;
-    orbit.update();
-    this.orbit = orbit;
-
-    const control = new TransformControls(this.currentCamera, this.renderer.domElement);
-    control.addEventListener('dragging-changed', function (event) {
-      orbit.enabled = !event.value;
-    });
-    control.traverse(e => e.castShadow = false);
-    this.controls = control;
-    this.root.add(this.controls);
 
     // helper
     const gridHelper = new THREE.GridHelper(20, 20, 0xc1c1c1, 0x8d8d8d);
@@ -200,65 +138,6 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.root.add(this.cameraHelper);
 
     this.viewHelper = new ViewHelper(this.currentCamera, this.renderer.domElement);
-
-    // raycaster
-    this.raycaster = new Raycaster();
-    this.fnPointerDown = (e: PointerEvent) => {
-      this.onPointerDown(e);
-    };
-    this.fnPointerUp = (e: PointerEvent) => {
-      this.onPointerUp(e);
-    };
-    this.context.addEventListener('pointerdown', this.fnPointerDown);
-    this.context.addEventListener('pointerup', this.fnPointerUp);
-
-    this.keydownListener = (event: KeyboardEvent) => {
-      switch (event.keyCode) {
-        case 81: // Q
-          control.setSpace(control.space === 'local' ? 'world' : 'local');
-          break;
-
-        case 87: // W
-          control.setMode('translate');
-          break;
-
-        case 69: // E
-          control.setMode('rotate');
-          break;
-
-        case 82: // R
-          control.setMode('scale');
-          break;
-
-        case 88: // X
-          control.showX = !control.showX;
-          break;
-
-        case 89: // Y
-          control.showY = !control.showY;
-          break;
-
-        case 90: // Z
-          control.showZ = !control.showZ;
-          break;
-
-        case 32: // Spacebar
-          control.enabled = !control.enabled;
-          break;
-
-        case 16: // Shift
-          this.multiSelectEnable = true;
-          break;
-      }
-    };
-
-    this.keyupListener = (event: KeyboardEvent) => {
-      switch (event.keyCode) {
-        case 16: // Shift
-          this.multiSelectEnable = false;
-          break;
-      }
-    };
   }
   resize(width: number, height: number, pixelRatio?: number) {
     if (!this.context) {
@@ -271,15 +150,9 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.size.width = width * ratioScale;
     this.size.height = height * ratioScale;
 
-    // this.context.width = this.size.width;
-    // this.context.height = this.size.height;
     this.renderer.setSize(this.size.width, this.size.height, false);
-    // this.renderer.setScissor(0, 0, this.size.width, this.size.height);
 
-    this.outlinePass.resolution = new THREE.Vector2(this.size.width, this.size.height);
-    this.outlinePass.setSize(this.size.width, this.size.height);
-    this.outlinePass.selectedObjects = this.selectedObjects;
-    this.effectFXAA.uniforms['resolution'].value.set(1 / this.size.width, 1 / this.size.height);
+    this.root.resize();
 
     this.cameraPersp.aspect = aspect;
     this.cameraPersp.updateProjectionMatrix();
@@ -314,10 +187,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     }
 
     this.currentCamera = camera;
-    this.orbit.saveState();
-    this.orbit.object = camera;
-    this.orbit.reset();
-    this.controls.camera = camera;
+    this.root.setCamera(camera);
 
     if (this.currentCamera.parent !== this.root) {
       if (this.currentCamera instanceof PerspectiveCamera) {
@@ -325,9 +195,6 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
         this.currentCamera.updateProjectionMatrix();
       }
     }
-
-    this.renderPass.camera = this.currentCamera;
-    this.outlinePass.renderCamera = this.currentCamera;
   }
 
   reposCamera() {
@@ -337,95 +204,25 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   }
 
   setScene(scene: PhysicalScene) {
-    if (this.currentScene === scene) {
-      return;
-    }
-
-    if (this.currentScene) {
-      this.root.remove(this.currentScene);
-
-      // do not fire any event in editor mode
-      this.currentScene.deactive();
-    }
-
-    this.controls.detach();
-
-    this.currentScene = scene;
-    this.root.background = scene.background;
-    this.root.environment = scene.environment;
-    this.root.add(this.currentScene);
-    // do not fire any event in editor mode
-    this.recompileMaterials();
-    this.currentScene.active();
+    this.root.setScene(scene);
   }
 
   selectObject(object?: THREE.Object3D, force?: boolean) {
-    if (!force && object === this.controls.object) {
-      return;
-    }
-    if (this.controls.object) {
-      this.controls.detach();
-      window.removeEventListener('keydown', this.keydownListener);
-      window.removeEventListener('keyup', this.keyupListener);
-    }
-    if (!this.multiSelectEnable) {
-      this.selectedObjects.length = 0;
-    }
-    if (this.lightHelper) {
-      this.lightHelper.removeFromParent();
-      const help = this.lightHelper;
-      setTimeout(() => {
-        help.dispose();
-      });
-      this.lightHelper = null;
-    }
-    this.cameraHelper.visible = false;
-    if (object) {
-      if (object instanceof THREE.Camera) {
-        this.cameraHelper.visible = true;
-        this.cameraHelper.camera = object;
-        this.cameraHelper.matrix = object.matrixWorld;
-        this.cameraHelper.update();
-        this.cameraHelper.visible = true;
-      } else if (object instanceof THREE.PointLight) {
-        this.lightHelper = new THREE.PointLightHelper(object);
-        this.root.add(this.lightHelper);
-      } else if (object instanceof THREE.SpotLight) {
-        this.lightHelper = new THREE.SpotLightHelper(object);
-        this.root.add(this.lightHelper);
-      } else if (object instanceof THREE.DirectionalLight) {
-        this.lightHelper = new THREE.DirectionalLightHelper(object);
-        this.root.add(this.lightHelper);
-      } else if (object instanceof THREE.HemisphereLight) {
-        this.lightHelper = new THREE.HemisphereLightHelper(object, 10);
-        this.root.add(this.lightHelper);
-      }
-      this.controls.attach(object);
-      if (this.selectedObjects.indexOf(object) === -1) {
-        this.selectedObjects.push(object);
-      }
-      window.addEventListener('keydown', this.keydownListener);
-      window.addEventListener('keyup', this.keyupListener);
-    }
-
-    this.dispatchEvent({ type: 'objectChanged', soure: this, object });
+    return this.root.selectObject(object, force);
   }
 
   get selected(): THREE.Object3D | undefined {
-    return this.controls.object;
+    return this.root.selected;
   }
 
   setSelectedObjects(ar: Array<THREE.Object3D>) {
     this.selectedObjects = ar;
-    this.outlinePass.selectedObjects = ar;
+    return this.root.setSelectedObjects(ar);
   }
 
   private render(delta: number, now: number) {
     worldGlobal.delta = delta;
     worldGlobal.now = now;
-    if (this.currentScene) {
-      this.currentScene.update(this.renderer, this.currentCamera, delta, now, true);
-    }
     if (this.vrSession) {
       this.updateVR();
     }
@@ -436,7 +233,8 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     } else if (this.vrSession) {
       this.renderer.render(this.root, this.currentCamera);
     } else {
-      this.composer.render(delta);
+      this.root.render(delta, now);
+      // this.composer.render(delta);
     }
     this.renderer.autoClear = false;
     this.viewHelper.render(this.renderer);
@@ -470,80 +268,6 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
       stats.update();
     };
     this.renderer.setAnimationLoop(step);
-  }
-
-  private onPointerDown(e: PointerEvent) {
-    if (!this.currentScene) {
-      return;
-    }
-    if (this.controls.object) {
-      this.beforeTransformedObject = this.controls.object;
-      this.beforeTransformed.position.copy(this.controls.object.position);
-      this.beforeTransformed.scale.copy(this.controls.object.scale);
-      this.beforeTransformed.rotation.copy(this.controls.object.rotation);
-    }
-    const { left, top, width, height } = this.context.getBoundingClientRect();
-    this.positionDown.set((e.clientX - left) / width * 2 - 1, - (e.clientY - top) / height * 2 + 1);
-  }
-
-  private onPointerUp(e: PointerEvent) {
-    if (!this.currentScene) {
-      return;
-    }
-    if (this.beforeTransformedObject && this.controls.object === this.beforeTransformedObject) {
-      const object = this.controls.object;
-      const positionOld = this.beforeTransformed.position.clone();
-      const scaleOld = this.beforeTransformed.scale.clone();
-      const rotationOld = this.beforeTransformed.rotation.clone();
-      const position = this.controls.object.position.clone();
-      const scale = this.controls.object.scale.clone();
-      const rotation = this.controls.object.rotation.clone();
-      const isEquals = positionOld.equals(position) && scaleOld.equals(scale) && rotationOld.equals(rotation);
-      if (!isEquals) {
-        this.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.controls.object] });
-        this.history.push({
-          tip: 'Object changed!',
-          undo: () => {
-            object.position.copy(positionOld);
-            object.scale.copy(scaleOld);
-            object.rotation.copy(rotationOld);
-          },
-          redo: () => {
-            object.position.copy(position);
-            object.scale.copy(scale);
-            object.rotation.copy(rotation);
-          },
-        })
-      }
-    }
-    const { left, top, width, height } = this.context.getBoundingClientRect();
-    const pointer = new THREE.Vector2((e.clientX - left) / width * 2 - 1, - (e.clientY - top) / height * 2 + 1);
-    if (!pointer.equals(this.positionDown)) {
-      return;
-    }
-    this.raycaster.setFromCamera(pointer, this.currentCamera);
-    const intersects = this.raycaster.intersectObjects(this.currentScene.children, false);
-    if (intersects.length > 0) {
-      const object = intersects[0].object;
-      if (this.controls.object !== object) {
-        this.selectObject(object, true);
-      }
-    }
-  }
-
-  private recompileMaterials() {
-    if (!this.currentScene) {
-      return;
-    }
-    this.currentScene.traverse(child => {
-      if ((child as any).material instanceof Material) {
-        (child as any).material.needsUpdate = true;
-      } else if (Array.isArray((child as any).material)) {
-        for (const m of (child as any).material) {
-          (m as any).material.needsUpdate = true;
-        }
-      }
-    });
   }
 
   private setupVr(scene: THREE.Scene) {
@@ -645,12 +369,12 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
   protected updateVR() {
     this.renderer.xr.updateCamera(this.currentCamera as any);
-    if (!this.currentScene) {
+    if (!this.root.currentScene) {
       return;
     }
     for (const hand of this.hands) {
       if (!hand) continue;
-      for (const it of this.currentScene.children as Entity[]) {
+      for (const it of this.root.currentScene.children as Entity[]) {
         if (it.bodyType === BodyType.Ghost) {
           continue;
         }
@@ -667,24 +391,8 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   }
 
   dispose(): void {
-    this.context.removeEventListener('pointerdown', this.fnPointerDown);
-    this.context.removeEventListener('pointerup', this.fnPointerUp);
-    window.removeEventListener('keydown', this.keydownListener);
-    window.removeEventListener('keyup', this.keyupListener);
-
+    this.root.dispose();
     this.viewHelper.dispose();
-
-    // post processing
-    this.composer.dispose();
-    if (this.renderPass) {
-      this.renderPass.dispose();
-    }
-    if (this.outlinePass) {
-      this.outlinePass.dispose();
-    }
-    this.outputPass.dispose();
-    this.effectFXAA.dispose();
-
     this.clock.stop();
     this.renderer.dispose();
   }

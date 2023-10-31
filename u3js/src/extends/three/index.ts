@@ -16,3 +16,4 @@ export * from './water';
 export * from './sky';
 export * from './model';
 export * from './reflector';
+import './bvh';

@@ -17,14 +17,7 @@ export default defineConfig({
     rollupOptions: {
       // make sure to externalize deps that shouldn't be bundled
       // into your library
-      external: ['three'],
-      output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          three: 'THREE',
-        },
-      },
+      external: ['three', 'three-mesh-bvh'],
     },
   },
   // plugins: [dts({ rollupTypes: true })],

@@ -115,6 +115,6 @@ addThreeClass('Character', {
     'geo.radialSegments': 'Number',
   },
   proto: 'Model3D',
-  group: 'Entities.Character',
+  group: 'Objects.Character',
   icon: 'human',
 });
