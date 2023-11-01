@@ -185,7 +185,8 @@ async function enterVr() {
   store.state.isFloating = false;
 }
 
-function stopVr() {
+function escape() {
+  global.world.closeSculptor();
   if (global.world.isRunningVR()) {
     global.world.stopVR();
   } else {
@@ -202,7 +203,7 @@ onMounted(() => {
   global.addKeyDownListener('meta+z', undo, 'Global.Undo');
   global.addKeyDownListener('meta+shift+z', redo, 'Global.Redo');
   global.addKeyDownListener('meta+r', run, 'Global.Run');
-  global.addKeyDownListener('Escape', stopVr, 'Global.Exit VR');
+  global.addKeyDownListener('Escape', escape, 'Global.Exit VR/Sculptor');
 });
 
 onUnmounted(() => {
@@ -214,7 +215,7 @@ onUnmounted(() => {
   global.removeKeyDownListener('meta+z', undo);
   global.removeKeyDownListener('meta+shift+z', redo);
   global.removeKeyDownListener('meta+r', run);
-  global.removeKeyDownListener('Escape', stopVr);
+  global.removeKeyDownListener('Escape', escape);
 });
 
 </script>

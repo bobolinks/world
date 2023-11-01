@@ -14,6 +14,7 @@ import { logger } from 'u3js/src/extends/helper/logger';
 import { WorldSettings } from 'u3js/src/runtime';
 import { BodyType, Entity } from 'u3js/src/extends/three/entity';
 import { WorldEditor } from './editors/world';
+import { Sculptor } from './editors/sculptor';
 
 const stats = new Stats();
 stats.dom.style.top = 'unset';
@@ -39,6 +40,9 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   public readonly uuid = THREE.MathUtils.generateUUID();
 
   public readonly root: WorldEditor;
+  public readonly sculptor: Sculptor;
+  private sculptorResolve: any;
+
   protected currentCamera: Camera;
 
   public cameraPersp: PerspectiveCamera;
@@ -123,6 +127,10 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.root.add(this.cameraPerspVR);
 
     this.currentCamera = this.cameraPersp;
+
+    // sculptor
+    this.sculptor = new Sculptor(this.renderer, this.size, history, this);
+    this.sculptor.actived = false;
 
     // vr
     this.setupVr(this.root);
@@ -220,6 +228,26 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     return this.root.setSelectedObjects(ar);
   }
 
+  async openSculptor(mesh: THREE.Mesh) {
+    if (this.sculptorResolve) {
+      return;
+    }
+    this.sculptor.object = mesh;
+    this.sculptor.actived = true;
+    this.root.actived = false;
+    return new Promise((resolve) => this.sculptorResolve = resolve).finally(() => {
+      this.sculptor.actived = false;
+      this.root.actived = true;
+    });
+  }
+
+  closeSculptor() {
+    if (this.sculptorResolve) {
+      this.sculptorResolve();
+      this.sculptorResolve = undefined;
+    }
+  }
+
   private render(delta: number, now: number) {
     worldGlobal.delta = delta;
     worldGlobal.now = now;
@@ -232,6 +260,8 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
       this.renderer.render(this.root, this.currentCamera);
     } else if (this.vrSession) {
       this.renderer.render(this.root, this.currentCamera);
+    } else if (this.sculptor.actived) {
+      this.sculptor.render(delta, now);
     } else {
       this.root.render(delta, now);
       // this.composer.render(delta);
@@ -392,6 +422,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
   dispose(): void {
     this.root.dispose();
+    this.sculptor.dispose();
     this.viewHelper.dispose();
     this.clock.stop();
     this.renderer.dispose();

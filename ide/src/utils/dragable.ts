@@ -102,8 +102,8 @@ export class Dragable {
       }
       if (!this.isMoved) {
         this.isMoved = true;
-        const showTrash = !!this.elementDragging.getAttribute('showTrash');
-        if (showTrash) {
+        const showTrash = this.elementDragging.getAttribute('showTrash');
+        if (showTrash && showTrash !== 'false') {
           this.showTrash();
         }
         this.dataTransfer = new DataTransfer();

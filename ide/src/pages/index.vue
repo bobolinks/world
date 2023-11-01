@@ -19,7 +19,7 @@
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff9900" :disabled="isViewTypeDisabled" />
             </div>
           </div>
-          <div v-else>
+          <div v-else class="hd-row">
             <label>asd</label>
           </div>
         </template>

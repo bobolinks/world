@@ -19,6 +19,8 @@ import { addConstructor, addNodeClass } from 'u3js/src/extends/helper/clslib';
 import { addEffectClass } from 'u3js/src/extends/three/effect';
 import { logger } from 'u3js/src/extends/helper/logger';
 
+export const BuiltinSceneSculptor = '[Sculptor]';
+
 // disable script in editor mode
 ScriptNode.prototype.exec = function () { } as any;
 ScriptBlockNode.prototype.exec = function () { } as any;
@@ -69,6 +71,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
   public readonly plugins = new Set<string>;
 
   public scene: PhysicalScene;
+  public sculptor: Scene;
   readonly scenes: Array<PhysicalScene> = [];
   readonly cameras: Array<Camera> = [];
   readonly selectedObjects: Array<THREE.Object3D> = [];
@@ -83,6 +86,9 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     this.scene = new PhysicalScene();
     this.scene.name = 'index';
     this.scenes.push(this.scene, new SpawnsScene);
+
+    this.sculptor = new Scene();
+    this.sculptor.name = BuiltinSceneSculptor;
 
     const camera = defaultCamera();
     this.cameras.push(camera);
@@ -152,7 +158,13 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       child.dispose();
     }
     this.scenes.length = 0;
-    this.scenes.push(...root.children as Array<PhysicalScene>);
+    root.children.forEach((e: PhysicalScene) => {
+      if (e.isPhysicalScene) {
+        this.scenes.push(e);
+      } else if (e.name === BuiltinSceneSculptor) {
+        this.sculptor = e;
+      }
+    });
     // build default spawns scene
     if (!this.scenes.find(e => e.name === BuiltinSceneSpawns)) {
       this.scenes.push(new SpawnsScene);
@@ -183,7 +195,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
   toJSON() {
     const root = new Object3D();
 
-    root.children = this.scenes;
+    root.children = [...this.scenes, this.sculptor];
 
     const output: ProjectOutput = toJSON(root, this.textures) as any;
 

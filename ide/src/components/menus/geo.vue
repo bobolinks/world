@@ -72,18 +72,22 @@ function applyUpdate(names: Array<GeoOp>) {
   });
 }
 
-function onSelect(value: GeoOp) {
+async function onSelect(value: GeoOp) {
   const object = global.world.selected;
   if (!object || !(object instanceof Mesh)) {
     return;
   }
   if (['position' , 'rotation', 'scale'].includes(value)) {
-    applyUpdate([value]);
-  } else if (value === 'convert') {
-    store.editorType = 'Sculptor';
-  } else {
-    store.editorType = 'Sculptor';
+    return applyUpdate([value]);
+  } 
+  if (value === 'convert') {
+    //
   }
+  store.editorType = 'Sculptor';
+  global.dispatchEvent({ type: 'sceneChanged', soure: null as any, scene: global.project.sculptor });
+  await global.world.openSculptor(object);
+  store.editorType = 'Scene';
+  global.dispatchEvent({ type: 'sceneChanged', soure: null as any, scene: global.project.scene });
 }
 
 const applyPosition = () => {

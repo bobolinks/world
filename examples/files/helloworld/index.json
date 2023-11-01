@@ -1,6 +1,6 @@
 {
   "object": {
-    "uuid": "86af4f8f-11c8-48a4-a3e2-8759529fdf54",
+    "uuid": "37fb1b91-f6d3-4b24-ac37-60431991deea",
     "type": "Object3D",
     "layers": 1,
     "matrix": [
@@ -382,7 +382,7 @@
               1,
               0,
               0,
-              0.8828878516914158,
+              0.7761829577575496,
               -10.991394144684321,
               1
             ],
@@ -438,7 +438,7 @@
                   1,
                   0
                 ],
-                "material": "db67dc9a-184c-429a-80e1-58e0910e8332",
+                "material": "b9afeaf9-54aa-4531-b645-6553038ff0e0",
                 "props": {
                   "maxCount": 100,
                   "texture": "/fs/file/shared/images/firetorch_1.jpg",
@@ -666,6 +666,35 @@
           0,
           0
         ]
+      },
+      {
+        "uuid": "206214b1-6151-4de7-b105-e6cf2791ecbb",
+        "type": "Scene",
+        "name": "[Sculptor]",
+        "layers": 1,
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ]
       }
     ]
   },
@@ -710,7 +739,7 @@
       "uuid": "259334eb-1a64-488f-b702-783f6d635c06"
     },
     {
-      "uuid": "db67dc9a-184c-429a-80e1-58e0910e8332",
+      "uuid": "b9afeaf9-54aa-4531-b645-6553038ff0e0",
       "type": "PointsNodeMaterial",
       "color": 16777215,
       "size": 1,
@@ -730,9 +759,9 @@
       "stencilZFail": 7680,
       "stencilZPass": 7680,
       "inputNodes": {
-        "colorNode": "2d22a31c-2303-409b-be11-c078df57300c",
-        "positionNode": "52be1523-344a-4d7e-8dd5-169a2d27e572",
-        "sizeNode": "4bf34715-abca-4186-af55-620427ff6b11"
+        "colorNode": "76540802-1785-465a-bc1b-1dc6fbdeb5e2",
+        "positionNode": "f215a8ce-b2d6-4f96-b5b1-f8a391348c7c",
+        "sizeNode": "409850b8-6e3b-498a-8aae-e737136249b7"
       }
     }
   ],
@@ -740,7 +769,7 @@
     {
       "uuid": "8ea0a428-2497-4172-8a8e-973f6dfa8d7a",
       "name": "",
-      "image": "9b644c8b-9f8d-45ba-86b4-2972cb4413ae",
+      "image": "a274f5ff-1e6a-4a58-933c-28cd47092e36",
       "mapping": 301,
       "channel": 0,
       "repeat": [
@@ -778,7 +807,7 @@
     {
       "uuid": "99eb2fe0-de5b-4232-aa30-c4c7b8e6eba9",
       "name": "",
-      "image": "2fb5ca4b-5fa0-45d5-9dbf-971029be28d0",
+      "image": "dc2a6e95-4087-4703-8225-81772bb3a4e2",
       "mapping": 300,
       "channel": 0,
       "repeat": [
@@ -811,9 +840,9 @@
       "unpackAlignment": 4
     },
     {
-      "uuid": "4116e2c9-aa03-4c6e-ad6c-40f086fbad5d",
+      "uuid": "d00b0d37-33f0-4f52-9ba7-31cb111da811",
       "name": "",
-      "image": "cebd944a-2d8c-4801-b8a7-41f735512b6c",
+      "image": "2cbdc84c-de0a-4942-a767-725176e1c3a8",
       "mapping": 300,
       "channel": 0,
       "repeat": [
@@ -848,7 +877,7 @@
   ],
   "images": [
     {
-      "uuid": "9b644c8b-9f8d-45ba-86b4-2972cb4413ae",
+      "uuid": "a274f5ff-1e6a-4a58-933c-28cd47092e36",
       "url": [
         "/fs/file/shared/environments/park/px.jpg",
         "/fs/file/shared/environments/park/nx.jpg",
@@ -859,11 +888,11 @@
       ]
     },
     {
-      "uuid": "2fb5ca4b-5fa0-45d5-9dbf-971029be28d0",
+      "uuid": "dc2a6e95-4087-4703-8225-81772bb3a4e2",
       "url": "/fs/file/shared/images/snowflake1.png"
     },
     {
-      "uuid": "cebd944a-2d8c-4801-b8a7-41f735512b6c",
+      "uuid": "2cbdc84c-de0a-4942-a767-725176e1c3a8",
       "url": "/fs/file/shared/images/firetorch_1.jpg"
     }
   ],
@@ -6313,36 +6342,36 @@
       "objectType": "HemisphereLight"
     },
     {
-      "uuid": "2d22a31c-2303-409b-be11-c078df57300c",
+      "uuid": "76540802-1785-465a-bc1b-1dc6fbdeb5e2",
       "type": "OperatorNode",
       "inputNodes": {
-        "aNode": "8664278e-8be8-41b6-8c0e-3c1e7be99915",
-        "bNode": "fe212c8b-7e18-41e8-8f68-5d8fd665e3f9"
+        "aNode": "ec5720d4-233b-47e6-be4f-98edbf23b1d4",
+        "bNode": "1bea16d1-85d8-4400-947c-529b0afb801e"
       },
       "op": "*"
     },
     {
-      "uuid": "8664278e-8be8-41b6-8c0e-3c1e7be99915",
+      "uuid": "ec5720d4-233b-47e6-be4f-98edbf23b1d4",
       "type": "TextureNode",
       "inputNodes": {
-        "uvNode": "b7d1b771-fd8d-4ffc-bdd0-c7b3618e5c7e"
+        "uvNode": "bc19185e-315c-4714-91ed-7d826cb487a0"
       },
-      "value": "4116e2c9-aa03-4c6e-ad6c-40f086fbad5d",
+      "value": "d00b0d37-33f0-4f52-9ba7-31cb111da811",
       "valueType": null,
       "nodeType": null,
       "precision": null
     },
     {
-      "uuid": "b7d1b771-fd8d-4ffc-bdd0-c7b3618e5c7e",
+      "uuid": "bc19185e-315c-4714-91ed-7d826cb487a0",
       "type": "SpriteSheetUVNode",
       "inputNodes": {
-        "countNode": "bcf2ed54-8480-4d17-b3b3-86b955d4b785",
-        "uvNode": "3ce69f7d-8ff3-4dde-a8aa-99975e7774e6",
-        "frameNode": "bbb535e2-3adc-427a-8e5a-89dfae591c72"
+        "countNode": "64dd0c0d-0ac7-46f3-8fe2-dbf6c261abe4",
+        "uvNode": "c22eb55e-3875-420c-87c1-4296a8f59f4e",
+        "frameNode": "2ed3e685-655d-42d2-8909-a3d2a4861052"
       }
     },
     {
-      "uuid": "bcf2ed54-8480-4d17-b3b3-86b955d4b785",
+      "uuid": "64dd0c0d-0ac7-46f3-8fe2-dbf6c261abe4",
       "type": "ConstNode",
       "value": [
         6,
@@ -6353,22 +6382,22 @@
       "precision": null
     },
     {
-      "uuid": "3ce69f7d-8ff3-4dde-a8aa-99975e7774e6",
+      "uuid": "c22eb55e-3875-420c-87c1-4296a8f59f4e",
       "type": "PointUVNode"
     },
     {
-      "uuid": "bbb535e2-3adc-427a-8e5a-89dfae591c72",
+      "uuid": "2ed3e685-655d-42d2-8909-a3d2a4861052",
       "type": "OperatorNode",
       "inputNodes": {
-        "aNode": "b9e8412a-d4c5-4f39-b14a-730b661eec01",
-        "bNode": "07398cd0-4016-47ad-ab22-cf28b3b7855c"
+        "aNode": "78f241b9-6f6e-499f-84b3-50c441b43f7b",
+        "bNode": "52ae13c6-f79c-436c-8d71-494c67913c93"
       },
       "op": "*"
     },
     {
-      "uuid": "b9e8412a-d4c5-4f39-b14a-730b661eec01",
+      "uuid": "78f241b9-6f6e-499f-84b3-50c441b43f7b",
       "type": "TimerNode",
-      "value": 37304.83759999587,
+      "value": 1107.5962000000188,
       "valueType": "float",
       "nodeType": null,
       "precision": null,
@@ -6376,34 +6405,34 @@
       "scale": 1
     },
     {
-      "uuid": "07398cd0-4016-47ad-ab22-cf28b3b7855c",
+      "uuid": "52ae13c6-f79c-436c-8d71-494c67913c93",
       "type": "AttributeNode"
     },
     {
-      "uuid": "fe212c8b-7e18-41e8-8f68-5d8fd665e3f9",
+      "uuid": "1bea16d1-85d8-4400-947c-529b0afb801e",
       "type": "AttributeNode"
     },
     {
-      "uuid": "52be1523-344a-4d7e-8dd5-169a2d27e572",
+      "uuid": "f215a8ce-b2d6-4f96-b5b1-f8a391348c7c",
       "type": "MathNode",
       "inputNodes": {
-        "aNode": "51172e61-1ebf-4991-bda5-9e6eb8edce23",
-        "bNode": "24c0739d-f8c1-402b-87e5-51753529acc5",
-        "cNode": "853912d6-dd50-40a8-a626-d54d437d8747"
+        "aNode": "a1eb5330-ec77-46de-8014-07ceb2883249",
+        "bNode": "5895dcc2-b7c3-4a96-930c-f01d1c8c3285",
+        "cNode": "ad84efd7-5fb0-474f-9c0b-b336f0c8ab01"
       },
       "method": "mix"
     },
     {
-      "uuid": "51172e61-1ebf-4991-bda5-9e6eb8edce23",
+      "uuid": "a1eb5330-ec77-46de-8014-07ceb2883249",
       "type": "PositionNode",
       "scope": "local"
     },
     {
-      "uuid": "24c0739d-f8c1-402b-87e5-51753529acc5",
+      "uuid": "5895dcc2-b7c3-4a96-930c-f01d1c8c3285",
       "type": "AttributeNode"
     },
     {
-      "uuid": "853912d6-dd50-40a8-a626-d54d437d8747",
+      "uuid": "ad84efd7-5fb0-474f-9c0b-b336f0c8ab01",
       "type": "UniformNode",
       "value": 0,
       "valueType": "float",
@@ -6411,7 +6440,7 @@
       "precision": null
     },
     {
-      "uuid": "4bf34715-abca-4186-af55-620427ff6b11",
+      "uuid": "409850b8-6e3b-498a-8aae-e737136249b7",
       "type": "AttributeNode"
     }
   ],
@@ -6452,7 +6481,7 @@
     }
   ],
   "project": {
-    "revision": 288,
+    "revision": 292,
     "world": {
       "resolution": "2560:1440",
       "toneMapping": 4,

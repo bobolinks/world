@@ -2,7 +2,7 @@
   <el-tree class="otree" :default-expand-all="true" :data="treeData" :props="props" :expand-on-click-node="false"
     @current-change="change" @node-click="click" @node-contextmenu="contextmenu">
     <template #default="{ node, data }">
-      <div class="label-round" draggable="true" showTrash="true" :selected="current === data.uuid"
+      <div class="label-round" draggable="true" :showTrash="canRemove(data.name)" :selected="current === data.uuid"
         @dragstart="onItemDragStart(data, $event)" @dragend="onItemDragEnd(data, $event)" @drop="onDrop(data, $event)">
         <i :class="toIconClass(data.type)" style="pointer-events: none; margin-left: -8px; margin-right: 6px;" />
         <span class="prefix" :class="{ 'is-leaf': node.isLeaf }" style="pointer-events: none;">{{ data.type }}</span>
@@ -66,7 +66,8 @@ function genTree() {
     }
     return o;
   };
-  return trav(global.project.scene);
+  const scene = store.state.editorType === 'Sculptor' ? global.project.sculptor : global.project.scene;
+  return trav(scene);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -78,6 +79,10 @@ function reset({ detail }: any) {
 
 function toIconClass(name: string) {
   return icons.glyphs.find((e) => e.font_class === name) ? `icon-${name}` : 'icon-model3d';
+}
+
+function canRemove(name: string) {
+  return name && !/^\[/.test(name);
 }
 
 function change(data: TreeNodeData) {

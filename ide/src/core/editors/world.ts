@@ -147,6 +147,8 @@ export class WorldEditor extends Scene {
   }
   set actived(val: boolean) {
     this._actived = val;
+    this.controls.enabled = val;
+    this.orbit.enabled = val;
   }
 
   // size has been updated outside
