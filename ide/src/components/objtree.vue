@@ -66,8 +66,7 @@ function genTree() {
     }
     return o;
   };
-  const scene = store.state.editorType === 'Sculptor' ? global.project.sculptor : global.project.scene;
-  return trav(scene);
+  return trav(global.project.scene);
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -82,7 +81,7 @@ function toIconClass(name: string) {
 }
 
 function canRemove(name: string) {
-  return name && !/^\[/.test(name);
+  return !name || !/^\[/.test(name);
 }
 
 function change(data: TreeNodeData) {
@@ -219,6 +218,9 @@ function onItemDragEnd(data: TreeNodeData, ev: DragEvent) {
   const object: Object3D = global.project.scene.getObjectById(data.id) as any;
   if (ev.dataTransfer?.getData('selfRemove')) {
     removeObject(object);
+    if (global.world.selected === object) {
+      global.world.selectObject(undefined);
+    }
   }
 }
 
@@ -263,6 +265,8 @@ onMounted(() => {
   global.addEventListener('sceneChanged', reset);
   global.addEventListener('objectChanged', reset);
   global.addEventListener('treeModified', reset);
+  global.addEventListener('enterSculptor', reset);
+  global.addEventListener('leaveSculptor', reset);
 });
 
 onUnmounted(() => {
@@ -270,6 +274,8 @@ onUnmounted(() => {
   global.removeEventListener('sceneChanged', reset);
   global.removeEventListener('objectChanged', reset);
   global.removeEventListener('treeModified', reset);
+  global.removeEventListener('enterSculptor', reset);
+  global.removeEventListener('leaveSculptor', reset);
 })
 
 </script>

@@ -94,7 +94,7 @@ onMounted(() => {
     global.world = new World(document.getElementById('canvas') as any, global.history);
 
     if (window.monaco) {
-      global.editor = new GraphEditor(global.world.root, global.world.renderer, (global.world as any).composer, global.history);
+      global.editor = new GraphEditor(global.world.worldEditor, global.world.renderer, (global.world as any).composer, global.history);
       (graph.value as any).append(global.editor.domElement);
     } else {
       window.addEventListener('monacoReady', waitForMonaco)

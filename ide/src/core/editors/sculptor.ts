@@ -8,6 +8,7 @@ import { CONTAINED, INTERSECTED, MeshBVH, MeshBVHVisualizer, NOT_INTERSECTED } f
 import type { HistoryManager } from "u3js/src/types/types";
 import { SceneEditorEventMap } from "./event";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 
 declare module 'three' {
   interface BufferGeometry {
@@ -46,14 +47,16 @@ export class Sculptor extends Scene {
   private highlightWireframeMesh: Mesh<BufferGeometry, MeshBasicMaterial>;
   private group: Group;
   private helper: MeshBVHVisualizer;
-  private controls: OrbitControls;
+  private orbit: OrbitControls;
+  private controls: TransformControls;
+  private transforming = false;
 
   private fnPointerDown: any;
   private fnPointerUp: any;
   private fnPointerMove: any;
 
+  public toolMode: 'box' | 'lasso' = 'lasso';
   private selectionMode: 'centroid' | 'centroid-visible' | 'intersection' = 'intersection';
-  private toolMode: 'box' | 'lasso' = 'lasso';
   private liveUpdate = false;
   private rotate = false;
   private useBoundsTree = false;
@@ -152,14 +155,23 @@ export class Sculptor extends Scene {
     this.add(shadowPlane);
 
     // controls
-    const controls = new OrbitControls(this.camera, renderer.domElement);
-    controls.minDistance = 3;
-    controls.touches.ONE = TOUCH.PAN;
-    controls.mouseButtons.LEFT = MOUSE.PAN;
-    controls.touches.TWO = TOUCH.ROTATE;
-    controls.mouseButtons.RIGHT = MOUSE.ROTATE;
-    controls.enablePan = false;
-    this.controls = controls;
+    const orbit = new OrbitControls(this.camera, renderer.domElement);
+    orbit.minDistance = 3;
+    orbit.touches.ONE = TOUCH.PAN;
+    orbit.mouseButtons.LEFT = MOUSE.PAN;
+    orbit.touches.TWO = TOUCH.ROTATE;
+    orbit.mouseButtons.RIGHT = MOUSE.ROTATE;
+    orbit.enablePan = false;
+    this.orbit = orbit;
+
+    const control = new TransformControls(this.camera, this.renderer.domElement);
+    control.addEventListener('dragging-changed', (event) => {
+      orbit.enabled = !event.value;
+      this.transforming = !orbit.enabled;
+    });
+    control.traverse(e => e.castShadow = false);
+    this.controls = control;
+    this.add(this.controls);
 
     this.fnPointerDown = (e: PointerEvent) => {
       this.onPointerDown(e);
@@ -201,7 +213,7 @@ export class Sculptor extends Scene {
   }
   set actived(val: boolean) {
     this._actived = val;
-    this.controls.enabled = val;
+    this.orbit.enabled = val;
   }
 
   get wireframe() {
@@ -212,6 +224,22 @@ export class Sculptor extends Scene {
     if (this._object) {
       this.mesh.material = val ? this.wireframeMaterial : this._object.material;
     }
+  }
+
+  selectObject(object?: THREE.Object3D, force?: boolean) {
+    if (!force && object === this.controls.object) {
+      return;
+    }
+    if (this.controls.object) {
+      this.controls.detach();
+    }
+    if (object) {
+      this.controls.attach(object);
+    }
+    this.dispatcher.dispatchEvent({ type: 'objectChanged', soure: this, object });
+  }
+  get selected(): THREE.Object3D | undefined {
+    return this.controls.object;
   }
 
   render(delta: number, now: number) {
@@ -269,7 +297,7 @@ export class Sculptor extends Scene {
   }
 
   private onPointerDown(e: PointerEvent) {
-    if (!this._actived) {
+    if (!this._actived || this.transforming) {
       return;
     }
 
@@ -283,7 +311,7 @@ export class Sculptor extends Scene {
     this.dragging = true;
   }
   private onPointerUp(e: PointerEvent) {
-    if (!this._actived) {
+    if (!this._actived || this.transforming) {
       return;
     }
     this.selectionShape.visible = false;
@@ -293,7 +321,7 @@ export class Sculptor extends Scene {
     }
   }
   private onPointerMove(e: PointerEvent) {
-    if (!this._actived) {
+    if (!this._actived || this.transforming) {
       return;
     }
     // If the left mouse button is not pressed

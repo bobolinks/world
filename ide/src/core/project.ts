@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { ACESFilmicToneMapping, Object3D, PCFSoftShadowMap, Scene, EventDispatcher, PerspectiveCamera, Camera, BoxGeometry, Mesh, } from "three";
-import { MeshBasicNodeMaterial, UniformNode, } from "three/examples/jsm/nodes/Nodes";
+import { ACESFilmicToneMapping, Object3D, PCFSoftShadowMap, Scene, EventDispatcher, PerspectiveCamera, Camera, } from "three";
 import type { UserEventMap } from 'u3js/src/types/types';
 import apis from "../apis";
 import Net from '../utils/net';
@@ -70,9 +69,8 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
   public readonly textures: Record<string, THREE.Texture> = {};
   public readonly plugins = new Set<string>;
 
-  public scene: PhysicalScene;
-  public sculptor: Scene;
-  readonly scenes: Array<PhysicalScene> = [];
+  public scene: Scene;
+  readonly scenes: Array<Scene> = [];
   readonly cameras: Array<Camera> = [];
   readonly selectedObjects: Array<THREE.Object3D> = [];
 
@@ -86,9 +84,6 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     this.scene = new PhysicalScene();
     this.scene.name = 'index';
     this.scenes.push(this.scene, new SpawnsScene);
-
-    this.sculptor = new Scene();
-    this.sculptor.name = BuiltinSceneSculptor;
 
     const camera = defaultCamera();
     this.cameras.push(camera);
@@ -155,19 +150,21 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
 
     // load scenes
     for (const child of this.scenes) {
-      child.dispose();
+      if ((child as any).dispose) {
+        (child as any).dispose();
+      }
     }
     this.scenes.length = 0;
-    root.children.forEach((e: PhysicalScene) => {
-      if (e.isPhysicalScene) {
-        this.scenes.push(e);
-      } else if (e.name === BuiltinSceneSculptor) {
-        this.sculptor = e;
-      }
-    });
+    this.scenes.push(...root.children);
     // build default spawns scene
     if (!this.scenes.find(e => e.name === BuiltinSceneSpawns)) {
       this.scenes.push(new SpawnsScene);
+    }
+    // build default sculptor scene
+    if (!this.scenes.find(e => e.name === BuiltinSceneSculptor)) {
+      const sculptor = new Scene;
+      sculptor.name = BuiltinSceneSculptor;
+      this.scenes.push();
     }
     this.scene = (this.scenes.find(e => e.name === json.project.scene) || this.scenes[0]) as PhysicalScene;
 
@@ -195,7 +192,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
   toJSON() {
     const root = new Object3D();
 
-    root.children = [...this.scenes, this.sculptor];
+    root.children = this.scenes;
 
     const output: ProjectOutput = toJSON(root, this.textures) as any;
 
@@ -205,7 +202,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     output.project = {
       revision: this.revision,
       world: this.world,
-      scene: this.scene.name,
+      scene: [BuiltinSceneSpawns, BuiltinSceneSculptor].includes(this.scene.name) ? '' : this.scene.name,
       plugins: [...this.plugins],
     };
 
@@ -227,19 +224,13 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     this.cameras.push(camera);
     this.addObject(camera);
 
-    const mesh = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicNodeMaterial({
-      opacity: 1,
-    }));
-    mesh.material.colorNode = new UniformNode(new THREE.Color());
-    this.addObject(mesh);
-
     this._revision++;
 
     this.dispatchEvent({ type: 'objectAdded', soure: this, object: this.scene });
     this.dispatchEvent({ type: 'sceneChanged', soure: this, scene: this.scene });
   }
-  setScene(name: string) {
-    const scene = this.scenes.find(e => e.name === name) as PhysicalScene;
+  setScene(name: string, ignoreEvent?: boolean) {
+    const scene = this.scenes.find(e => e.name === name);
     if (!scene) {
       return;
     }
@@ -252,17 +243,19 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       }
     });
 
-    if (scene.name !== BuiltinSceneSpawns && !this.cameras.length) {
+    if (![BuiltinSceneSpawns, BuiltinSceneSculptor].includes(scene.name) && !this.cameras.length) {
       const camera = defaultCamera();
       this.cameras.length = 0;
       this.cameras.push(camera);
       this.addObject(camera);
     }
 
-    this.dispatchEvent({ type: 'sceneChanged', soure: this, scene: this.scene });
+    if (!ignoreEvent) {
+      this.dispatchEvent({ type: 'sceneChanged', soure: this, scene: this.scene });
+    }
   }
-  removeScene(scene: PhysicalScene): boolean {
-    if (scene.name === BuiltinSceneSpawns) {
+  removeScene(scene: Scene): boolean {
+    if ([BuiltinSceneSpawns, BuiltinSceneSculptor].includes(scene.name)) {
       return false;
     }
     if (this.scenes.length === 1) {

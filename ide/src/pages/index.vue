@@ -4,23 +4,24 @@
     <div class="body-panels">
       <Panel class="frame main" icon="icon-vec3" :floating="store.state.isFloating">
         <template #header>
-          <div v-if="store.state.editorType !== 'Sculptor'" class="hd-row">
-            <Align />
-            <Geo />
-            <Animation />
+          <div class="hd-row">
+            <Align v-if="store.state.editorType !== 'Sculptor'" />
+            <Geo v-if="store.state.editorType !== 'Sculptor'" />
+            <Animation v-if="store.state.editorType !== 'Sculptor'" />
             <div style="flex: 1 1 auto;" />
+            <el-select v-if="store.state.editorType === 'Sculptor'" v-model="currentSelectMode" placeholder="Select" size="small" style="width: 80px;">
+              <el-option v-for="item in ['lasso','box']" :key="item" :label="item" :value="item" />
+            </el-select>
+            <i v-if="store.state.editorType === 'Sculptor'" class="icon-vec2" style="margin-left: 0.5em; margin-right:0.5em; cursor: default;" />
             <el-select v-model="currentCamera" placeholder="Select" size="small">
               <el-option v-for="item in cameras" :key="item" :label="item" :value="item" />
             </el-select>
             <i class="icon-video-camera" style="margin-left: 0.5em; margin-right:0.5em;" @click="reposCamera" />
-            <div style="align-items: center; display: flex; flex-direction: row; justify-content: center; margin: 0 4px;">
+            <div v-if="store.state.editorType !== 'Sculptor'" style="align-items: center; display: flex; flex-direction: row; justify-content: center; margin: 0 4px;">
               <el-switch v-model="editorSwitch" size="large" width="60" inline-prompt
                 :active-action-icon="DataBoard" :inactive-action-icon="SetUp"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff9900" :disabled="isViewTypeDisabled" />
             </div>
-          </div>
-          <div v-else class="hd-row">
-            <label>asd</label>
           </div>
         </template>
         <Main />
@@ -59,6 +60,7 @@ import { Dragable } from '../utils/dragable';
 import Align from '../components/menus/align.vue';
 import Animation from '../components/menus/animation.vue';
 import Contextmenu from '../components/elements/contextmenu.vue';
+import { BuiltinSceneSculptor } from '../core/project';
 
 const currentScene = ref(global.project.scene.name);
 const list = ref<string[]>(global.project.scenes.map(e => e.name));
@@ -66,6 +68,7 @@ const currentCamera = ref('Perspective');
 const cameras = ref<Array<string>>(['Perspective', 'Orthographic']);
 const isViewTypeDisabled = ref(true);
 const editorSwitch = ref(true);
+const currentSelectMode = ref<'lasso'|'box'>('lasso');
 
 watch(editorSwitch, ()=> {
   store.state.editorType = editorSwitch.value ? 'Scene' : 'Graph';
@@ -88,6 +91,10 @@ watch(currentCamera, () => {
   global.world.setCamera(camera);
 });
 
+watch(currentSelectMode, () => {
+  global.world.sculptor.toolMode = currentSelectMode.value;
+});
+
 function newScene() {
   global.project.newScene();
   currentScene.value = global.project.scene.name;
@@ -104,7 +111,7 @@ function reset() {
 
 function resetScenes() {
   currentScene.value = global.project.scene.name;
-  list.value = global.project.scenes.map(e => e.name);
+  list.value = global.project.scenes.map(e => e.name).filter(e => e !== BuiltinSceneSculptor);
 }
 function resetCamers() {
   currentCamera.value = 'Perspective';
@@ -133,7 +140,7 @@ function handleSceneNameChanged({ objects }: any) {
 }
 
 function switchViewMode() {
-  if (!global.world?.selected || store.state.editorType === 'Sculptor') {
+  if (!global.world?.selected) {
     return;
   }
   editorSwitch.value = !editorSwitch.value;
@@ -149,6 +156,8 @@ onMounted(() => {
   global.addEventListener('projectLoaded', reset);
   global.addEventListener('sceneChanged', reset);
   global.addEventListener('treeModified', resetCamers);
+  global.addEventListener('enterSculptor', resetCamers);
+  global.addEventListener('leaveSculptor', resetCamers);
   global.addEventListener('objectModified', handleSceneNameChanged);
   global.addEventListener('objectChanged', dectectObjectSelected);
   global.addKeyDownListener('meta+e', switchViewMode, 'Global.Switch to View/Graph Mode');
@@ -158,6 +167,8 @@ onUnmounted(() => {
   global.removeEventListener('projectLoaded', reset);
   global.removeEventListener('sceneChanged', reset);
   global.removeEventListener('treeModified', resetCamers);
+  global.removeEventListener('enterSculptor', resetCamers);
+  global.removeEventListener('leaveSculptor', resetCamers);
   global.removeEventListener('objectModified', handleSceneNameChanged);
   global.removeEventListener('objectChanged', dectectObjectSelected);
   global.removeKeyDownListener('e', switchViewMode);

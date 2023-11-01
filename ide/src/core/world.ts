@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as THREE from 'three';
-import { Camera, Clock, EventDispatcher, PerspectiveCamera, OrthographicCamera } from "three";
+import { Camera, Clock, EventDispatcher, PerspectiveCamera, OrthographicCamera, Scene } from "three";
 import { nodeFrame, WebGPU, WebGPURenderer } from 'u3js/src/libs/three/examples';
 import Stats from 'three/examples/jsm/libs/stats.module.js';
 import { ViewHelper } from 'three/examples/jsm/helpers/ViewHelper';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer';
 import { OculusHandModel } from 'three/examples/jsm/webxr/OculusHandModel';
 import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory';
-import { PhysicalScene } from 'u3js/src/extends/three/scene';
 import type { HistoryManager, UserEventMap } from 'u3js/src/types/types';
 import worldGlobal, { MaxGPUComputeWidth, MaxGPUComputeHeight } from 'u3js/src/extends/three/worldGlobal';
 import { logger } from 'u3js/src/extends/helper/logger';
@@ -15,18 +14,19 @@ import { WorldSettings } from 'u3js/src/runtime';
 import { BodyType, Entity } from 'u3js/src/extends/three/entity';
 import { WorldEditor } from './editors/world';
 import { Sculptor } from './editors/sculptor';
+import { SceneEditorEvent, SceneEditorEventMap } from './editors/event';
 
 const stats = new Stats();
 stats.dom.style.top = 'unset';
 stats.dom.style.bottom = '0';
 document.body.appendChild(stats.dom);
 
-export type WorldEvent = 'worldStarted' | 'worldSettingsModified' | 'objectChanged' | 'objectModified';
-export type WorldEventMap = {
+export type WorldEvent = SceneEditorEvent | 'worldStarted' | 'worldSettingsModified' | 'enterSculptor' | 'leaveSculptor';
+export type WorldEventMap = SceneEditorEventMap & {
   worldStarted: { type: WorldEvent; soure: EventDispatcher; world: World };
   worldSettingsModified: { type: WorldEvent; soure: EventDispatcher; settings: Partial<WorldSettings> };
-  objectChanged: { type: WorldEvent; soure: EventDispatcher; object: THREE.Object3D | undefined };
-  objectModified: { type: WorldEvent; soure: EventDispatcher; objects: THREE.Object3D[]; };
+  enterSculptor: { type: 'enterSculptor'; soure: EventDispatcher; };
+  leaveSculptor: { type: 'leaveSculptor'; soure: EventDispatcher; };
 };
 
 const useGPU = false;
@@ -39,9 +39,10 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   public readonly size: { width: number; height: number } = { width: 640, height: 480 };
   public readonly uuid = THREE.MathUtils.generateUUID();
 
-  public readonly root: WorldEditor;
+  public readonly worldEditor: WorldEditor;
   public readonly sculptor: Sculptor;
   private sculptorResolve: any;
+  private currentEditor: WorldEditor | Sculptor;
 
   protected currentCamera: Camera;
 
@@ -119,12 +120,12 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.cameraPerspVR.lookAt(0, 0, 0);
 
     // scene
-    this.root = new WorldEditor(this.renderer, this.size, this.cameraPersp, this.selectedObjects, history, this);
-    this.root.actived = true;
+    this.worldEditor = new WorldEditor(this.renderer, this.size, this.cameraPersp, this.selectedObjects, history, this);
+    this.worldEditor.actived = true;
 
-    this.root.add(this.cameraOrtho);
-    this.root.add(this.cameraPersp);
-    this.root.add(this.cameraPerspVR);
+    this.worldEditor.add(this.cameraOrtho);
+    this.worldEditor.add(this.cameraPersp);
+    this.worldEditor.add(this.cameraPerspVR);
 
     this.currentCamera = this.cameraPersp;
 
@@ -132,18 +133,20 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.sculptor = new Sculptor(this.renderer, this.size, history, this);
     this.sculptor.actived = false;
 
+    this.currentEditor = this.worldEditor;
+
     // vr
-    this.setupVr(this.root);
+    this.setupVr(this.worldEditor);
 
     // helper
     const gridHelper = new THREE.GridHelper(20, 20, 0xc1c1c1, 0x8d8d8d);
     gridHelper.visible = !!JSON.parse(localStorage.getItem('isGridHelperVisible') || '1');
     this.gridHelper = gridHelper;
-    this.root.add(this.gridHelper);
+    this.worldEditor.add(this.gridHelper);
 
     this.cameraHelper = new THREE.CameraHelper(this.currentCamera);
     this.cameraHelper.visible = false;
-    this.root.add(this.cameraHelper);
+    this.worldEditor.add(this.cameraHelper);
 
     this.viewHelper = new ViewHelper(this.currentCamera, this.renderer.domElement);
   }
@@ -160,7 +163,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
     this.renderer.setSize(this.size.width, this.size.height, false);
 
-    this.root.resize();
+    this.worldEditor.resize();
 
     this.cameraPersp.aspect = aspect;
     this.cameraPersp.updateProjectionMatrix();
@@ -169,7 +172,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.cameraOrtho.bottom = -this.cameraOrtho.top;
     this.cameraOrtho.updateProjectionMatrix();
 
-    if (this.currentCamera.parent !== this.root) {
+    if (this.currentCamera.parent !== this.worldEditor) {
       if (this.currentCamera instanceof PerspectiveCamera) {
         this.currentCamera.aspect = aspect;
         this.currentCamera.updateProjectionMatrix();
@@ -189,15 +192,19 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     }
   }
 
+  setEditor(type: 'Scene' | 'Sculptor') {
+    this.currentEditor = type === 'Scene' ? this.worldEditor : this.sculptor;
+  }
+
   setCamera(camera: Camera) {
     if (this.currentCamera === camera) {
       return;
     }
 
     this.currentCamera = camera;
-    this.root.setCamera(camera);
+    this.worldEditor.setCamera(camera);
 
-    if (this.currentCamera.parent !== this.root) {
+    if (this.currentCamera.parent !== this.worldEditor) {
       if (this.currentCamera instanceof PerspectiveCamera) {
         this.currentCamera.aspect = this.size.width / this.size.height;
         this.currentCamera.updateProjectionMatrix();
@@ -211,21 +218,25 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.currentCamera.lookAt(new THREE.Vector3(0, 0, 0));
   }
 
-  setScene(scene: PhysicalScene) {
-    this.root.setScene(scene);
+  setScene(scene: Scene) {
+    if (this.currentEditor instanceof WorldEditor) {
+      this.currentEditor.setScene(scene);
+    } else {
+      this.currentEditor.add(scene);
+    }
   }
 
   selectObject(object?: THREE.Object3D, force?: boolean) {
-    return this.root.selectObject(object, force);
+    return this.currentEditor.selectObject(object, force);
   }
 
   get selected(): THREE.Object3D | undefined {
-    return this.root.selected;
+    return this.currentEditor.selected;
   }
 
   setSelectedObjects(ar: Array<THREE.Object3D>) {
     this.selectedObjects = ar;
-    return this.root.setSelectedObjects(ar);
+    return this.worldEditor.setSelectedObjects(ar);
   }
 
   async openSculptor(mesh: THREE.Mesh) {
@@ -234,10 +245,10 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     }
     this.sculptor.object = mesh;
     this.sculptor.actived = true;
-    this.root.actived = false;
+    this.worldEditor.actived = false;
     return new Promise((resolve) => this.sculptorResolve = resolve).finally(() => {
       this.sculptor.actived = false;
-      this.root.actived = true;
+      this.worldEditor.actived = true;
     });
   }
 
@@ -257,13 +268,13 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     nodeFrame.update();
     this.renderer.autoClear = true;
     if ((this.renderer as any).isWebGPURenderer) {
-      this.renderer.render(this.root, this.currentCamera);
+      this.renderer.render(this.worldEditor, this.currentCamera);
     } else if (this.vrSession) {
-      this.renderer.render(this.root, this.currentCamera);
+      this.renderer.render(this.worldEditor, this.currentCamera);
     } else if (this.sculptor.actived) {
       this.sculptor.render(delta, now);
     } else {
-      this.root.render(delta, now);
+      this.worldEditor.render(delta, now);
       // this.composer.render(delta);
     }
     this.renderer.autoClear = false;
@@ -399,12 +410,12 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
   protected updateVR() {
     this.renderer.xr.updateCamera(this.currentCamera as any);
-    if (!this.root.currentScene) {
+    if (!this.worldEditor.currentScene) {
       return;
     }
     for (const hand of this.hands) {
       if (!hand) continue;
-      for (const it of this.root.currentScene.children as Entity[]) {
+      for (const it of this.worldEditor.currentScene.children as Entity[]) {
         if (it.bodyType === BodyType.Ghost) {
           continue;
         }
@@ -421,7 +432,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   }
 
   dispose(): void {
-    this.root.dispose();
+    this.worldEditor.dispose();
     this.sculptor.dispose();
     this.viewHelper.dispose();
     this.clock.stop();

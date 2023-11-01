@@ -8,6 +8,7 @@ import Menubar from '../elements/menubar.vue';
 import { global } from '../../global';
 import { Entity } from 'u3js/src/extends/three/entity';
 import store from '../../store';
+import { BuiltinSceneSculptor } from '../../core/project';
 
 type GeoOp = 'position' | 'rotation' | 'scale' | 'convert' | 'edit';
 
@@ -16,7 +17,7 @@ const menus = ref<{title: string; value: GeoOp}[]>([
   {value: 'position', title: 'Apply Position [Meta + Shift + p]'},
   {value: 'rotation', title: 'Apply Rotation [Meta + Shift + r]'},
   {value: 'scale', title: 'Apply Scale [Meta + Shift + s]'},
-  {value: 'convert', title: 'Convert to Entity and edit'},
+  {value: 'convert', title: 'Convert to entity and edit'},
   {value: 'edit', title: 'Geometry edit'},
 ]);
 
@@ -84,10 +85,17 @@ async function onSelect(value: GeoOp) {
     //
   }
   store.editorType = 'Sculptor';
-  global.dispatchEvent({ type: 'sceneChanged', soure: null as any, scene: global.project.sculptor });
+  const selectedObject = global.world.selected;
+  const sceneName = global.project.scene.name;
+  global.world.setEditor('Sculptor');
+  global.project.setScene(BuiltinSceneSculptor, true);
+  global.dispatchEvent({ type: 'enterSculptor', soure: null as any, });  
   await global.world.openSculptor(object);
   store.editorType = 'Scene';
-  global.dispatchEvent({ type: 'sceneChanged', soure: null as any, scene: global.project.scene });
+  global.world.setEditor('Scene');
+  global.project.setScene(sceneName, true);
+  global.world.selectObject(selectedObject);
+  global.dispatchEvent({ type: 'leaveSculptor', soure: null as any, });  
 }
 
 const applyPosition = () => {

@@ -6,9 +6,8 @@
         <el-dropdown type="primary" @command="selectProject">
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-for="name in store.state.projects" :key="name" :command="name">
-                {{ name
-                }}
+              <el-dropdown-item v-for="name in store.state.projects" :key="name" :command="name" :icon="Star">
+                {{ name }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -55,7 +54,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, onMounted, onUnmounted, } from 'vue';
-import { MagicStick, UploadFilled, Setting } from '@element-plus/icons-vue';
+import { MagicStick, UploadFilled, Setting, Star } from '@element-plus/icons-vue';
 import { ElMessageBox } from 'element-plus';
 import Keyboard, { updateKeys } from './keyboard.vue';
 import Uploader from './popovers/uploader.vue';

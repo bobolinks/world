@@ -14,7 +14,7 @@ import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader";
 export class WorldEditor extends Scene {
   private _actived = false;
 
-  public currentScene?: PhysicalScene;
+  public currentScene?: Scene;
 
   private multiSelectEnable = false;
 
@@ -160,7 +160,7 @@ export class WorldEditor extends Scene {
   }
 
   render(delta: number, now: number) {
-    if (this.currentScene) {
+    if (this.currentScene && this.currentScene instanceof PhysicalScene) {
       this.currentScene.update(this.renderer, this.camera, delta, now, true);
     }
     this.composer.render(delta);
@@ -178,14 +178,16 @@ export class WorldEditor extends Scene {
     this.outlinePass.renderCamera = this.camera;
   }
 
-  setScene(scene: PhysicalScene) {
+  setScene(scene: Scene) {
     if (this.currentScene === scene) {
       return;
     }
 
     if (this.currentScene) {
       this.remove(this.currentScene);
-      this.currentScene.deactive();
+      if (this.currentScene instanceof PhysicalScene) {
+        this.currentScene.deactive();
+      }
     }
 
     this.controls.detach();
@@ -196,7 +198,9 @@ export class WorldEditor extends Scene {
     this.add(this.currentScene);
 
     this.recompileMaterials();
-    this.currentScene.active();
+    if (this.currentScene instanceof PhysicalScene) {
+      this.currentScene.active();
+    }
   }
 
   selectObject(object?: THREE.Object3D, force?: boolean) {

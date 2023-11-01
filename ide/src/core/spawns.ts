@@ -1,7 +1,8 @@
-import { BuiltinSceneSpawns, PhysicalScene } from "u3js/src";
+import { Scene } from "three";
+import { BuiltinSceneSpawns, } from "u3js/src";
 import { addThreeClass } from "u3js/src/extends/three/utils";
 
-export class SpawnsScene extends PhysicalScene {
+export class SpawnsScene extends Scene {
   constructor() {
     super();
     this.name = BuiltinSceneSpawns;
