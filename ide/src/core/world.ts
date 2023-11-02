@@ -219,11 +219,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   }
 
   setScene(scene: Scene) {
-    if (this.currentEditor instanceof WorldEditor) {
-      this.currentEditor.setScene(scene);
-    } else {
-      this.currentEditor.add(scene);
-    }
+    this.currentEditor.setScene(scene);
   }
 
   selectObject(object?: THREE.Object3D, force?: boolean) {

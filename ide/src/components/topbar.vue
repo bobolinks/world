@@ -6,7 +6,7 @@
         <el-dropdown type="primary" @command="selectProject">
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-for="name in store.state.projects" :key="name" :command="name" :icon="Star">
+              <el-dropdown-item v-for="name in store.state.projects" :key="name" :command="name" :icon="Star" style="margin-left: -0.5em;">
                 {{ name }}
               </el-dropdown-item>
             </el-dropdown-menu>
@@ -198,6 +198,8 @@ onMounted(() => {
   global.addEventListener('projectDirty', onProjectDirty);
   global.addEventListener('sceneChanged', onSceneChanged);
   global.addEventListener('historyChanged', resetHistoryInfo);
+  global.addEventListener('enterSculptor', resetHistoryInfo);
+  global.addEventListener('leaveSculptor', resetHistoryInfo);
   global.addKeyDownListener('meta+s', save, 'Global.Save');
   global.addKeyDownListener('meta+z', undo, 'Global.Undo');
   global.addKeyDownListener('meta+shift+z', redo, 'Global.Redo');
@@ -210,6 +212,8 @@ onUnmounted(() => {
   global.removeEventListener('projectDirty', onProjectDirty);
   global.removeEventListener('sceneChanged', onSceneChanged);
   global.removeEventListener('historyChanged', resetHistoryInfo);
+  global.removeEventListener('enterSculptor', resetHistoryInfo);
+  global.removeEventListener('leaveSculptor', resetHistoryInfo);
   global.removeKeyDownListener('meta+s', save);
   global.removeKeyDownListener('meta+z', undo);
   global.removeKeyDownListener('meta+shift+z', redo);

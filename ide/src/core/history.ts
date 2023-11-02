@@ -22,6 +22,14 @@ export class HistoryManager extends EventDispatcher<HistoryEventMap> {
     this.currentStore = this.stores[scene.uuid] || (this.stores[scene.uuid] = { cursor: 0, points: [] });
   }
 
+  clear() {
+    if (!this.currentStore) {
+      throw logger.panic('Current store has not been selected!');
+    }
+    this.currentStore.cursor = 0;
+    this.currentStore.points.length = 0;
+  }
+
   push(keypoint: DataKeyPoint): void {
     if (!this.currentStore) {
       throw logger.panic('Current store has not been selected!');

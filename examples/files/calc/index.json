@@ -1187,7 +1187,7 @@
             ],
             "autoplay": false,
             "loop": false,
-            "src": "/fs/file/helloworld/sounds/button-release.ogg",
+            "src": "/fs/file/calc/sounds/button-release.ogg",
             "listener": "bf0d6e98-96f4-418a-881d-75d6a344d60e"
           },
           {
@@ -1456,7 +1456,7 @@
                 ],
                 "autoplay": false,
                 "loop": false,
-                "src": "/fs/file/helloworld/sounds/drum-0.mp3",
+                "src": "/fs/file/calc/sounds/drum-0.mp3",
                 "listener": "bf0d6e98-96f4-418a-881d-75d6a344d60e"
               }
             ],
@@ -1747,7 +1747,7 @@
                 ],
                 "autoplay": false,
                 "loop": false,
-                "src": "/fs/file/helloworld/sounds/drum-1.mp3",
+                "src": "/fs/file/calc/sounds/drum-1.mp3",
                 "listener": "bf0d6e98-96f4-418a-881d-75d6a344d60e"
               }
             ],
@@ -2038,7 +2038,7 @@
                 ],
                 "autoplay": false,
                 "loop": false,
-                "src": "/fs/file/helloworld/sounds/drum-2.mp3",
+                "src": "/fs/file/calc/sounds/drum-2.mp3",
                 "listener": "bf0d6e98-96f4-418a-881d-75d6a344d60e"
               }
             ],
@@ -2329,7 +2329,7 @@
                 ],
                 "autoplay": false,
                 "loop": false,
-                "src": "/fs/file/helloworld/sounds/drum-3.mp3",
+                "src": "/fs/file/calc/sounds/drum-3.mp3",
                 "listener": "bf0d6e98-96f4-418a-881d-75d6a344d60e"
               }
             ],
@@ -10370,7 +10370,7 @@
     },
     "scene": "index",
     "plugins": [
-      "/fs/file/helloworld/plugins/example.js"
+      "/fs/file/calc/plugins/example.js"
     ]
   }
 }

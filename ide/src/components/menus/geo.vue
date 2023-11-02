@@ -2,7 +2,7 @@
   <Menubar :disabled="!isEnabled" title="Geometry" :menus="menus" @select="onSelect" />
 </template>
 <script setup lang="ts">
-import { Mesh, Object3D, Vector3, Euler, Matrix4 } from 'three';
+import { Mesh, Object3D, Vector3, Euler, Matrix4, BufferGeometry } from 'three';
 import { onMounted, onUnmounted, ref } from 'vue';
 import Menubar from '../elements/menubar.vue';
 import { global } from '../../global';
@@ -89,13 +89,33 @@ async function onSelect(value: GeoOp) {
   const sceneName = global.project.scene.name;
   global.world.setEditor('Sculptor');
   global.project.setScene(BuiltinSceneSculptor, true);
+  global.history.setScene(global.project.scene);
+  const geoOld = (object as Mesh<BufferGeometry>).geometry.attributes.position.clone();
+  const promise = global.world.openSculptor(object);
   global.dispatchEvent({ type: 'enterSculptor', soure: null as any, });  
-  await global.world.openSculptor(object);
+  await promise;
+  const hasChanged = global.history.canUndo();
+  global.history.clear();
   store.editorType = 'Scene';
   global.world.setEditor('Scene');
-  global.project.setScene(sceneName, true);
+  global.project.setScene(sceneName);
+  // global.history.setScene(global.project.scene);
   global.world.selectObject(selectedObject);
   global.dispatchEvent({ type: 'leaveSculptor', soure: null as any, });  
+  if (hasChanged) {
+    const geoNew = (object as Mesh<BufferGeometry>).geometry.attributes.position;
+    global.history.push({
+      tip: 'Geometry edit',
+      undo: ()=> {
+        object.geometry.attributes.position = geoOld;
+        global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
+      },
+      redo: () => {
+        object.geometry.attributes.position = geoNew;
+        global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
+      },
+    });
+  }
 }
 
 const applyPosition = () => {

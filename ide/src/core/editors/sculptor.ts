@@ -2,6 +2,7 @@
 import {
   BufferGeometry, Color, DoubleSide, EventDispatcher, Float32BufferAttribute, GridHelper,
   Group, Line, Line3, LineBasicMaterial, MOUSE, MathUtils, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial,
+  Object3D,
   PerspectiveCamera, Ray, Scene, ShadowMaterial, TOUCH, Uint8BufferAttribute, Vector2, Vector3, Vector4, WebGLRenderer
 } from "three";
 import { CONTAINED, INTERSECTED, MeshBVH, MeshBVHVisualizer, NOT_INTERSECTED } from "three-mesh-bvh";
@@ -10,11 +11,11 @@ import { SceneEditorEventMap } from "./event";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 
-declare module 'three' {
-  interface BufferGeometry {
-    boundsTree: MeshBVH;
-  }
-}
+// declare module 'three' {
+//   interface BufferGeometry {
+//     boundsTree: MeshBVH;
+//   }
+// }
 
 const tempVec0 = new Vector2();
 const tempVec1 = new Vector2();
@@ -37,6 +38,7 @@ export class Sculptor extends Scene {
   private _object?: Mesh;
   private _actived = false;
   private _wireframe = true;
+  private _target?: Object3D;
 
   public readonly camera: PerspectiveCamera;
 
@@ -50,6 +52,8 @@ export class Sculptor extends Scene {
   private orbit: OrbitControls;
   private controls: TransformControls;
   private transforming = false;
+  private beforeTransformedObject?: Object3D;
+  private beforeTransformed = new Object3D();
 
   private fnPointerDown: any;
   private fnPointerUp: any;
@@ -79,7 +83,7 @@ export class Sculptor extends Scene {
     this.background = new Color(0x263238);
 
     // camera
-    this.camera = new PerspectiveCamera(50, 1, 0.001, 1000);
+    this.camera = new PerspectiveCamera(50, 1, 0.0001, 3000);
     this.camera.name = 'Perspective';
     this.camera.position.set(0, 0, 12);
     this.camera.lookAt(0, 0, 0);
@@ -226,8 +230,22 @@ export class Sculptor extends Scene {
     }
   }
 
+  setScene(scene: Scene) {
+    let target = scene.getObjectByName('[target]');
+    if (!target) {
+      target = new Object3D();
+      target.name = '[target]';
+      scene.add(target);
+    }
+    this._target = target;
+    this.add(scene);
+  }
+
   selectObject(object?: THREE.Object3D, force?: boolean) {
     if (!force && object === this.controls.object) {
+      return;
+    }
+    if (object && object instanceof Scene) {
       return;
     }
     if (this.controls.object) {
@@ -245,7 +263,6 @@ export class Sculptor extends Scene {
   render(delta: number, now: number) {
     // Update the selection lasso lines
     if (this.selectionShapeNeedsUpdate) {
-
       if (this.toolMode === 'lasso') {
         const ogLength = this.selectionPoints.length;
         this.selectionPoints.push(
@@ -297,27 +314,61 @@ export class Sculptor extends Scene {
   }
 
   private onPointerDown(e: PointerEvent) {
-    if (!this._actived || this.transforming) {
+    if (!this._actived) {
       return;
+    } else if (this.transforming) {
+      if (this.controls.object) {
+        this.beforeTransformedObject = this.controls.object;
+        this.beforeTransformed.position.copy(this.controls.object.position);
+      }
+    } else {
+      const { left, top, width, height } = this.renderer.domElement.getBoundingClientRect();
+
+      this.prevPoint.x = e.clientX;
+      this.prevPoint.y = e.clientY;
+      this.startPoint.x = ((e.clientX - left) / width) * 2 - 1;
+      this.startPoint.y = - (((e.clientY - top) / height) * 2 - 1);
+      this.selectionPoints.length = 0;
+      this.dragging = true;
     }
-
-    const { left, top, width, height } = this.renderer.domElement.getBoundingClientRect();
-
-    this.prevPoint.x = e.clientX;
-    this.prevPoint.y = e.clientY;
-    this.startPoint.x = ((e.clientX - left) / width) * 2 - 1;
-    this.startPoint.y = - (((e.clientY - top) / height) * 2 - 1);
-    this.selectionPoints.length = 0;
-    this.dragging = true;
   }
   private onPointerUp(e: PointerEvent) {
-    if (!this._actived || this.transforming) {
+    if (!this._actived) {
       return;
-    }
-    this.selectionShape.visible = false;
-    this.dragging = false;
-    if (this.selectionPoints.length) {
-      this.selectionNeedsUpdate = true;
+    } else if (this.beforeTransformedObject) {
+      if (this.controls.object === this.beforeTransformedObject) {
+        const positionOld = this.beforeTransformed.position.clone();
+        const position = this.controls.object.position.clone();
+        const isEquals = positionOld.equals(position);
+        if (!isEquals) {
+          const delta = position.sub(positionOld);
+          const invert = delta.clone().multiplyScalar(-1);
+          // this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.controls.object] });
+          if (this.beforeTransformedObject === this._target) {
+            // update target's geometry
+            this.moveSelectedPoints(delta);
+            this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.controls.object] });
+            this.history.push({
+              tip: 'Object changed!',
+              undo: () => {
+                this.moveSelectedPoints(invert);
+              },
+              redo: () => {
+                this.moveSelectedPoints(delta);
+              },
+            });
+          } else {
+            // do nothings
+          }
+        }
+      }
+      this.beforeTransformedObject = undefined;
+    } else {
+      this.selectionShape.visible = false;
+      this.dragging = false;
+      if (this.selectionPoints.length) {
+        this.selectionNeedsUpdate = true;
+      }
     }
   }
   private onPointerMove(e: PointerEvent) {
@@ -330,14 +381,12 @@ export class Sculptor extends Scene {
     }
 
     const { left, top, width, height } = this.renderer.domElement.getBoundingClientRect();
-
     const ex = e.clientX;
     const ey = e.clientY;
     const nx = ((e.clientX - left) / width) * 2 - 1;
     const ny = - (((e.clientY - top) / height) * 2 - 1);
 
     if (this.toolMode === 'box') {
-
       // set points for the corner of the box
       this.selectionPoints.length = 3 * 5;
 
@@ -420,8 +469,30 @@ export class Sculptor extends Scene {
     }
   }
 
-  updateSelection() {
+  moveSelectedPoints(delta: Vector3) {
+    const meshPosition = this.mesh.geometry.attributes.position;
+    const selPosition = this.highlightMesh.geometry.attributes.position;
+    const index: Float32BufferAttribute = this.highlightMesh.geometry.index as any;
+    const set = new Set();
+    const count = this.highlightMesh.geometry.drawRange.count;
 
+    for (let i = 0; i < count; i++) {
+      const idx = index.getX(i);
+      if (set.has(idx)) {
+        continue;
+      }
+      set.add(idx);
+      const x = meshPosition.getX(idx);
+      const y = meshPosition.getY(idx);
+      const z = meshPosition.getZ(idx);
+      meshPosition.setXYZ(idx, x + delta.x, y + delta.y, z + delta.z);
+      selPosition.setXYZ(idx, x + delta.x, y + delta.y, z + delta.z);
+    }
+    meshPosition.needsUpdate = true;
+    selPosition.needsUpdate = true;
+  }
+
+  updateSelection() {
     // TODO: Possible improvements
     // - Correctly handle the camera near clip
     // - Improve line line intersect performance?
@@ -441,7 +512,6 @@ export class Sculptor extends Scene {
     lassoSegments.length = this.selectionPoints.length;
 
     for (let s = 0, l = this.selectionPoints.length; s < l; s += 3) {
-
       const line = lassoSegments[s];
       const sNext = (s + 3) % l;
       line.start.x = this.selectionPoints[s];
@@ -449,15 +519,13 @@ export class Sculptor extends Scene {
 
       line.end.x = this.selectionPoints[sNext];
       line.end.y = this.selectionPoints[sNext + 1];
-
     }
 
     invWorldMatrix.copy(this.mesh.matrixWorld).invert();
     camLocalPosition.set(0, 0, 0).applyMatrix4(this.camera.matrixWorld).applyMatrix4(invWorldMatrix);
 
-    const startTime = window.performance.now();
     const indices: number[] = [];
-    this.mesh.geometry.boundsTree.shapecast({
+    this.mesh.geometry.boundsTree!.shapecast({
       intersectsBounds: (box, isLeaf, score, depth) => {
 
         // check if bounds intersect or contain the lasso region
@@ -553,7 +621,6 @@ export class Sculptor extends Scene {
 
         // check if there are any intersections
         for (let i = 0, l = lines.length; i < l; i++) {
-
           const boxLine = lines[i];
           for (let s = 0, ls = segmentsToCheck.length; s < ls; s++) {
             if (this.lineCrossesLine(boxLine, segmentsToCheck[s])) {
@@ -561,7 +628,6 @@ export class Sculptor extends Scene {
             }
           }
         }
-
         return crossings % 2 === 0 ? NOT_INTERSECTED : CONTAINED;
       },
 
@@ -593,7 +659,7 @@ export class Sculptor extends Scene {
               tempRay.origin.copy(centroid).addScaledVector(faceNormal, 1e-6);
               tempRay.direction.subVectors(camLocalPosition, centroid);
 
-              const res = this.mesh.geometry.boundsTree.raycastFirst(tempRay, DoubleSide);
+              const res = this.mesh.geometry.boundsTree!.raycastFirst(tempRay, DoubleSide);
               if (res) {
                 return false;
               }
@@ -661,6 +727,7 @@ export class Sculptor extends Scene {
       }
     });
 
+    const position: Float32BufferAttribute = this.mesh.geometry.attributes.position as any;
     const indexAttr: Float32BufferAttribute = this.mesh.geometry.index as any;
     const newIndexAttr: Float32BufferAttribute = this.highlightMesh.geometry.index as any;
     if (indices.length && this.selectModel) {
@@ -673,11 +740,33 @@ export class Sculptor extends Scene {
       this.highlightMesh.geometry.drawRange.count = Infinity;
       newIndexAttr.needsUpdate = true;
 
+      if (this._target) {
+        this._target.position.set(0, 0, 0);
+      }
     } else {
+      let x = 0, y = 0, z = 0;
       // update the highlight mesh
       for (let i = 0, l = indices.length; i < l; i++) {
         const i2 = indexAttr.getX(indices[i]);
         newIndexAttr.setX(i, i2);
+
+        if (this._target) {
+          const xx = position.getX(i2);
+          const yy = position.getY(i2);
+          const zz = position.getZ(i2);
+          x += xx;
+          y += yy;
+          z += zz;
+        }
+      }
+
+      // calc center of selected points
+      if (this._target) {
+        const c = indices.length;
+        x /= c;
+        y /= c;
+        z /= c;
+        this._target.position.set(x, y, z);
       }
 
       this.highlightMesh.geometry.drawRange.count = indices.length;

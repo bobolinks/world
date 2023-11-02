@@ -14,6 +14,9 @@ export default defineConfig({
   },
   plugins: [
     vue({
+      script: {
+        defineModel: true,
+      },
       template: {
         compilerOptions: {
           isCustomElement: tagName => {

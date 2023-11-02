@@ -2,7 +2,7 @@
   <el-tree class="otree" :default-expand-all="true" :data="treeData" :props="props" :expand-on-click-node="false"
     @current-change="change" @node-click="click" @node-contextmenu="contextmenu">
     <template #default="{ node, data }">
-      <div class="label-round" draggable="true" :showTrash="canRemove(data.name)" :selected="current === data.uuid"
+      <div class="label-round" draggable="true" :showTrash="isBuiltin(data.name)" :selected="current === data.uuid"
         @dragstart="onItemDragStart(data, $event)" @dragend="onItemDragEnd(data, $event)" @drop="onDrop(data, $event)">
         <i :class="toIconClass(data.type)" style="pointer-events: none; margin-left: -8px; margin-right: 6px;" />
         <span class="prefix" :class="{ 'is-leaf': node.isLeaf }" style="pointer-events: none;">{{ data.type }}</span>
@@ -80,7 +80,7 @@ function toIconClass(name: string) {
   return icons.glyphs.find((e) => e.font_class === name) ? `icon-${name}` : 'icon-model3d';
 }
 
-function canRemove(name: string) {
+function isBuiltin(name: string) {
   return !name || !/^\[/.test(name);
 }
 
@@ -96,6 +96,9 @@ function change(data: TreeNodeData) {
 }
 
 async function onDrop(dataNode: TreeNodeData, event: DragEvent) {
+  if (store.state.editorType === 'Sculptor') {
+    return;
+  }
   const data = parseDragParams(event);
   if (!data) {
     return;
@@ -132,6 +135,9 @@ async function onDrop(dataNode: TreeNodeData, event: DragEvent) {
     });
   } else if (data.type === 'dragObject') {
     if (data.otype !== 'Object3D' || !(data.object instanceof Object3D)) {
+      return;
+    }
+    if (isBuiltin(data.object.name)) {
       return;
     }
     const object = data.object;

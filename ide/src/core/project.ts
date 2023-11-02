@@ -164,7 +164,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     if (!this.scenes.find(e => e.name === BuiltinSceneSculptor)) {
       const sculptor = new Scene;
       sculptor.name = BuiltinSceneSculptor;
-      this.scenes.push();
+      this.scenes.push(sculptor);
     }
     this.scene = (this.scenes.find(e => e.name === json.project.scene) || this.scenes[0]) as PhysicalScene;
 

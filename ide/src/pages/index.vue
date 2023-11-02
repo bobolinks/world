@@ -4,24 +4,27 @@
     <div class="body-panels">
       <Panel class="frame main" icon="icon-vec3" :floating="store.state.isFloating">
         <template #header>
-          <div class="hd-row">
-            <Align v-if="store.state.editorType !== 'Sculptor'" />
-            <Geo v-if="store.state.editorType !== 'Sculptor'" />
-            <Animation v-if="store.state.editorType !== 'Sculptor'" />
+          <div v-if="store.state.editorType !== 'Sculptor'" class="hd-row">
+            <Align />
+            <Geo />
+            <Animation />
             <div style="flex: 1 1 auto;" />
-            <el-select v-if="store.state.editorType === 'Sculptor'" v-model="currentSelectMode" placeholder="Select" size="small" style="width: 80px;">
-              <el-option v-for="item in ['lasso','box']" :key="item" :label="item" :value="item" />
-            </el-select>
-            <i v-if="store.state.editorType === 'Sculptor'" class="icon-vec2" style="margin-left: 0.5em; margin-right:0.5em; cursor: default;" />
             <el-select v-model="currentCamera" placeholder="Select" size="small">
               <el-option v-for="item in cameras" :key="item" :label="item" :value="item" />
             </el-select>
             <i class="icon-video-camera" style="margin-left: 0.5em; margin-right:0.5em;" @click="reposCamera" />
-            <div v-if="store.state.editorType !== 'Sculptor'" style="align-items: center; display: flex; flex-direction: row; justify-content: center; margin: 0 4px;">
+            <div style="align-items: center; display: flex; flex-direction: row; justify-content: center; margin: 0 4px;">
               <el-switch v-model="editorSwitch" size="large" width="60" inline-prompt
                 :active-action-icon="DataBoard" :inactive-action-icon="SetUp"
                 style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff9900" :disabled="isViewTypeDisabled" />
             </div>
+          </div>
+          <div v-else class="hd-row">
+            <div style="flex: 1 1 auto;" />
+            <el-select v-model="currentSelectMode" placeholder="Select" size="small" style="width: 120px;">
+              <el-option v-for="item in ['lasso','box']" :key="item" :label="item" :value="item" />
+            </el-select>
+            <i class="icon-vec2" style="margin-left: 0.5em; margin-right:0.5em; cursor: default;" />
           </div>
         </template>
         <Main />
@@ -140,10 +143,11 @@ function handleSceneNameChanged({ objects }: any) {
 }
 
 function switchViewMode() {
-  if (!global.world?.selected) {
+  if (!global.world?.selected || store.state.editorType === 'Sculptor') {
     return;
   }
   editorSwitch.value = !editorSwitch.value;
+  store.state.editorType = editorSwitch.value ? 'Scene' : 'Graph';
   if (store.state.editorType === 'Graph') {
     global.editor.setObject(global.world.selected);
   }

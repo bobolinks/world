@@ -1,6 +1,6 @@
 {
   "object": {
-    "uuid": "d1bcb3ac-7b89-4545-9f4f-910614887a49",
+    "uuid": "c41a7941-9999-4dea-9686-c0e06a626b3f",
     "type": "Object3D",
     "layers": 1,
     "matrix": [
@@ -69,15 +69,15 @@
             "layers": 1,
             "matrix": [
               0.7071067811865475,
-              -2.7755575615628914e-17,
-              -0.7071067811865476,
+              8.326672684688674e-17,
+              -0.7071067811865477,
               0,
-              -0.408248290463863,
-              0.816496580927726,
-              -0.408248290463863,
+              -0.4082482904638631,
+              0.8164965809277259,
+              -0.4082482904638629,
               0,
-              0.5773502691896258,
               0.5773502691896257,
+              0.5773502691896258,
               0.5773502691896257,
               0,
               1,
@@ -98,6 +98,193 @@
             "aspect": 1,
             "filmGauge": 35,
             "filmOffset": 0
+          },
+          {
+            "uuid": "4fe7efaa-4b38-4979-ab64-aa857c807ec2",
+            "type": "HemisphereLight",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "color": 16777215,
+            "intensity": 1,
+            "groundColor": 16777215
+          },
+          {
+            "uuid": "422564e6-8571-4ae7-94ee-652b71017a75",
+            "type": "DirectionalLight",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0.25400674987056787,
+              0.44962898317872735,
+              0.3932666294762367,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "color": 16777215,
+            "intensity": 1,
+            "shadow": {
+              "bias": -0.1,
+              "mapSize": [
+                2048,
+                2048
+              ],
+              "camera": {
+                "uuid": "bbeabaaa-3162-4c3a-8ac4-12b5e49d667d",
+                "type": "OrthographicCamera",
+                "layers": 1,
+                "up": [
+                  0,
+                  1,
+                  0
+                ],
+                "zoom": 1,
+                "left": -5,
+                "right": 5,
+                "top": 5,
+                "bottom": -5,
+                "near": 0.5,
+                "far": 500
+              }
+            }
+          },
+          {
+            "uuid": "c11d4b43-23fc-408d-bdce-fad1e7e0822f",
+            "type": "Box",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": [
+                  {
+                    "name": "object3DRef",
+                    "node": "fdac09df-8a67-4163-a147-e00c67ede9db",
+                    "anchor": {
+                      "x": 774,
+                      "y": 265
+                    },
+                    "bounds": {
+                      "material": {
+                        "t": 1,
+                        "n": "e11eb605-5d3f-4d2d-ad9e-1d7f15681b58"
+                      }
+                    },
+                    "outs": {}
+                  },
+                  {
+                    "name": "meshStandardMaterial",
+                    "node": "e11eb605-5d3f-4d2d-ad9e-1d7f15681b58",
+                    "anchor": {
+                      "x": 157,
+                      "y": 242
+                    },
+                    "bounds": {},
+                    "outs": {
+                      "$": [
+                        {
+                          "n": "fdac09df-8a67-4163-a147-e00c67ede9db",
+                          "f": "material",
+                          "t": 1
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "geometry": "9729e608-6671-4eb8-9f14-299f3d66c439",
+            "material": "e11eb605-5d3f-4d2d-ad9e-1d7f15681b58",
+            "mass": 0,
+            "bodyType": 0,
+            "geoMatrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
+            ]
           }
         ],
         "gravity": -9.8,
@@ -141,6 +328,66 @@
           0,
           0
         ]
+      },
+      {
+        "uuid": "ae7c7cfd-ed04-4539-9e6c-08eb95436418",
+        "type": "Scene",
+        "name": "[Sculptor]",
+        "layers": 1,
+        "matrix": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "children": [
+          {
+            "uuid": "6c8a4c5f-57ad-4149-b7ff-8eaa695c96d7",
+            "type": "Object3D",
+            "name": "[target]",
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              2.527979330810628,
+              1.3333333333333333,
+              0.3333333333333333,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ]
+          }
+        ]
       }
     ]
   },
@@ -149,17 +396,61 @@
     "type": "Object",
     "generator": "Object3D.toJSON"
   },
-  "geometries": [],
-  "materials": [],
+  "geometries": [
+    {
+      "uuid": "9729e608-6671-4eb8-9f14-299f3d66c439",
+      "type": "BoxGeometry",
+      "width": 4,
+      "height": 8,
+      "depth": 1,
+      "widthSegments": 4,
+      "heightSegments": 1,
+      "depthSegments": 1
+    }
+  ],
+  "materials": [
+    {
+      "uuid": "e11eb605-5d3f-4d2d-ad9e-1d7f15681b58"
+    }
+  ],
   "textures": [],
   "images": [],
   "shapes": [],
   "skeletons": [],
   "animations": [],
-  "nodes": [],
+  "nodes": [
+    {
+      "uuid": "fdac09df-8a67-4163-a147-e00c67ede9db",
+      "type": "ObjectNode",
+      "_inst": "object3DRef",
+      "object": "c11d4b43-23fc-408d-bdce-fad1e7e0822f",
+      "objectType": "Box"
+    },
+    {
+      "uuid": "e11eb605-5d3f-4d2d-ad9e-1d7f15681b58",
+      "type": "MeshStandardMaterial",
+      "color": 16777215,
+      "roughness": 0.37,
+      "metalness": 0.7,
+      "emissive": 0,
+      "envMapIntensity": 1,
+      "depthFunc": 3,
+      "depthTest": true,
+      "depthWrite": true,
+      "colorWrite": true,
+      "stencilWrite": false,
+      "stencilWriteMask": 255,
+      "stencilFunc": 519,
+      "stencilRef": 0,
+      "stencilFuncMask": 255,
+      "stencilFail": 7680,
+      "stencilZFail": 7680,
+      "stencilZPass": 7680
+    }
+  ],
   "listeners": [],
   "project": {
-    "revision": 3,
+    "revision": 97,
     "world": {
       "resolution": "2560:1440",
       "toneMapping": 4,
