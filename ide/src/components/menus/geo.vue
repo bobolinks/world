@@ -10,15 +10,14 @@ import { Entity } from 'u3js/src/extends/three/entity';
 import store from '../../store';
 import { BuiltinSceneSculptor } from '../../core/project';
 
-type GeoOp = 'position' | 'rotation' | 'scale' | 'convert' | 'edit';
+type GeoOp = 'position' | 'rotation' | 'scale' | 'editor';
 
 const isEnabled = ref(false);
 const menus = ref<{title: string; value: GeoOp}[]>([
   {value: 'position', title: 'Apply Position [Meta + Shift + p]'},
   {value: 'rotation', title: 'Apply Rotation [Meta + Shift + r]'},
   {value: 'scale', title: 'Apply Scale [Meta + Shift + s]'},
-  {value: 'convert', title: 'Convert to entity and edit'},
-  {value: 'edit', title: 'Geometry edit'},
+  {value: 'editor', title: 'Geometry Editor [Meta + Shift + g]'},
 ]);
 
 function applyUpdate(names: Array<GeoOp>) {
@@ -73,7 +72,7 @@ function applyUpdate(names: Array<GeoOp>) {
   });
 }
 
-async function onSelect(value: GeoOp) {
+function onSelect(value: GeoOp) {
   const object = global.world.selected;
   if (!object || !(object instanceof Mesh)) {
     return;
@@ -81,8 +80,70 @@ async function onSelect(value: GeoOp) {
   if (['position' , 'rotation', 'scale'].includes(value)) {
     return applyUpdate([value]);
   } 
-  if (value === 'convert') {
-    //
+  enterGeoEditor();
+}
+
+const applyPosition = () => {
+  const object = global.world.selected;
+  if (!object || !(object instanceof Mesh)) {
+    return;
+  }
+  applyUpdate(['position']);
+}
+
+const applyRotation = () => {
+  const object = global.world.selected;
+  if (!object || !(object instanceof Mesh)) {
+    return;
+  }
+  applyUpdate(['rotation']);
+}
+
+const applyScale = () => {
+  const object = global.world.selected;
+  if (!object || !(object instanceof Mesh)) {
+    return;
+  }
+  applyUpdate(['scale']);
+}
+
+const enterGeoEditor = async () => {
+  const object = global.world.selected;
+  if (!object || !(object instanceof Mesh)) {
+    return;
+  }
+  if (object.type !== 'Entity' || object.geometry.type !== 'BufferGeometry') {
+    const geoType = object.geometry.type;
+    const geoOld = object.geometry;
+    const geoNew = geoType === 'BufferGeometry' ? undefined : new BufferGeometry().copy(object.geometry);
+    const objType = object.type;
+    global.history.push({
+      tip: 'Object convert',
+      undo: ()=> {
+        (object as any).type = objType;
+        if (geoNew) {
+          object.geometry.dispose();
+          object.geometry = geoOld;
+        }
+        global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
+        global.dispatchEvent({ type: 'treeModified', soure: null as any, root: object });
+      },
+      redo: () => {
+        (object as any).type = 'Entity';
+        if (geoNew) {
+          object.geometry.dispose();
+          object.geometry = geoNew;
+        }
+        global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
+        global.dispatchEvent({ type: 'treeModified', soure: null as any, root: object });
+      },
+    });
+    (object as any).type = 'Entity';
+    if (geoNew) {
+      object.geometry.dispose();
+      object.geometry = geoNew;
+    }
+    global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
   }
   store.editorType = 'Sculptor';
   const selectedObject = global.world.selected;
@@ -118,30 +179,6 @@ async function onSelect(value: GeoOp) {
   }
 }
 
-const applyPosition = () => {
-  const object = global.world.selected;
-  if (!object || !(object instanceof Mesh)) {
-    return;
-  }
-  applyUpdate(['position']);
-}
-
-const applyRotation = () => {
-  const object = global.world.selected;
-  if (!object || !(object instanceof Mesh)) {
-    return;
-  }
-  applyUpdate(['rotation']);
-}
-
-const applyScale = () => {
-  const object = global.world.selected;
-  if (!object || !(object instanceof Mesh)) {
-    return;
-  }
-  applyUpdate(['scale']);
-}
-
 function dectectObjectSelected() {
   if (!global.world) {
     isEnabled.value = false;
@@ -156,6 +193,7 @@ onMounted(() => {
   global.addKeyDownListener('meta+shift+p', applyPosition, 'Geometry Edit.Apply Position');
   global.addKeyDownListener('meta+shift+r', applyRotation, 'Geometry Edit.Apply Rotation');
   global.addKeyDownListener('meta+shift+s', applyScale, 'Geometry Edit.Apply Scale');
+  global.addKeyDownListener('meta+shift+g', enterGeoEditor, 'Geometry Edit.Geometry Editor');
 });
 
 onUnmounted(() => {
@@ -163,6 +201,7 @@ onUnmounted(() => {
   global.removeKeyDownListener('meta+shift+p', applyPosition);
   global.removeKeyDownListener('meta+shift+r', applyRotation);
   global.removeKeyDownListener('meta+shift+s', applyScale);
+  global.removeKeyDownListener('meta+shift+g', enterGeoEditor);
 });
 
 </script>

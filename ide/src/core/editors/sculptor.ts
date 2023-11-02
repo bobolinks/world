@@ -160,7 +160,8 @@ export class Sculptor extends Scene {
 
     // controls
     const orbit = new OrbitControls(this.camera, renderer.domElement);
-    orbit.minDistance = 3;
+    orbit.minDistance = 0.1;
+    orbit.maxDistance = 100;
     orbit.touches.ONE = TOUCH.PAN;
     orbit.mouseButtons.LEFT = MOUSE.PAN;
     orbit.touches.TWO = TOUCH.ROTATE;
@@ -345,15 +346,21 @@ export class Sculptor extends Scene {
           const invert = delta.clone().multiplyScalar(-1);
           // this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.controls.object] });
           if (this.beforeTransformedObject === this._target) {
+            const index: Float32BufferAttribute = this.highlightMesh.geometry.index!.clone();
+            const count = this.highlightMesh.geometry.drawRange.count;
             // update target's geometry
             this.moveSelectedPoints(delta);
             this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.controls.object] });
             this.history.push({
               tip: 'Object changed!',
               undo: () => {
+                this.highlightMesh.geometry.index = index;
+                this.highlightMesh.geometry.drawRange.count = count;
                 this.moveSelectedPoints(invert);
               },
               redo: () => {
+                this.highlightMesh.geometry.index = index;
+                this.highlightMesh.geometry.drawRange.count = count;
                 this.moveSelectedPoints(delta);
               },
             });
@@ -474,7 +481,8 @@ export class Sculptor extends Scene {
     const selPosition = this.highlightMesh.geometry.attributes.position;
     const index: Float32BufferAttribute = this.highlightMesh.geometry.index as any;
     const set = new Set();
-    const count = this.highlightMesh.geometry.drawRange.count;
+    const dc = this.highlightMesh.geometry.drawRange.count;
+    const count = dc === Infinity ? index.count : dc;
 
     for (let i = 0; i < count; i++) {
       const idx = index.getX(i);

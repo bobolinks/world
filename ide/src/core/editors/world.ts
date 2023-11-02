@@ -1,4 +1,4 @@
-import { Camera, Color, EventDispatcher, Material, Object3D, Raycaster, Scene, Vector2, WebGLRenderer } from "three";
+import { Camera, Color, EventDispatcher, MOUSE, Material, Object3D, Raycaster, Scene, TOUCH, Vector2, WebGLRenderer } from "three";
 import type { HistoryManager, } from 'u3js/src/types/types';
 import { SceneEditorEventMap } from "./event";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -69,8 +69,12 @@ export class WorldEditor extends Scene {
 
     // controls
     const orbit = new OrbitControls(this.camera, this.renderer.domElement);
-    orbit.minDistance = 1;
+    orbit.minDistance = 0.1;
     orbit.maxDistance = 100;
+    orbit.touches.ONE = TOUCH.PAN;
+    orbit.mouseButtons.LEFT = MOUSE.PAN;
+    orbit.touches.TWO = TOUCH.ROTATE;
+    orbit.mouseButtons.RIGHT = MOUSE.ROTATE;
     orbit.update();
     this.orbit = orbit;
 
