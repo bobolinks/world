@@ -1,3 +1,7 @@
+// fix nodes crash in file ModelNode.js
+// code: export const modelViewMatrix = nodeImmutable( ModelNode, ModelNode.VIEW_MATRIX ).temp( 'ModelViewMatrix' );
+import "three/examples/jsm/nodes/core/VarNode.js";
+import "three/examples/jsm/nodes/Nodes.js";
 import * as U3JS from './index';
 export * from './index';
 

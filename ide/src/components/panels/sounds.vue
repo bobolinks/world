@@ -1,34 +1,35 @@
 <template>
   <div class="list">
     <div v-for="item in items" :key="item.name" class="item" draggable="true" @dragstart="onItemDragstart(item, $event)">
-      <audio controls :src="item.url" style="height: 24px;" />
-      <div
-        style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin: 0 1.6em;">
+      <audio controls :src="item.url" style="height: 24px" />
+      <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin: 0 1.6em">
         <label>{{ item.name }}</label>
-        <span style="font-size: 1rem;">{{ item.size }} Bytes</span>
+        <span style="font-size: 1rem">{{ item.size }} Bytes</span>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import apis from '../../apis';
 import { global } from '../../global';
 import { fillDragParams } from '../../core/drags';
 
-type ItemInfo = { url: string; name: string; size: number; };
+type ItemInfo = { url: string; name: string; size: number };
 
 const items = ref<Array<ItemInfo>>([]);
 
 async function loadFiles() {
   const filter = /\.wav|\.mp3|\.acc|\.ogg$/i;
-  const ls = (await apis.getMediaFiles(global.project.name)).filter(e => filter.test(e.url));
+  const ls = (await apis.getMediaFiles(global.project.name)).filter((e) => filter.test(e.url));
   items.value.length = 0;
   items.value.push(...defaultImages);
-  items.value.push(...ls.map(e => {
-    const name: string = e.url.split('/').pop() as any;
-    return { url: e.url, name, size: e.size };
-  }));
+  items.value.push(
+    ...ls.map((e) => {
+      const name: string = e.url.split('/').pop() as any;
+      return { url: e.url, name, size: e.size };
+    }),
+  );
 }
 
 const defaultImages: Array<ItemInfo> = [];
@@ -45,8 +46,6 @@ onMounted(() => {
 onUnmounted(() => {
   global.removeEventListener('assetsChanged', loadFiles);
 });
-
-
 </script>
 
 <style scoped>
@@ -71,7 +70,7 @@ onUnmounted(() => {
   box-shadow: 0px 0px 3px 1px #ccc;
 }
 
-.item>* {
+.item > * {
   position: relative;
   font-size: 1.2rem;
   font-weight: 300;

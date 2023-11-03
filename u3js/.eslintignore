@@ -1,5 +1,5 @@
 node_modules/
 src/**/*.js
 *.js
-examples/**/*.js
-dist
+examples/*.js
+dist/*

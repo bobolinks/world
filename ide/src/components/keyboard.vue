@@ -10,12 +10,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, } from 'vue';
+import { onMounted } from 'vue';
 
 onMounted(() => {
   updateKeys();
 });
-
 </script>
 <script lang="ts">
 import { ref } from 'vue';
@@ -32,14 +31,13 @@ const worldViewEdit: KeyGroup = {
     x: 'Toggle X',
     y: 'Toggle Y',
     z: 'Toggle Z',
-    'Space': 'Toggle enabled',
+    Space: 'Toggle enabled',
   },
 };
 
 export function updateKeys() {
-  keys.value = { ...global.keyGroups, 'World Editor': worldViewEdit, };
+  keys.value = { ...global.keyGroups, 'World Editor': worldViewEdit };
 }
-
 </script>
 <style>
 .list {

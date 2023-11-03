@@ -15,26 +15,25 @@
 defineProps({
   icon: {
     type: String,
-    default: "icon-egg",
+    default: 'icon-egg',
   },
   showHeader: {
     type: Boolean,
-    default: true
+    default: true,
   },
   title: {
     type: String,
-    default: "",
+    default: '',
   },
   maxWidth: {
     type: String,
-    default: "320px",
+    default: '320px',
   },
   values: {
     type: Array<{ name: string; value: string }>,
     default: [],
   },
 });
-
 </script>
 <script lang="ts">
 import Popover, { showPopover } from './popover.vue';
@@ -70,7 +69,7 @@ export async function showSelector(el: HTMLElement, ev?: Event) {
   const promise = new Promise((resolve, reject) => {
     wrap.resolve = resolve;
     wrap.reject = reject;
-  })
+  });
   showPopover(el, ev);
   return await promise;
 }

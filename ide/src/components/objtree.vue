@@ -1,21 +1,18 @@
 <template>
-  <el-tree class="otree" :default-expand-all="true" :data="treeData" :props="props" :expand-on-click-node="false"
-    @current-change="change" @node-click="click" @node-contextmenu="contextmenu">
+  <el-tree class="otree" :default-expand-all="true" :data="treeData" :props="props" :expand-on-click-node="false" @current-change="change" @node-click="click" @node-contextmenu="contextmenu">
     <template #default="{ node, data }">
-      <div class="label-round" draggable="true" :showTrash="isBuiltin(data.name)" :selected="current === data.uuid"
-        @dragstart="onItemDragStart(data, $event)" @dragend="onItemDragEnd(data, $event)" @drop="onDrop(data, $event)">
-        <i :class="toIconClass(data.type)" style="pointer-events: none; margin-left: -8px; margin-right: 6px;" />
-        <span class="prefix" :class="{ 'is-leaf': node.isLeaf }" style="pointer-events: none;">{{ data.type }}</span>
+      <div class="label-round" draggable="true" :showTrash="isBuiltin(data.name)" :selected="current === data.uuid" @dragstart="onItemDragStart(data, $event)" @dragend="onItemDragEnd(data, $event)" @drop="onDrop(data, $event)">
+        <i :class="toIconClass(data.type)" style="pointer-events: none; margin-left: -8px; margin-right: 6px" />
+        <span class="prefix" :class="{ 'is-leaf': node.isLeaf }" style="pointer-events: none">{{ data.type }}</span>
       </div>
-      <span class="text-ellipsis" ondblclick="this.contentEditable=true; this.focus();"
-        @blur="updateContent($event, data)">
+      <span class="text-ellipsis" ondblclick="this.contentEditable=true; this.focus();" @blur="updateContent($event, data)">
         {{ node.label || data.uuid }}
       </span>
     </template>
   </el-tree>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { ElNotification } from 'element-plus';
 import type { TreeNode, TreeNodeData } from 'element-plus/es/components/tree-v2/src/types';
 import { Object3D, Scene } from 'three';
@@ -90,7 +87,7 @@ function change(data: TreeNodeData) {
   }
   const object: Object3D = global.project.scene.getObjectById(data.id) as any;
   global.world.selectObject(object);
-  if (store.state.editorType ==='Graph') {
+  if (store.state.editorType === 'Graph') {
     global.editor.setObject(object);
   }
 }
@@ -114,12 +111,12 @@ async function onDrop(dataNode: TreeNodeData, event: DragEvent) {
       } else if (liss.length === 1) {
         params.push({ listener: liss[0] });
       } else {
-        store.state.audioListeners = liss.map(e => ({ name: e.name, value: e.uuid }));
+        store.state.audioListeners = liss.map((e) => ({ name: e.name, value: e.uuid }));
         const rs = await showSelector(document.querySelector('.mainLisSelector') as any);
         if (!rs) {
           return;
         }
-        params.push({ listener: liss.find(e => e.uuid === rs) });
+        params.push({ listener: liss.find((e) => e.uuid === rs) });
       }
     }
 
@@ -194,15 +191,15 @@ async function contextmenu(e: PointerEvent, data: TreeNodeData) {
   if ((object as any).isScene) {
     return;
   }
-  const action: 'DeeplyClone' | 'Clone' = await showMenu(document.querySelector('.mainContextMenu') as any, e, [
-    {name: 'Clone Deeply', value: 'DeeplyClone'},
-    {name: 'Clone', value: 'Clone'},
-  ]) as any;
+  const action: 'DeeplyClone' | 'Clone' = (await showMenu(document.querySelector('.mainContextMenu') as any, e, [
+    { name: 'Clone Deeply', value: 'DeeplyClone' },
+    { name: 'Clone', value: 'Clone' },
+  ])) as any;
   if (!action) {
     return;
   }
   const parent = object.parent as Object3D;
-  const cloned: Object3D = action === 'DeeplyClone' ? clone(object, true) : object.clone(false) ;
+  const cloned: Object3D = action === 'DeeplyClone' ? clone(object, true) : object.clone(false);
   global.history.push({
     tip: `Duplicate object from [uuid=${object.uuid}]`,
     undo: () => {
@@ -282,8 +279,7 @@ onUnmounted(() => {
   global.removeEventListener('treeModified', reset);
   global.removeEventListener('enterSculptor', reset);
   global.removeEventListener('leaveSculptor', reset);
-})
-
+});
 </script>
 <style scoped>
 .otree {
@@ -317,13 +313,12 @@ onUnmounted(() => {
   margin-right: 1em;
 }
 
-.label-round[selected="true"] {
+.label-round[selected='true'] {
   background-color: #ff9900;
   color: white;
 }
 
-.label-round[selected="true"] .prefix.is-leaf {
+.label-round[selected='true'] .prefix.is-leaf {
   color: white;
 }
-
 </style>

@@ -25,7 +25,7 @@ export class WorldEditor extends Scene {
   protected outputPass: OutputPass;
   protected effectFXAA: ShaderPass;
 
-  protected orbit: OrbitControls;
+  public readonly orbit: OrbitControls;
   protected controls: TransformControls;
 
   private beforeTransformedObject?: Object3D;

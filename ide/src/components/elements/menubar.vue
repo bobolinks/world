@@ -1,20 +1,19 @@
 <template>
   <div class="menubar" :disabled="disabled">
     <el-dropdown size="small" :disabled="disabled">
-    <label class="menu-title">{{ title }}</label>
-    <template #dropdown>
-      <el-dropdown-menu>
-        <el-dropdown-item v-for="item of menus" :key="item.value" @click="select(item)">
-          {{ item.title }}
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </template>
-  </el-dropdown>
+      <label class="menu-title">{{ title }}</label>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item v-for="item of menus" :key="item.value" @click="select(item)">
+            {{ item.title }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
   </div>
 </template>
 <script setup lang="ts">
-
-type MenuItem = {value: string; title: string; disabled?: boolean;};
+type MenuItem = { value: string; title: string; disabled?: boolean };
 
 defineProps({
   title: {
@@ -31,15 +30,13 @@ defineProps({
   },
 });
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select']);
 
 function select(item: MenuItem) {
   emit('select', item.value);
 }
-
 </script>
 <style scoped>
-
 .menubar {
   display: flex;
   flex-direction: row;
@@ -51,7 +48,7 @@ function select(item: MenuItem) {
   border-left: 1px dashed #777;
 }
 
-.menubar[disabled="true"] {
+.menubar[disabled='true'] {
   pointer-events: none;
 }
 
@@ -69,9 +66,8 @@ function select(item: MenuItem) {
   padding: 0px 0.8em;
 }
 
-.menubar[disabled="true"] .menu-title {
+.menubar[disabled='true'] .menu-title {
   background-color: #bbb;
   color: #555;
 }
-
 </style>

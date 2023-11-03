@@ -2,8 +2,7 @@
   <el-table :data="fontsData" :show-header="false" style="width: 100%">
     <el-table-column prop="name" label="name">
       <template #default="scope">
-        <div class="font-item" style="display: flex; align-items: center" draggable="true"
-          @dragstart="onItemDragstart(scope.row, $event)">
+        <div class="font-item" style="display: flex; align-items: center" draggable="true" @dragstart="onItemDragstart(scope.row, $event)">
           <el-icon>
             <Rank />
           </el-icon>
@@ -24,7 +23,7 @@ const fontsData = ref<any[]>([]);
 
 async function loadFontsInfo() {
   const ls = await apis.getFonts(global.project.name);
-  fontsData.value = ls.map(e => {
+  fontsData.value = ls.map((e) => {
     const name: string = e.split('/').pop() as any;
     return { url: e, name };
   });
@@ -42,7 +41,6 @@ onMounted(() => {
 onUnmounted(() => {
   global.removeEventListener('assetsChanged', loadFontsInfo);
 });
-
 </script>
 <style scoped>
 .font-item * {

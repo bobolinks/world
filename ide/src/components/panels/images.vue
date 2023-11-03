@@ -1,30 +1,32 @@
 <template>
   <div class="list">
     <div v-for="item in items" :key="item.name" class="item" draggable="true" @dragstart="onItemDragstart(item, $event)">
-      <img :src="item.url">
+      <img :src="item.url" />
       <label>{{ item.name }}</label>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import apis from '../../apis';
 import { global } from '../../global';
 import { fillDragParams } from '../../core/drags';
 
-type ItemInfo = { url: string; name: string; size: number; };
+type ItemInfo = { url: string; name: string; size: number };
 
 const items = ref<Array<ItemInfo>>([]);
 
 async function loadFiles() {
   const filter = /\.jpg|\.jpeg|\.bmp|\.png$/i;
-  const ls = (await apis.getMediaFiles(global.project.name)).filter(e => filter.test(e.url));
+  const ls = (await apis.getMediaFiles(global.project.name)).filter((e) => filter.test(e.url));
   items.value.length = 0;
   items.value.push(...defaultImages);
-  items.value.push(...ls.map(e => {
-    const name: string = e.url.split('/').pop() as any;
-    return { url: e.url, name, size: e.size };
-  }));
+  items.value.push(
+    ...ls.map((e) => {
+      const name: string = e.url.split('/').pop() as any;
+      return { url: e.url, name, size: e.size };
+    }),
+  );
 }
 
 const defaultImages: Array<ItemInfo> = [];
@@ -64,8 +66,6 @@ onMounted(() => {
 onUnmounted(() => {
   global.removeEventListener('assetsChanged', loadFiles);
 });
-
-
 </script>
 
 <style scoped>

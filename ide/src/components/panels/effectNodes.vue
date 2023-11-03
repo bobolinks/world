@@ -40,5 +40,4 @@ onMounted(() => {
 onUnmounted(() => {
   global.removeEventListener('projectLoaded', updateSource);
 });
-
 </script>

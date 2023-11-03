@@ -9,7 +9,7 @@ module.exports = {
     'plugin:import/errors',
     'plugin:import/typescript',
   ],
-  plugins: ["@typescript-eslint", "vue", "import"],
+  plugins: ["@typescript-eslint", "import"],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',

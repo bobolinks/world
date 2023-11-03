@@ -76,9 +76,8 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     if (useGPU && WebGPU.isAvailable()) {
       this.rendererGPU = new WebGPURenderer({
         canvas: this.context,
-        context: this.context.getContext('webgpu'),
         antialias: true,
-      }) as THREE.WebGLRenderer;
+      }) as any as THREE.WebGLRenderer;
     } else {
       this.rendererGL = new THREE.WebGLRenderer({
         canvas: this.context,
@@ -213,7 +212,9 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   }
 
   reposCamera() {
-    this.currentCamera.position.set(0, 3, 8);
+    this.currentCamera.position.x = 0;
+    this.currentCamera.position.y = 0;
+    this.worldEditor.orbit.reset();
     this.currentCamera.rotation.set(0, 0, 0);
     this.currentCamera.lookAt(new THREE.Vector3(0, 0, 0));
   }

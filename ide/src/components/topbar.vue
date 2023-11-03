@@ -1,20 +1,19 @@
 <template>
-  <div style="align-items: stretch; display: flex; flex-direction: column;">
+  <div style="align-items: stretch; display: flex; flex-direction: column">
     <div class="topbar" style="align-items: stretch; display: flex; flex-direction: row; width: auto">
-      <div class="leftside"
-        style="align-items: center; display: flex; flex: 1 1 auto; flex-direction: row; font-size: 2rem; padding-left: 0.5rem">
+      <div class="leftside" style="align-items: center; display: flex; flex: 1 1 auto; flex-direction: row; font-size: 2rem; padding-left: 0.5rem">
         <el-dropdown type="primary" @command="selectProject">
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-for="name in store.state.projects" :key="name" :command="name" :icon="Star" style="margin-left: -0.5em;">
+              <el-dropdown-item v-for="name in store.state.projects" :key="name" :command="name" :icon="Star" style="margin-left: -0.5em">
                 {{ name }}
               </el-dropdown-item>
             </el-dropdown-menu>
           </template>
-          <i class="icon-project" style="font-size: 2rem; margin-left: 0.2em; margin-right: 0.5em; outline: none; " />
+          <i class="icon-project" style="font-size: 2rem; margin-left: 0.2em; margin-right: 0.5em; outline: none" />
         </el-dropdown>
         <el-input v-model="inputValue" class="nameInput" placeholder="Please input" :disabled="!isNameEditable" @change="renameProject" />
-        <el-icon style="margin-left: 0.5em; transform: scaleX(-1);">
+        <el-icon style="margin-left: 0.5em; transform: scaleX(-1)">
           <MagicStick @click="newProject" />
         </el-icon>
         <!-- <i class="icon-add" style="margin-left: 1em;" @click="newProject" /> -->
@@ -42,8 +41,7 @@
           <Keyboard />
         </el-popover>
         <i class="icon-vr" @click="enterVr" />
-        <i :class="store.state.isFloating ? 'icon-minimize' : 'icon-maximize'" action="maximize"
-          @click="store.state.isFloating = !store.state.isFloating" />
+        <i :class="store.state.isFloating ? 'icon-minimize' : 'icon-maximize'" action="maximize" @click="store.state.isFloating = !store.state.isFloating" />
       </div>
     </div>
     <Uploader v-model="uploaderVisible" title="Upload files" />
@@ -53,7 +51,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { MagicStick, UploadFilled, Setting, Star } from '@element-plus/icons-vue';
 import { ElMessageBox } from 'element-plus';
 import Keyboard, { updateKeys } from './keyboard.vue';
@@ -220,7 +218,6 @@ onUnmounted(() => {
   global.removeKeyDownListener('meta+r', run);
   global.removeKeyDownListener('Escape', escape);
 });
-
 </script>
 
 <style>
@@ -228,7 +225,7 @@ onUnmounted(() => {
   background-color: unset !important;
 }
 
-.nameInput .el-input__wrapper, 
+.nameInput .el-input__wrapper,
 .nameInput.is-disabled .el-input__wrapper {
   background-color: unset !important;
   border: none;
@@ -250,10 +247,9 @@ onUnmounted(() => {
   pointer-events: none;
   cursor: not-allowed;
 }
-
 </style>
 
-<style scoped='true'>
+<style scoped="true">
 .topbar {
   padding: 0;
   color: hsla(0, 100%, 100%, 1);
@@ -267,7 +263,6 @@ onUnmounted(() => {
 .topbar i {
   font-size: 2rem;
 }
-
 
 .topbtns i {
   font-size: 2rem;
@@ -331,5 +326,4 @@ i[disabled='true'] {
 .icon-maximize {
   z-index: 9999;
 }
-
 </style>

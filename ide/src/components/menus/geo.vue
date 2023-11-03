@@ -13,11 +13,11 @@ import { BuiltinSceneSculptor } from '../../core/project';
 type GeoOp = 'position' | 'rotation' | 'scale' | 'editor';
 
 const isEnabled = ref(false);
-const menus = ref<{title: string; value: GeoOp}[]>([
-  {value: 'position', title: 'Apply Position [Meta + Shift + p]'},
-  {value: 'rotation', title: 'Apply Rotation [Meta + Shift + r]'},
-  {value: 'scale', title: 'Apply Scale [Meta + Shift + s]'},
-  {value: 'editor', title: 'Geometry Editor [Meta + Shift + g]'},
+const menus = ref<{ title: string; value: GeoOp }[]>([
+  { value: 'position', title: 'Apply Position [Meta + Shift + p]' },
+  { value: 'rotation', title: 'Apply Rotation [Meta + Shift + r]' },
+  { value: 'scale', title: 'Apply Scale [Meta + Shift + s]' },
+  { value: 'editor', title: 'Geometry Editor [Meta + Shift + g]' },
 ]);
 
 function applyUpdate(names: Array<GeoOp>) {
@@ -77,9 +77,9 @@ function onSelect(value: GeoOp) {
   if (!object || !(object instanceof Mesh)) {
     return;
   }
-  if (['position' , 'rotation', 'scale'].includes(value)) {
+  if (['position', 'rotation', 'scale'].includes(value)) {
     return applyUpdate([value]);
-  } 
+  }
   enterGeoEditor();
 }
 
@@ -89,7 +89,7 @@ const applyPosition = () => {
     return;
   }
   applyUpdate(['position']);
-}
+};
 
 const applyRotation = () => {
   const object = global.world.selected;
@@ -97,7 +97,7 @@ const applyRotation = () => {
     return;
   }
   applyUpdate(['rotation']);
-}
+};
 
 const applyScale = () => {
   const object = global.world.selected;
@@ -105,7 +105,7 @@ const applyScale = () => {
     return;
   }
   applyUpdate(['scale']);
-}
+};
 
 const enterGeoEditor = async () => {
   const object = global.world.selected;
@@ -119,7 +119,7 @@ const enterGeoEditor = async () => {
     const objType = object.type;
     global.history.push({
       tip: 'Object convert',
-      undo: ()=> {
+      undo: () => {
         (object as any).type = objType;
         if (geoNew) {
           object.geometry.dispose();
@@ -153,7 +153,7 @@ const enterGeoEditor = async () => {
   global.history.setScene(global.project.scene);
   const geoOld = (object as Mesh<BufferGeometry>).geometry.attributes.position.clone();
   const promise = global.world.openSculptor(object);
-  global.dispatchEvent({ type: 'enterSculptor', soure: null as any, });  
+  global.dispatchEvent({ type: 'enterSculptor', soure: null as any });
   await promise;
   const hasChanged = global.history.canUndo();
   global.history.clear();
@@ -162,12 +162,12 @@ const enterGeoEditor = async () => {
   global.project.setScene(sceneName);
   // global.history.setScene(global.project.scene);
   global.world.selectObject(selectedObject);
-  global.dispatchEvent({ type: 'leaveSculptor', soure: null as any, });  
+  global.dispatchEvent({ type: 'leaveSculptor', soure: null as any });
   if (hasChanged) {
     const geoNew = (object as Mesh<BufferGeometry>).geometry.attributes.position;
     global.history.push({
       tip: 'Geometry edit',
-      undo: ()=> {
+      undo: () => {
         object.geometry.attributes.position = geoOld;
         global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
       },
@@ -177,7 +177,7 @@ const enterGeoEditor = async () => {
       },
     });
   }
-}
+};
 
 function dectectObjectSelected() {
   if (!global.world) {
@@ -203,6 +203,5 @@ onUnmounted(() => {
   global.removeKeyDownListener('meta+shift+s', applyScale);
   global.removeKeyDownListener('meta+shift+g', enterGeoEditor);
 });
-
 </script>
 <style scoped></style>

@@ -3,7 +3,7 @@
     <div class="popover-container" :class="bodyClass" :style="{ width: maxWidth, 'max-width': maxWidth }">
       <div v-if="showHeader" class="popover-header" @click.stop>
         <slot name="header" />
-     </div>
+      </div>
       <slot />
     </div>
   </div>
@@ -14,11 +14,11 @@ import { ref, onMounted, onUnmounted } from 'vue';
 defineProps({
   maxWidth: {
     type: String,
-    default: "320px",
+    default: '320px',
   },
   showHeader: {
     type: Boolean,
-    default: true
+    default: true,
   },
   bodyClass: {
     type: String,
@@ -28,22 +28,22 @@ defineProps({
 
 const root = ref<HTMLDivElement>(null as any);
 
-const emits = defineEmits(['onBlur'])
+const emits = defineEmits(['onBlur']);
 
 const onBlur = () => {
-  root.value.style.display = "none";
+  root.value.style.display = 'none';
   emits('onBlur');
 };
 
 onMounted(() => {
-  root.value.addEventListener("click", onBlur);
+  root.value.addEventListener('click', onBlur);
   root.value.parentElement?.removeChild(root.value);
   document.body.appendChild(root.value);
 });
 
 onUnmounted(() => {
   if (root.value) {
-    root.value.removeEventListener("click", onBlur);
+    root.value.removeEventListener('click', onBlur);
     document.body.removeChild(root.value);
   }
 });
@@ -110,5 +110,4 @@ export function showPopover(el: HTMLElement, ev?: Event) {
   font-size: 1.6rem;
   padding: 2px;
 }
-
 </style>

@@ -8,7 +8,7 @@ import { global } from '../../global';
 import { Character } from 'u3js/src/extends/three/character';
 
 const isEnabled = ref(false);
-const menus = ref<{title: string; value: string}[]>([]);
+const menus = ref<{ title: string; value: string }[]>([]);
 
 function onSelect(value: string) {
   const object = global.world.selected;
@@ -34,8 +34,8 @@ function dectectObjectSelected() {
     const object: Character = global.world.selected as any;
     isEnabled.value = object instanceof Character ? true : false;
     if (isEnabled.value) {
-      for(const k of Object.keys(object.actions)) {
-        menus.value.push({title: `Start/Stop ${k}`, value: k});
+      for (const k of Object.keys(object.actions)) {
+        menus.value.push({ title: `Start/Stop ${k}`, value: k });
       }
     }
   }
@@ -49,6 +49,5 @@ onMounted(() => {
 onUnmounted(() => {
   global.removeEventListener('objectChanged', dectectObjectSelected);
 });
-
 </script>
 <style scoped></style>

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  BufferGeometry, Color, DoubleSide, EventDispatcher, Float32BufferAttribute, GridHelper,
+  AmbientLight,
+  BufferGeometry, Color, DirectionalLight, DoubleSide, EventDispatcher, Float32BufferAttribute, GridHelper,
   Group, Line, Line3, LineBasicMaterial, MOUSE, MathUtils, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial,
   Object3D,
   PerspectiveCamera, Ray, Scene, ShadowMaterial, TOUCH, Uint8BufferAttribute, Vector2, Vector3, Vector4, WebGLRenderer
@@ -10,6 +11,7 @@ import type { HistoryManager } from "u3js/src/types/types";
 import { SceneEditorEventMap } from "./event";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
+import { Evaluator, Brush } from "three-bvh-csg";
 
 // declare module 'three' {
 //   interface BufferGeometry {
@@ -72,6 +74,9 @@ export class Sculptor extends Scene {
   private startPoint = new Vector2();
   private dragging = false;
 
+  // geometry operation
+  private evaluator = new Evaluator();
+
   constructor(
     public readonly renderer: WebGLRenderer,
     public readonly size: { width: number; height: number },
@@ -90,6 +95,13 @@ export class Sculptor extends Scene {
 
     this.add(this.camera);
 
+    const light = new DirectionalLight(0xffffff, 1);
+    light.castShadow = true;
+    light.shadow.mapSize.set(2048, 2048);
+    light.position.set(10, 10, 10);
+    this.add(light);
+    this.add(new AmbientLight(0xb0bec5, 0.8));
+
     // selection shape
     const selectionShape = new Line<BufferGeometry, LineBasicMaterial>();
     selectionShape.material.color.set(0xff9800).convertSRGBToLinear();
@@ -105,7 +117,7 @@ export class Sculptor extends Scene {
     this.group = new Group();
     this.add(this.group);
 
-    const mesh = new Mesh(undefined, this.wireframeMaterial);
+    const mesh = new Brush(undefined, this.wireframeMaterial);
     this.mesh = mesh;
     this.group.add(this.mesh);
 
@@ -157,6 +169,9 @@ export class Sculptor extends Scene {
     shadowPlane.renderOrder = 2;
     shadowPlane.receiveShadow = true;
     this.add(shadowPlane);
+
+    // geometry operations
+    this.evaluator.attributes = ['position', 'normal'];
 
     // controls
     const orbit = new OrbitControls(this.camera, renderer.domElement);

@@ -1,13 +1,10 @@
 <template>
   <el-dialog v-model="modelVisibleValue" :title="title" width="30%" draggable align-center @close="modelVisibleValue = false">
-    <el-upload class="uploader" drag :action="url" multiple :file-list="fileList" :on-success="handleSuccess"
-      :before-upload="beforeUpload" accept="image/*,audio/*,.glb,.fbx,.ttf,.js,.mjs,.cjs">
+    <el-upload class="uploader" drag :action="url" multiple :file-list="fileList" :on-success="handleSuccess" :before-upload="beforeUpload" accept="image/*,audio/*,.glb,.fbx,.ttf,.js,.mjs,.cjs">
       <el-icon class="el-icon--upload">
         <upload-filled />
       </el-icon>
-      <div class="el-upload__text">
-        Drop file here or <em>click to upload</em>
-      </div>
+      <div class="el-upload__text">Drop file here or <em>click to upload</em></div>
       <template #tip>
         <div class="el-upload__tip">
           {{ tip }}
@@ -42,7 +39,7 @@ const fileList = ref<any[]>([]);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const handleSuccess = (response: any, uploadFile: any) => {
   global.dispatchEvent({ type: 'assetsChanged' });
-}
+};
 
 function beforeUpload(file: File) {
   if (/^image\//.test(file.type)) {
@@ -58,7 +55,6 @@ function beforeUpload(file: File) {
   }
   return false;
 }
-
 </script>
 <style scoped>
 .uploader {

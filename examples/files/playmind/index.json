@@ -1,6 +1,6 @@
 {
   "object": {
-    "uuid": "0deeb7bc-a131-45ce-b387-55c8c9c5bee3",
+    "uuid": "42364d84-65fa-4f04-9263-c169daf0aa00",
     "type": "Object3D",
     "layers": 1,
     "matrix": [
@@ -55,6 +55,8 @@
           1,
           0
         ],
+        "background": "b79b634d-a845-4e93-a664-e4cd667999ed",
+        "environment": "b79b634d-a845-4e93-a664-e4cd667999ed",
         "children": [
           {
             "uuid": "c2dff47d-a4fe-44f9-abc3-df11441cc1ca",
@@ -68,21 +70,21 @@
             },
             "layers": 1,
             "matrix": [
-              0.7071067811865475,
-              8.326672684688674e-17,
-              -0.7071067811865477,
+              0.9996709412019595,
+              -4.336808689942017e-19,
+              -0.025651692271423828,
               0,
-              -0.4082482904638631,
-              0.8164965809277259,
-              -0.4082482904638629,
+              -0.004366525466220507,
+              0.9854054488587399,
+              -0.17016766677268,
               0,
-              0.5773502691896257,
-              0.5773502691896258,
-              0.5773502691896257,
+              0.02527731733670868,
+              0.1702236803723413,
+              0.9850811925261563,
               0,
-              1,
-              1,
-              1,
+              0.1504400451938128,
+              1.9935730775435954,
+              12.204937468519164,
               1
             ],
             "up": [
@@ -95,7 +97,7 @@
             "near": 0.001,
             "far": 1000,
             "focus": 10,
-            "aspect": 1,
+            "aspect": 1.7777777777777777,
             "filmGauge": 35,
             "filmOffset": 0
           },
@@ -253,8 +255,8 @@
               0,
               1,
               0,
-              0,
-              0,
+              0.25576617091223186,
+              -0.03250195996711769,
               0,
               1
             ],
@@ -376,15 +378,71 @@
               0,
               1,
               0,
-              3.2838332657027665,
-              0.8345771733671685,
-              0.07142857142857142,
+              1.599999984105428,
+              -1.2715657552083333e-7,
+              0,
               1
             ],
             "up": [
               0,
               1,
               0
+            ]
+          },
+          {
+            "uuid": "2a830714-21b0-44e5-a2cf-e020934bae0c",
+            "type": "Box",
+            "userData": {
+              "graph": {
+                "isGraph": true,
+                "nodes": []
+              }
+            },
+            "layers": 1,
+            "matrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              3.2477053151981137,
+              1.5646393921605388,
+              0,
+              1
+            ],
+            "up": [
+              0,
+              1,
+              0
+            ],
+            "geometry": "13e754c0-8859-43ff-bd6c-9561fb44e5e0",
+            "material": "3f63763c-b35a-475b-abc7-bdb12226fafb",
+            "mass": 0,
+            "bodyType": 0,
+            "geoMatrix": [
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1,
+              0,
+              0,
+              0,
+              0,
+              1
             ]
           }
         ]
@@ -1293,15 +1351,86 @@
           "radius": 4.5000002119276274
         }
       }
+    },
+    {
+      "uuid": "13e754c0-8859-43ff-bd6c-9561fb44e5e0",
+      "type": "BoxGeometry",
+      "width": 1,
+      "height": 1,
+      "depth": 1,
+      "widthSegments": 1,
+      "heightSegments": 1,
+      "depthSegments": 1
     }
   ],
   "materials": [
     {
       "uuid": "e11eb605-5d3f-4d2d-ad9e-1d7f15681b58"
+    },
+    {
+      "uuid": "3f63763c-b35a-475b-abc7-bdb12226fafb",
+      "type": "MeshStandardMaterial",
+      "color": 16777215,
+      "roughness": 1,
+      "metalness": 0,
+      "emissive": 0,
+      "envMapIntensity": 1,
+      "blendColor": 0
     }
   ],
-  "textures": [],
-  "images": [],
+  "textures": [
+    {
+      "uuid": "b79b634d-a845-4e93-a664-e4cd667999ed",
+      "name": "",
+      "image": "a8333e35-5ac8-4d26-ae91-97e4057d3540",
+      "mapping": 301,
+      "channel": 0,
+      "repeat": [
+        1,
+        1
+      ],
+      "offset": [
+        0,
+        0
+      ],
+      "center": [
+        0,
+        0
+      ],
+      "rotation": 0,
+      "wrap": [
+        1001,
+        1001
+      ],
+      "format": 1023,
+      "internalFormat": null,
+      "type": 1009,
+      "colorSpace": "srgb",
+      "minFilter": 1008,
+      "magFilter": 1006,
+      "anisotropy": 1,
+      "flipY": false,
+      "generateMipmaps": true,
+      "premultiplyAlpha": false,
+      "unpackAlignment": 4,
+      "userData": {
+        "name": "park"
+      }
+    }
+  ],
+  "images": [
+    {
+      "uuid": "a8333e35-5ac8-4d26-ae91-97e4057d3540",
+      "url": [
+        "/fs/file/shared/environments/park/px.jpg",
+        "/fs/file/shared/environments/park/nx.jpg",
+        "/fs/file/shared/environments/park/py.jpg",
+        "/fs/file/shared/environments/park/ny.jpg",
+        "/fs/file/shared/environments/park/pz.jpg",
+        "/fs/file/shared/environments/park/nz.jpg"
+      ]
+    }
+  ],
   "shapes": [],
   "skeletons": [],
   "animations": [],
@@ -1321,23 +1450,12 @@
       "metalness": 0.7,
       "emissive": 0,
       "envMapIntensity": 1,
-      "depthFunc": 3,
-      "depthTest": true,
-      "depthWrite": true,
-      "colorWrite": true,
-      "stencilWrite": false,
-      "stencilWriteMask": 255,
-      "stencilFunc": 519,
-      "stencilRef": 0,
-      "stencilFuncMask": 255,
-      "stencilFail": 7680,
-      "stencilZFail": 7680,
-      "stencilZPass": 7680
+      "blendColor": 0
     }
   ],
   "listeners": [],
   "project": {
-    "revision": 115,
+    "revision": 142,
     "world": {
       "resolution": "2560:1440",
       "toneMapping": 4,

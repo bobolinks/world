@@ -8,23 +8,31 @@
             <Align />
             <Geo />
             <Animation />
-            <div style="flex: 1 1 auto;" />
+            <div style="flex: 1 1 auto" />
             <el-select v-model="currentCamera" placeholder="Select" size="small">
               <el-option v-for="item in cameras" :key="item" :label="item" :value="item" />
             </el-select>
-            <i class="icon-video-camera" style="margin-left: 0.5em; margin-right:0.5em;" @click="reposCamera" />
-            <div style="align-items: center; display: flex; flex-direction: row; justify-content: center; margin: 0 4px;">
-              <el-switch v-model="editorSwitch" size="large" width="60" inline-prompt
-                :active-action-icon="DataBoard" :inactive-action-icon="SetUp"
-                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff9900" :disabled="isViewTypeDisabled" />
+            <i class="icon-video-camera" style="margin-left: 0.5em; margin-right: 0.5em" @click="reposCamera" />
+            <div style="align-items: center; display: flex; flex-direction: row; justify-content: center; margin: 0 4px">
+              <el-switch
+                v-model="editorSwitch"
+                size="large"
+                width="60"
+                inline-prompt
+                :active-action-icon="DataBoard"
+                :inactive-action-icon="SetUp"
+                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff9900"
+                :disabled="isViewTypeDisabled"
+              />
             </div>
           </div>
           <div v-else class="hd-row">
-            <div style="flex: 1 1 auto;" />
-            <el-select v-model="currentSelectMode" placeholder="Select" size="small" style="width: 120px;">
-              <el-option v-for="item in ['lasso','box']" :key="item" :label="item" :value="item" />
+            <div style="flex: 1 1 auto" />
+            <GeoEditorSettings />
+            <el-select v-model="currentSelectMode" placeholder="Select" size="small" style="width: 120px">
+              <el-option v-for="item in ['lasso', 'box']" :key="item" :label="item" :value="item" />
             </el-select>
-            <i class="icon-vec2" style="margin-left: 0.5em; margin-right:0.5em; cursor: default;" />
+            <i class="icon-vec2" style="margin-left: 0.5em; margin-right: 0.5em; cursor: default" />
           </div>
         </template>
         <Main />
@@ -36,12 +44,12 @@
               <el-select v-model="currentScene" placeholder="Select" size="small">
                 <el-option v-for="item in list" :key="item" :label="item" :value="item" />
               </el-select>
-              <i class="icon-add" style="margin-left: 0.5em; margin-right:0.5em;" @click="newScene" />
+              <i class="icon-add" style="margin-left: 0.5em; margin-right: 0.5em" @click="newScene" />
             </div>
           </template>
           <ObjTree />
         </Panel>
-        <Panels class="frame" style="border-radius: 6px; overflow: hidden;" />
+        <Panels class="frame" style="border-radius: 6px; overflow: hidden" />
       </div>
     </div>
     <Contextmenu class="mainContextMenu" max-width="160px" />
@@ -57,6 +65,7 @@ import Panel from '../components/panel.vue';
 import ObjTree from '../components/objtree.vue';
 import Panels from '../components/panels.vue';
 import Geo from '../components/menus/geo.vue';
+import GeoEditorSettings from '../components/menus/geoEditorSettings.vue';
 import { store } from '../store';
 import { global } from '../global';
 import { Dragable } from '../utils/dragable';
@@ -66,14 +75,14 @@ import Contextmenu from '../components/elements/contextmenu.vue';
 import { BuiltinSceneSculptor } from '../core/project';
 
 const currentScene = ref(global.project.scene.name);
-const list = ref<string[]>(global.project.scenes.map(e => e.name));
+const list = ref<string[]>(global.project.scenes.map((e) => e.name));
 const currentCamera = ref('Perspective');
 const cameras = ref<Array<string>>(['Perspective', 'Orthographic']);
 const isViewTypeDisabled = ref(true);
 const editorSwitch = ref(true);
-const currentSelectMode = ref<'lasso'|'box'>('lasso');
+const currentSelectMode = ref<'lasso' | 'box'>('lasso');
 
-watch(editorSwitch, ()=> {
+watch(editorSwitch, () => {
   store.state.editorType = editorSwitch.value ? 'Scene' : 'Graph';
 });
 
@@ -87,7 +96,7 @@ watch(currentCamera, () => {
   if (!global.world) {
     return;
   }
-  const camera = [global.world.cameraPersp, global.world.cameraOrtho, ...global.project.cameras].find(e => e.name === currentCamera.value);
+  const camera = [global.world.cameraPersp, global.world.cameraOrtho, ...global.project.cameras].find((e) => e.name === currentCamera.value);
   if (!camera) {
     return;
   }
@@ -101,7 +110,7 @@ watch(currentSelectMode, () => {
 function newScene() {
   global.project.newScene();
   currentScene.value = global.project.scene.name;
-  list.value = global.project.scenes.map(e => e.name);
+  list.value = global.project.scenes.map((e) => e.name);
   store.state.editorType = 'Scene';
   reset();
 }
@@ -114,11 +123,11 @@ function reset() {
 
 function resetScenes() {
   currentScene.value = global.project.scene.name;
-  list.value = global.project.scenes.map(e => e.name).filter(e => e !== BuiltinSceneSculptor);
+  list.value = global.project.scenes.map((e) => e.name).filter((e) => e !== BuiltinSceneSculptor);
 }
 function resetCamers() {
   currentCamera.value = 'Perspective';
-  cameras.value = ['Perspective', 'Orthographic', ...global.project.cameras.map(e => e.name)];
+  cameras.value = ['Perspective', 'Orthographic', ...global.project.cameras.map((e) => e.name)];
   if (global.world) {
     global.world.setCamera(global.world.cameraPersp);
   }
@@ -176,10 +185,9 @@ onUnmounted(() => {
   global.removeEventListener('objectModified', handleSceneNameChanged);
   global.removeEventListener('objectChanged', dectectObjectSelected);
   global.removeKeyDownListener('e', switchViewMode);
-})
-
+});
 </script>
-<style scoped='true'>
+<style scoped="true">
 .container {
   width: 100vw;
   height: 100vh;

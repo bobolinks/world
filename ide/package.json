@@ -17,7 +17,8 @@
     "flow": "^0.2.3",
     "md5": "^2.3.0",
     "normalize-url": "^8.0.0",
-    "three": "^0.157.0",
+    "three": "^0.158.0",
+    "three-bvh-csg": "^0.0.13",
     "three-mesh-bvh": "^0.6.8",
     "troika-three-text": "^0.48.0-unicode.1",
     "u3js": "file:../u3js",
@@ -28,7 +29,7 @@
   "devDependencies": {
     "@types/md5": "^2.3.2",
     "@types/node": "^20.3.2",
-    "@types/three": "^0.157.2",
+    "@types/three": "^0.158.1",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "@vitejs/plugin-basic-ssl": "^1.0.1",

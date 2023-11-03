@@ -1,13 +1,13 @@
 <template>
   <div class="list">
     <div v-for="item in items" :key="item.name" class="item" @click="setEnv(item)">
-      <img :src="item.cover">
+      <img :src="item.cover" />
       <label :data-name="item.name">{{ item.title }}</label>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { Texture, CubeTextureLoader } from 'three';
 import { HDRCubeTextureLoader } from 'three/examples/jsm/loaders/HDRCubeTextureLoader.js';
 import apis, { EnvSceneInfo } from '../../apis';
@@ -17,7 +17,7 @@ const items = ref<Array<EnvSceneInfo>>([]);
 
 async function loadEnvs() {
   const ls = await apis.environments();
-  items.value = [...ls, {name: 'Empty', title: 'Empty', cover: '/assets/images/blank.png', format: ''}];
+  items.value = [...ls, { name: 'Empty', title: 'Empty', cover: '/assets/images/blank.png', format: '' }];
 }
 
 function dettachTextureIfNoRef(textures: Array<Texture>) {
@@ -38,11 +38,11 @@ function dettachTextureIfNoRef(textures: Array<Texture>) {
 
 async function setEnv(item: EnvSceneInfo) {
   // find it from project
-  let texture: Texture | null | undefined = Object.values(global.project.textures).find(e => e.userData.name === item.name);
+  let texture: Texture | null | undefined = Object.values(global.project.textures).find((e) => e.userData.name === item.name);
   if (!texture && item.name !== 'Empty') {
     const loader = item.format === '.hdr' ? new HDRCubeTextureLoader() : new CubeTextureLoader();
     loader.setPath(`/fs/file/shared/environments/${item.name}/`);
-    texture = await loader.loadAsync(['px', 'nx', 'py', 'ny', 'pz', 'nz'].map(e => `${e}${item.format}`));
+    texture = await loader.loadAsync(['px', 'nx', 'py', 'ny', 'pz', 'nz'].map((e) => `${e}${item.format}`));
     texture.userData.name = item.name;
     global.project.textures[texture.uuid] = texture;
   }
@@ -53,8 +53,8 @@ async function setEnv(item: EnvSceneInfo) {
     const oldEnvironment = scene.environment;
     scene.background = texture as any;
     scene.environment = texture as any;
-    global.world.root.background = texture as any;
-    global.world.root.environment = texture as any;
+    global.world.worldEditor.background = texture as any;
+    global.world.worldEditor.environment = texture as any;
     dettachTextureIfNoRef([oldBackground, oldEnvironment] as any);
     global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [scene] });
     global.history.push({
@@ -62,8 +62,8 @@ async function setEnv(item: EnvSceneInfo) {
       undo: () => {
         scene.background = oldBackground;
         scene.environment = oldEnvironment;
-        global.world.root.background = oldBackground;
-        global.world.root.environment = oldEnvironment;
+        global.world.worldEditor.background = oldBackground;
+        global.world.worldEditor.environment = oldEnvironment;
       },
       redo: () => {
         scene.background = texture as any;
@@ -75,7 +75,7 @@ async function setEnv(item: EnvSceneInfo) {
         // @ts-expect-error
         global.world.root.environment = texture;
       },
-    })
+    });
   }
 }
 
@@ -83,10 +83,7 @@ onMounted(() => {
   loadEnvs();
 });
 
-onUnmounted(() => {
-
-});
-
+onUnmounted(() => {});
 </script>
 <style scoped>
 .list {

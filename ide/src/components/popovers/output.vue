@@ -3,8 +3,8 @@
   <el-dialog v-model="modelVisibleValue" :title="title" width="60%" draggable align-center @close="modelVisibleValue = false">
     <div v-if="store.messages.length" class="log-container">
       <i class="icon-clear" @click="clear" />
-      <pre v-for="(item,index) in store.messages" :key="'log'+index" :data-type="item.type" v-html="item.time + '&nbsp;' + (item.content || item.title)" />
-      <div id="dynamic-anchor-div" style="overflow-anchor: auto; height: 1px;" />
+      <pre v-for="(item, index) in store.messages" :key="'log' + index" :data-type="item.type" v-html="item.time + '&nbsp;' + (item.content || item.title)" />
+      <div id="dynamic-anchor-div" style="overflow-anchor: auto; height: 1px" />
     </div>
     <label v-else>No Messages</label>
   </el-dialog>
@@ -26,18 +26,17 @@ function clear() {
   store.messages.length = 0;
 }
 
-onMounted(()=> {
+onMounted(() => {
   const el = document.getElementById('dynamic-anchor-div');
-    if (el) el.scrollIntoView();
+  if (el) el.scrollIntoView();
 });
-
 </script>
 <style scoped>
 .icon-clear {
-  position: absolute; 
-  top: 0.65em; 
-  right: 2em; 
-  cursor: pointer; 
+  position: absolute;
+  top: 0.65em;
+  right: 2em;
+  cursor: pointer;
   color: #ff9900;
   margin-right: 8px;
 }
@@ -59,13 +58,11 @@ onMounted(()=> {
   color: #555;
 }
 
-.log-container pre[data-type="warning"] {
+.log-container pre[data-type='warning'] {
   color: #ff9900;
 }
 
-.log-container pre[data-type="error"] {
+.log-container pre[data-type='error'] {
   color: red;
 }
-
 </style>
-

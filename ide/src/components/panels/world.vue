@@ -4,8 +4,7 @@
     <div class="prop-item">
       <label class="text-ellipsis prop-name">Resolution</label>
       <p style="flex: 1 1 auto" />
-      <el-select v-model="screen.resolution" size="small" style="flex: 0 0 0%; min-width: 240px; margin-left: 1em;"
-        @change="resolutionChanged">
+      <el-select v-model="screen.resolution" size="small" style="flex: 0 0 0%; min-width: 240px; margin-left: 1em" @change="resolutionChanged">
         <el-option v-for="item in builtinResolutions" :key="item.value" :label="item.label" :value="item.value" />
       </el-select>
     </div>
@@ -43,7 +42,7 @@ const isGridShow = ref(global.world?.gridHelper.visible);
 function resolutionChanged(value: string | 'auto') {
   screen.value.resolution = value;
   global.project.world.resolution = value;
-  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project } );
+  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project });
   global.dispatchEvent({ type: 'worldSettingsModified', soure: null as any, settings: { resolution: value } });
 }
 
@@ -58,7 +57,7 @@ const isVREnable = ref(global.project.world.vrEnable);
 
 function switchVR() {
   global.project.world.vrEnable = isVREnable.value;
-  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project } );
+  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project });
 }
 
 function reset() {
@@ -79,7 +78,6 @@ onMounted(() => {
 onUnmounted(() => {
   global.removeEventListener('projectLoaded', reset);
 });
-
 </script>
 <style scoped>
 .props-list {

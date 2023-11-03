@@ -11,21 +11,21 @@ import { Object3D } from 'three';
 type ValueType = 'toFloor' | 'toWorldCenter' | 'toX0' | 'toX+' | 'toX-' | 'toY0' | 'toY+' | 'toY-' | 'toZ0' | 'toZ+' | 'toZ-' | 'disX' | 'disY' | 'disZ';
 
 const idObjectSelected = ref(false);
-const menus = ref<{title: string; value: ValueType}[]>([
-  {value: 'toFloor', title: 'Align to parent [Meta + Shift + f]'},
-  {value: 'toX0', title: 'Align to X axis [Meta + Shift + x]'},
-  {value: 'toY0', title: 'Align to Y axis [Meta + Shift + y]'},
-  {value: 'toZ0', title: 'Align to Z axis'},
-  {value: 'toWorldCenter', title: 'Move to world center [Meta + Shift + c]'},
-  {value: 'toX+', title: 'Align objects to Max(X)'},
-  {value: 'toX-', title: 'Align objects to Min(X)'},
-  {value: 'toY+', title: 'Align objects to Max(Y)'},
-  {value: 'toY-', title: 'Align objects to Min(Y)'},
-  {value: 'toZ+', title: 'Align objects to Max(Z)'},
-  {value: 'toZ-', title: 'Align objects to Min(Z)'},
-  {value: 'disX', title: 'Distribute objects to X axis'},
-  {value: 'disY', title: 'Distribute objects to Y axis'},
-  {value: 'disZ', title: 'Distribute objects to Z axis'},
+const menus = ref<{ title: string; value: ValueType }[]>([
+  { value: 'toFloor', title: 'Align to parent [Meta + Shift + f]' },
+  { value: 'toX0', title: 'Align to X axis [Meta + Shift + x]' },
+  { value: 'toY0', title: 'Align to Y axis [Meta + Shift + y]' },
+  { value: 'toZ0', title: 'Align to Z axis' },
+  { value: 'toWorldCenter', title: 'Move to world center [Meta + Shift + c]' },
+  { value: 'toX+', title: 'Align objects to Max(X)' },
+  { value: 'toX-', title: 'Align objects to Min(X)' },
+  { value: 'toY+', title: 'Align objects to Max(Y)' },
+  { value: 'toY-', title: 'Align objects to Min(Y)' },
+  { value: 'toZ+', title: 'Align objects to Max(Z)' },
+  { value: 'toZ-', title: 'Align objects to Min(Z)' },
+  { value: 'disX', title: 'Distribute objects to X axis' },
+  { value: 'disY', title: 'Distribute objects to Y axis' },
+  { value: 'disZ', title: 'Distribute objects to Z axis' },
 ]);
 
 function applyUpdate(action: ValueType) {
@@ -35,11 +35,11 @@ function applyUpdate(action: ValueType) {
   }
 
   const oldValues = new WeakMap<Object3D, Vector3>();
-  objects.forEach(e => oldValues.set(e, e.position.clone()));
+  objects.forEach((e) => oldValues.set(e, e.position.clone()));
   const newValues = new WeakMap<Object3D, Vector3>();
   if (action === 'toFloor') {
     const box3 = new Box3();
-    objects.forEach(o => {
+    objects.forEach((o) => {
       box3.setFromObject(o, false);
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
@@ -47,77 +47,77 @@ function applyUpdate(action: ValueType) {
       newValues.set(o, newValue);
     });
   } else if (action === 'toX0') {
-    objects.forEach(o => {
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.x = 0;
       newValues.set(o, newValue);
     });
   } else if (action === 'toX+') {
-    const value = Math.max(...objects.map(e => e.position.x));
-    objects.forEach(o => {
+    const value = Math.max(...objects.map((e) => e.position.x));
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.x = value;
       newValues.set(o, newValue);
     });
   } else if (action === 'toX-') {
-    const value = Math.min(...objects.map(e => e.position.x));
-    objects.forEach(o => {
+    const value = Math.min(...objects.map((e) => e.position.x));
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.x = value;
       newValues.set(o, newValue);
     });
   } else if (action === 'toY0') {
-    objects.forEach(o => {
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.y = 0;
       newValues.set(o, newValue);
     });
   } else if (action === 'toY+') {
-    const value = Math.max(...objects.map(e => e.position.y));
-    objects.forEach(o => {
+    const value = Math.max(...objects.map((e) => e.position.y));
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.y = value;
       newValues.set(o, newValue);
     });
   } else if (action === 'toY-') {
-    const value = Math.min(...objects.map(e => e.position.y));
-    objects.forEach(o => {
+    const value = Math.min(...objects.map((e) => e.position.y));
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.y = value;
       newValues.set(o, newValue);
     });
   } else if (action === 'toZ0') {
-    objects.forEach(o => {
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.z = 0;
       newValues.set(o, newValue);
     });
   } else if (action === 'toZ+') {
-    const value = Math.max(...objects.map(e => e.position.z));
-    objects.forEach(o => {
+    const value = Math.max(...objects.map((e) => e.position.z));
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.z = value;
       newValues.set(o, newValue);
     });
   } else if (action === 'toZ-') {
-    const value = Math.min(...objects.map(e => e.position.z));
-    objects.forEach(o => {
+    const value = Math.min(...objects.map((e) => e.position.z));
+    objects.forEach((o) => {
       const oldValue = oldValues.get(o);
       const newValue = oldValue!.clone();
       newValue.z = value;
       newValues.set(o, newValue);
     });
   } else if (action === 'disX') {
-    const max = Math.max(...objects.map(e => e.position.x));
-    const min = Math.min(...objects.map(e => e.position.x));
+    const max = Math.max(...objects.map((e) => e.position.x));
+    const min = Math.min(...objects.map((e) => e.position.x));
     const step = objects.length > 1 ? (max - min) / (objects.length - 1) : 0;
     objects.forEach((o, i) => {
       const oldValue = oldValues.get(o);
@@ -126,8 +126,8 @@ function applyUpdate(action: ValueType) {
       newValues.set(o, newValue);
     });
   } else if (action === 'disY') {
-    const max = Math.max(...objects.map(e => e.position.y));
-    const min = Math.min(...objects.map(e => e.position.y));
+    const max = Math.max(...objects.map((e) => e.position.y));
+    const min = Math.min(...objects.map((e) => e.position.y));
     const step = objects.length > 1 ? (max - min) / (objects.length - 1) : 0;
     objects.forEach((o, i) => {
       const oldValue = oldValues.get(o);
@@ -136,8 +136,8 @@ function applyUpdate(action: ValueType) {
       newValues.set(o, newValue);
     });
   } else if (action === 'disZ') {
-    const max = Math.max(...objects.map(e => e.position.z));
-    const min = Math.min(...objects.map(e => e.position.z));
+    const max = Math.max(...objects.map((e) => e.position.z));
+    const min = Math.min(...objects.map((e) => e.position.z));
     const step = objects.length > 1 ? (max - min) / (objects.length - 1) : 0;
     objects.forEach((o, i) => {
       const oldValue = oldValues.get(o);
@@ -148,11 +148,11 @@ function applyUpdate(action: ValueType) {
   }
 
   const redo = () => {
-    objects.forEach(e => e.position.copy(newValues.get(e) as any));
+    objects.forEach((e) => e.position.copy(newValues.get(e) as any));
     global.dispatchEvent({ type: 'objectModified', soure: null as any, objects });
   };
   const undo = () => {
-    objects.forEach(e => e.position.copy(oldValues.get(e) as any));
+    objects.forEach((e) => e.position.copy(oldValues.get(e) as any));
     global.dispatchEvent({ type: 'objectModified', soure: null as any, objects });
   };
   redo();
@@ -191,6 +191,5 @@ onUnmounted(() => {
   global.removeKeyDownListener('meta+shift+y', moveToYAxis);
   // global.removeKeyDownListener('meta+shift+z', moveToZAxis);
 });
-
 </script>
 <style scoped></style>

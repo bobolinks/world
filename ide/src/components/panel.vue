@@ -8,18 +8,16 @@
   </div>
 </template>
 <script lang="ts" setup>
-
 defineProps({
   icon: {
     type: String,
-    default: "icon-egg",
+    default: 'icon-egg',
   },
   showHeader: {
     type: Boolean,
-    default: true
+    default: true,
   },
 });
-
 </script>
 <style scoped>
 .panel {

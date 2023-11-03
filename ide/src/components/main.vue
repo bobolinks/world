@@ -1,9 +1,8 @@
 <template>
-  <div ref="root" class="wrap" style="position: relative; height: 100%; height: 100%;">
+  <div ref="root" class="wrap" style="position: relative; height: 100%; height: 100%">
     <canvas id="canvas" class="canvas" @drop="onDrop" />
-    <div v-show="store.state.editorType==='Graph'" ref="graph" class="graph" />
-    <Selector class="mainLisSelector" :values="store.state.audioListeners" max-width="420px"
-      title="Please select audio listener" />
+    <div v-show="store.state.editorType === 'Graph'" ref="graph" class="graph" />
+    <Selector class="mainLisSelector" :values="store.state.audioListeners" max-width="420px" title="Please select audio listener" />
   </div>
 </template>
 <script setup lang="ts">
@@ -25,7 +24,7 @@ declare global {
 defineProps({
   iso: {
     type: Boolean,
-    default: false
+    default: false,
   },
 });
 
@@ -44,7 +43,7 @@ function resizeCanvas() {
   if (screen.resolution === 'auto') {
     // do nothing
   } else {
-    const [w,h] = screen.resolution.split(':').map(e => Number.parseInt(e));
+    const [w, h] = screen.resolution.split(':').map((e) => Number.parseInt(e));
     const aspect = w / h;
     if (aspect > 1) {
       pixelRatio = Math.max(1, Math.floor(w / width));
@@ -59,9 +58,12 @@ function resizeCanvas() {
   global.world?.resize(width, height, pixelRatio);
 }
 
-watch(() => store.state.isFloating, () => {
-  setTimeout(resizeCanvas, 0);
-});
+watch(
+  () => store.state.isFloating,
+  () => {
+    setTimeout(resizeCanvas, 0);
+  },
+);
 
 function onProjectLoaded() {
   global.world.setSelectedObjects(global.project.selectedObjects);
@@ -78,12 +80,15 @@ function updateScene() {
   global.history.setScene(global.project.scene);
 }
 
-watch(() => store.state.editorType, () => {
-  updateScene();
-});
+watch(
+  () => store.state.editorType,
+  () => {
+    updateScene();
+  },
+);
 
 function waitForMonaco() {
-  window.removeEventListener('monacoReady', waitForMonaco)
+  window.removeEventListener('monacoReady', waitForMonaco);
   global.editor = new GraphEditor(new Scene(), (global.world as any).renderer, (global.world as any).composer, global.history);
   (graph.value as any).append(global.editor.domElement);
   resizeCanvas();
@@ -97,7 +102,7 @@ onMounted(() => {
       global.editor = new GraphEditor(global.world.worldEditor, global.world.renderer, (global.world as any).composer, global.history);
       (graph.value as any).append(global.editor.domElement);
     } else {
-      window.addEventListener('monacoReady', waitForMonaco)
+      window.addEventListener('monacoReady', waitForMonaco);
     }
 
     global.world.run();
@@ -105,7 +110,7 @@ onMounted(() => {
 
   resizeCanvas();
 
-  window.addEventListener('resize', resizeCanvas)
+  window.addEventListener('resize', resizeCanvas);
   global.addEventListener('projectLoaded', onProjectLoaded);
   global.addEventListener('worldSettingsModified', resizeCanvas);
   global.addEventListener('sceneChanged', updateScene);
@@ -133,12 +138,12 @@ async function onDrop(event: DragEvent) {
     } else if (liss.length === 1) {
       params.push({ listener: liss[0] });
     } else {
-      store.state.audioListeners = liss.map(e => ({ name: e.name, value: e.uuid }));
+      store.state.audioListeners = liss.map((e) => ({ name: e.name, value: e.uuid }));
       const rs = await showSelector(document.querySelector('.mainLisSelector') as any);
       if (!rs) {
         return;
       }
-      params.push({ listener: liss.find(e => e.uuid === rs) });
+      params.push({ listener: liss.find((e) => e.uuid === rs) });
     }
   }
   const object = global.project.addObjectByClass(data.name, undefined, params);
@@ -152,7 +157,6 @@ async function onDrop(event: DragEvent) {
     },
   });
 }
-
 </script>
 <style scoped>
 .wrap {

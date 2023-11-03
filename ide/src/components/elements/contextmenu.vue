@@ -9,10 +9,9 @@
 defineProps({
   maxWidth: {
     type: String,
-    default: "320px",
+    default: '320px',
   },
 });
-
 </script>
 <script lang="ts">
 import { ref } from 'vue';
@@ -55,7 +54,7 @@ export async function showMenu(el: HTMLElement, ev: Event, items: Array<MenuItem
   const promise = new Promise((resolve, reject) => {
     wrap.resolve = resolve;
     wrap.reject = reject;
-  })
+  });
   showPopover(el, ev);
   return await promise;
 }
@@ -95,5 +94,4 @@ export async function showMenu(el: HTMLElement, ev: Event, items: Array<MenuItem
   padding: 0 0.5em;
   pointer-events: none;
 }
-
 </style>

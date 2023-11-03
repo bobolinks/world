@@ -1,7 +1,6 @@
 <template>
   <div class="grid-list">
-    <div v-for="item in items" :key="item.name" class="grid-item" draggable="true" :style="{ width: itemWidth }"
-      @dragstart="$emit('onItemDragstart', item, $event)">
+    <div v-for="item in items" :key="item.name" class="grid-item" draggable="true" :style="{ width: itemWidth }" @dragstart="$emit('onItemDragstart', item, $event)">
       <div class="grid-slot">
         <i :class="item.icon" />
       </div>
@@ -9,8 +8,7 @@
     </div>
   </div>
 </template>
-<script lang='ts' setup>
-
+<script lang="ts" setup>
 type Item = {
   name: string;
   label?: string;
@@ -25,11 +23,10 @@ defineProps({
   itemWidth: {
     type: String,
     default: '170px',
-  }
+  },
 });
 
-defineEmits(['onItemDragstart'])
-
+defineEmits(['onItemDragstart']);
 </script>
 <style scoped>
 .grid-list {

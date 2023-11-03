@@ -13,7 +13,7 @@
     </el-table>
     <div class="table-foot">
       <div>
-        <a class="restart" style="cursor: pointer;" :disabled="!store.state.pluginsChanged" @click="reload()">Restart</a>
+        <a class="restart" style="cursor: pointer" :disabled="!store.state.pluginsChanged" @click="reload()">Restart</a>
         is require for changes to take effect
       </div>
     </div>
@@ -26,7 +26,7 @@ import { global } from '../../global';
 import { store } from '../../store';
 import { ElTable } from 'element-plus';
 
-type Item = {url: string; path: string; checked: boolean};
+type Item = { url: string; path: string; checked: boolean };
 
 const multipleTableRef = ref<InstanceType<typeof ElTable>>();
 const modelVisibleValue = defineModel();
@@ -34,12 +34,12 @@ const items = ref<Item[]>([]);
 
 async function loadData() {
   const ls = await apis.getPlugins(global.project.name);
-  items.value = ls.map(e => {
+  items.value = ls.map((e) => {
     const path = e.url.replace(/^\/fs\/file\//, '').replace(/\.[^.]+$/, '');
     const checked = global.project.plugins.has(e.url);
     return { url: e.url, path: path, checked };
   });
-  setTimeout(()=> {
+  setTimeout(() => {
     updateStatus();
   });
 }
@@ -49,7 +49,7 @@ function updateStatus() {
   if (!table) {
     return;
   }
-  for(const item of items.value) {
+  for (const item of items.value) {
     if (!item.checked) continue;
     table.toggleRowSelection(item, true);
   }
@@ -62,9 +62,9 @@ function reload() {
 const handleSelectionChange = (val: Item[]) => {
   store.state.pluginsChanged = true;
   global.project.plugins.clear();
-  val.forEach(e => (e.checked = true,global.project.plugins.add(e.url)));
-  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project } );
-}
+  val.forEach((e) => ((e.checked = true), global.project.plugins.add(e.url)));
+  global.dispatchEvent({ type: 'projectSettingsChanged', soure: null as any, project: global.project });
+};
 
 defineProps({
   title: {
@@ -83,10 +83,9 @@ onUnmounted(() => {
   global.removeEventListener('assetsChanged', loadData);
   global.removeEventListener('projectLoaded', loadData);
 });
-
 </script>
 <style>
-.notPadding .el-dialog__body{
+.notPadding .el-dialog__body {
   padding: 0 !important;
 }
 
@@ -103,8 +102,7 @@ onUnmounted(() => {
   font-weight: bold;
 }
 
-.restart[disabled="true"] {
+.restart[disabled='true'] {
   color: gray;
 }
-
 </style>
