@@ -136,10 +136,6 @@ export class GeometryEditor extends Scene {
     this.mesh.geometry = m.geometry;
 
     this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
-    const count = this.mesh.geometry.index?.count || 0;
-    this.mesh.geometry.setAttribute('color', new Uint8BufferAttribute(
-      new Array(count * 3).fill(255), 3, true
-    ));
 
     this.helper.update();
   }

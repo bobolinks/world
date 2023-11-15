@@ -79,7 +79,7 @@ const items = ref<Array<Modifier>>([
 
 const modifiers = {
   Simplifier(props: Record<string, { value: any }>) {
-    const object: Mesh = global.world.geometryEditors.Vertex.highlightMesh;
+    const object: Mesh = global.world.geometryEditors.Vertex.mesh;
     if (!object || !object.isMesh) {
       return;
     }
@@ -88,10 +88,10 @@ const modifiers = {
     const count = Math.floor(object.geometry.attributes.position.count * props.density.value);
     const geometry = modifier.modify(object.geometry, count);
 
-    global.world.geometryEditors.Vertex.replaceSelectedPoints(geometry);
+    global.world.geometryEditors.Vertex.replaceGeometry(geometry);
   },
   Subdivision(props: Record<string, { value: any }>) {
-    const object: Mesh = global.world.geometryEditors.Vertex.highlightMesh;
+    const object: Mesh = global.world.geometryEditors.Vertex.mesh;
     if (!object || !object.isMesh) {
       return;
     }
@@ -104,7 +104,7 @@ const modifiers = {
       // weight: props.weight.value,
     };
     const geometry = LoopSubdivision.modify(object.geometry, props.iterations.value, params);
-    global.world.geometryEditors.Vertex.replaceSelectedPoints(geometry);
+    global.world.geometryEditors.Vertex.replaceGeometry(geometry);
   },
 };
 

@@ -27,9 +27,8 @@ const lassoSegments: any[] = [];
 const perBoundsSegments: any[] = [];
 
 export class VertexEditor extends GeometryEditor {
-  public highlightMesh: Mesh<BufferGeometry, MeshBasicMaterial>;
-
   private selectionShape: Line;
+  private highlightMesh: Mesh<BufferGeometry, MeshBasicMaterial>;
 
   public toolMode: 'box' | 'lasso' = 'lasso';
   private selectionMode: 'centroid' | 'centroid-visible' | 'intersection' = 'intersection';
@@ -363,55 +362,55 @@ export class VertexEditor extends GeometryEditor {
     }
   }
 
-  replaceSelectedPoints(geometry: BufferGeometry) {
-    const oldIndex: Uint16BufferAttribute = this.mesh.geometry.index as any;
+  replaceGeometry(geometry: BufferGeometry) {
+    if (!this._object) {
+      return;
+    }
+
     const oldGeo = this.mesh.geometry;
     const drawRangeCount = this.highlightMesh.geometry.drawRange.count;
-
-    this.removeSelectedPoints(true);
+    const oldHighlightGeo = this.highlightMesh.geometry;
+    this.highlightMesh.geometry.drawRange.count = 0;
 
     if (!geometry.index) {
       geometry = mergeVertices(geometry);
     }
-    if (this.mesh.geometry.attributes.color && !(this.mesh.geometry.attributes.color instanceof Float32BufferAttribute)) {
-      const clr = this.mesh.geometry.attributes.color;
-      const fmtColor = new Float32BufferAttribute(clr.count * clr.itemSize, clr.itemSize);
-      for (let i = 0; i < clr.count; i++) {
-        fmtColor.setXYZ(i, clr.getX(i), clr.getY(i), clr.getZ(i));
-      }
-      this.mesh.geometry.attributes.color = fmtColor;
-    }
-    if (geometry.attributes.color && !(geometry.attributes.color instanceof Float32BufferAttribute)) {
-      const clr = geometry.attributes.color;
-      const fmtColor = new Float32BufferAttribute(clr.count * clr.itemSize, clr.itemSize);
-      for (let i = 0; i < clr.count; i++) {
-        fmtColor.setXYZ(i, clr.getX(i), clr.getY(i), clr.getZ(i));
-      }
-      geometry.attributes.color = fmtColor;
-    }
-    const newGeo = mergeGeometries([this.mesh.geometry, geometry], true);
-    this.mesh.geometry.dispose();
-    this.mesh.geometry = newGeo;
 
-    const newIndex: Uint16BufferAttribute = this.mesh.geometry.index as any;
+    const newHighlightGeo = geometry.clone();
+
+    this.mesh.geometry.dispose();
+    this.mesh.geometry = geometry;
+    this.highlightMesh.geometry.dispose();
+    this.highlightMesh.geometry = newHighlightGeo;
+    this._object.geometry = geometry;
+
+    if (this.selectionPoints.length) {
+      this.selectionShape.visible = false;
+      this.selectionNeedsUpdate = true;
+      this.selectionPoints.length = 0;
+    }
 
     const undo = () => {
       this.mesh.geometry.dispose();
       this.mesh.geometry = oldGeo;
-      this.mesh.geometry.index = oldIndex;
+      this.highlightMesh.geometry.dispose();
+      this.highlightMesh.geometry = oldHighlightGeo;
       this.highlightMesh.geometry.drawRange.count = drawRangeCount;
+      this._object!.geometry = oldGeo;
       this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
     };
     const redo = () => {
       this.mesh.geometry.dispose();
-      this.mesh.geometry = newGeo;
-      this.mesh.geometry.index = newIndex;
+      this.mesh.geometry = geometry;
+      this.highlightMesh.geometry.dispose();
+      this.highlightMesh.geometry = newHighlightGeo;
       this.highlightMesh.geometry.drawRange.count = 0;
+      this._object!.geometry = geometry;
       this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
     };
     this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
     this.history.push({
-      tip: 'Geo merged!',
+      tip: 'Geo Replaced!',
       undo,
       redo,
     });
