@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { createApp, openBlock, resolveComponent, createBlock } from 'vue';
 import { createRouter, createWebHashHistory, } from "vue-router";
+import * as THREE from 'three';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import 'u3js/src/browser';
@@ -13,6 +14,7 @@ import { store } from './store';
 
 declare global {
   interface Window {
+    THREE: typeof THREE;
     setImmediate: any;
     $: (selector: string, doc: Document) => void;
     __store: any;
@@ -22,6 +24,10 @@ declare global {
 
 if (!window.setImmediate) {
   window.setImmediate = window.setTimeout;
+}
+
+if (!window.THREE) {
+  window.THREE = THREE;
 }
 
 if (!window.$) {

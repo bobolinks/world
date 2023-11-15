@@ -1,5 +1,5 @@
 <template>
-  <Menubar :disabled="!isEnabled" title="Animations" :menus="menus" @select="onSelect" />
+  <Menubar :disabled="!isEnabled" title="Animations" :menus="menus" icon="icon-xbot" @select="onSelect" />
 </template>
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';

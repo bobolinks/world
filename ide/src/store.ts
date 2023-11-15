@@ -2,14 +2,14 @@ import { watch, } from "vue";
 import { createStore } from "vuex";
 import Theme from './utils/theme';
 import type { UserNoticeLevel } from "u3js/src/types/types";
-
-type EditorType = 'Scene' | 'Graph' | 'Sculptor';
+import type { EditorType } from "./core/world";
 
 const state = {
   theme: localStorage.getItem('theme') || 'dark' as 'dark' | 'light',
   isLoading: true,
   isNetBusy: false,
-  editorType: 'Scene' as EditorType,
+  editorType: 'World' as EditorType,
+  worldViewMode: 'world' as 'world' | 'graph',
   isFloating: false,
   projects: [] as Array<string>,
   projectName: localStorage.getItem('projectName') || 'shared',
@@ -23,14 +23,14 @@ export const store = createStore({
   mutations: {
     selectProject(st, name: string) {
       st.projectName = name;
-      st.editorType = 'Scene';
+      st.editorType = 'World';
       localStorage.setItem('projectName', name);
     },
     createProject(st, name: string) {
       st.projects.push(name);
       st.projects = [...st.projects];
       st.projectName = name;
-      st.editorType = 'Scene';
+      st.editorType = 'World';
       localStorage.setItem('projectName', name);
     },
     renameProject(st, name: string) {

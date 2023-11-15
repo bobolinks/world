@@ -4,7 +4,7 @@
     <div class="body-panels">
       <Panel class="frame main" icon="icon-vec3" :floating="store.state.isFloating">
         <template #header>
-          <div v-if="store.state.editorType !== 'Sculptor'" class="hd-row">
+          <div v-if="store.state.editorType === 'World'" class="hd-row">
             <Align />
             <Geo />
             <Animation />
@@ -32,7 +32,7 @@
             <el-select v-model="currentSelectMode" placeholder="Select" size="small" style="width: 120px">
               <el-option v-for="item in ['lasso', 'box']" :key="item" :label="item" :value="item" />
             </el-select>
-            <i class="icon-vec2" style="margin-left: 0.5em; margin-right: 0.5em; cursor: default" />
+            <i class="icon-selector" style="margin-left: 0.5em; margin-right: 0.5em; cursor: default" />
           </div>
         </template>
         <Main />
@@ -40,7 +40,7 @@
       <div class="ctrl-bar rightside">
         <Panel class="objtree frame" icon="icon-logic">
           <template #header>
-            <div v-if="store.state.editorType !== 'Sculptor'" class="hd-row">
+            <div v-if="store.state.editorType === 'World'" class="hd-row">
               <el-select v-model="currentScene" placeholder="Select" size="small">
                 <el-option v-for="item in list" :key="item" :label="item" :value="item" />
               </el-select>
@@ -72,7 +72,7 @@ import { Dragable } from '../utils/dragable';
 import Align from '../components/menus/align.vue';
 import Animation from '../components/menus/animation.vue';
 import Contextmenu from '../components/elements/contextmenu.vue';
-import { BuiltinSceneSculptor } from '../core/project';
+import { BuiltinSceneSpawns } from 'u3js/src';
 
 const currentScene = ref(global.project.scene.name);
 const list = ref<string[]>(global.project.scenes.map((e) => e.name));
@@ -83,11 +83,12 @@ const editorSwitch = ref(true);
 const currentSelectMode = ref<'lasso' | 'box'>('lasso');
 
 watch(editorSwitch, () => {
-  store.state.editorType = editorSwitch.value ? 'Scene' : 'Graph';
+  store.state.worldViewMode = editorSwitch.value ? 'world' : 'graph';
 });
 
 watch(currentScene, () => {
-  store.state.editorType = 'Scene';
+  store.state.editorType = 'World';
+  store.state.worldViewMode = 'world';
   global.project.setScene(currentScene.value);
   resetCamers();
 });
@@ -104,14 +105,14 @@ watch(currentCamera, () => {
 });
 
 watch(currentSelectMode, () => {
-  global.world.sculptor.toolMode = currentSelectMode.value;
+  global.world.geometryEditors.Vertex.toolMode = currentSelectMode.value;
 });
 
 function newScene() {
   global.project.newScene();
   currentScene.value = global.project.scene.name;
   list.value = global.project.scenes.map((e) => e.name);
-  store.state.editorType = 'Scene';
+  store.state.editorType = 'World';
   reset();
 }
 
@@ -123,7 +124,7 @@ function reset() {
 
 function resetScenes() {
   currentScene.value = global.project.scene.name;
-  list.value = global.project.scenes.map((e) => e.name).filter((e) => e !== BuiltinSceneSculptor);
+  list.value = global.project.scenes.map((e) => e.name).filter((e) => !/^\[/.test(e) || e === BuiltinSceneSpawns);
 }
 function resetCamers() {
   currentCamera.value = 'Perspective';
@@ -152,12 +153,12 @@ function handleSceneNameChanged({ objects }: any) {
 }
 
 function switchViewMode() {
-  if (!global.world?.selected || store.state.editorType === 'Sculptor') {
+  if (!global.world?.selected || store.state.editorType !== 'World') {
     return;
   }
   editorSwitch.value = !editorSwitch.value;
-  store.state.editorType = editorSwitch.value ? 'Scene' : 'Graph';
-  if (store.state.editorType === 'Graph') {
+  store.state.worldViewMode = editorSwitch.value ? 'world' : 'graph';
+  if (store.state.worldViewMode === 'graph') {
     global.editor.setObject(global.world.selected);
   }
 }
@@ -169,8 +170,8 @@ onMounted(() => {
   global.addEventListener('projectLoaded', reset);
   global.addEventListener('sceneChanged', reset);
   global.addEventListener('treeModified', resetCamers);
-  global.addEventListener('enterSculptor', resetCamers);
-  global.addEventListener('leaveSculptor', resetCamers);
+  global.addEventListener('enterGeoEditor', resetCamers);
+  global.addEventListener('leaveGeoEditor', resetCamers);
   global.addEventListener('objectModified', handleSceneNameChanged);
   global.addEventListener('objectChanged', dectectObjectSelected);
   global.addKeyDownListener('meta+e', switchViewMode, 'Global.Switch to View/Graph Mode');
@@ -180,8 +181,8 @@ onUnmounted(() => {
   global.removeEventListener('projectLoaded', reset);
   global.removeEventListener('sceneChanged', reset);
   global.removeEventListener('treeModified', resetCamers);
-  global.removeEventListener('enterSculptor', resetCamers);
-  global.removeEventListener('leaveSculptor', resetCamers);
+  global.removeEventListener('enterGeoEditor', resetCamers);
+  global.removeEventListener('leaveGeoEditor', resetCamers);
   global.removeEventListener('objectModified', handleSceneNameChanged);
   global.removeEventListener('objectChanged', dectectObjectSelected);
   global.removeKeyDownListener('e', switchViewMode);

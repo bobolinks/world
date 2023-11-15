@@ -8,7 +8,7 @@ import { ObjectLoader } from 'u3js/src/loader';
 import { PhysicalScene } from 'u3js/src/extends/three/scene';
 import { addThreeClass, createObject, emptyObject } from 'u3js/src/extends/three/utils';
 import { Graph } from 'u3js/src/extends/graph/graph';
-import { SpawnsScene } from './spawns';
+import { SpawnsScene, OperationScene, BuiltinSceneOperator } from './containers';
 import { BuiltinSceneSpawns, WorldSettings, } from 'u3js/src';
 import { ScriptNode } from 'u3js/src/extends/nodes/script';
 import { ScriptBlockNode } from 'u3js/src/extends/nodes/block';
@@ -17,8 +17,6 @@ import type { pluginInstall } from 'u3js/src/types/plugin';
 import { addConstructor, addNodeClass } from 'u3js/src/extends/helper/clslib';
 import { addEffectClass } from 'u3js/src/extends/three/effect';
 import { logger } from 'u3js/src/extends/helper/logger';
-
-export const BuiltinSceneSculptor = '[Sculptor]';
 
 // disable script in editor mode
 ScriptNode.prototype.exec = function () { } as any;
@@ -161,10 +159,8 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       this.scenes.push(new SpawnsScene);
     }
     // build default sculptor scene
-    if (!this.scenes.find(e => e.name === BuiltinSceneSculptor)) {
-      const sculptor = new Scene;
-      sculptor.name = BuiltinSceneSculptor;
-      this.scenes.push(sculptor);
+    if (!this.scenes.find(e => e.name === BuiltinSceneOperator)) {
+      this.scenes.push(new OperationScene);
     }
     this.scene = (this.scenes.find(e => e.name === json.project.scene) || this.scenes[0]) as PhysicalScene;
 
@@ -202,7 +198,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     output.project = {
       revision: this.revision,
       world: this.world,
-      scene: [BuiltinSceneSpawns, BuiltinSceneSculptor].includes(this.scene.name) ? '' : this.scene.name,
+      scene: /^\[/.test(this.scene.name) ? '' : this.scene.name,
       plugins: [...this.plugins],
     };
 
@@ -243,7 +239,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       }
     });
 
-    if (![BuiltinSceneSpawns, BuiltinSceneSculptor].includes(scene.name) && !this.cameras.length) {
+    if ((scene instanceof PhysicalScene) && !this.cameras.length) {
       const camera = defaultCamera();
       this.cameras.length = 0;
       this.cameras.push(camera);
@@ -254,8 +250,17 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
       this.dispatchEvent({ type: 'sceneChanged', soure: this, scene: this.scene });
     }
   }
+  ensureScene(name: string) {
+    let scene = this.scenes.find(e => e.name === name);
+    if (!scene) {
+      scene = new Scene();
+      scene.name = name;
+      this.scenes.push(scene);
+    }
+    return scene;
+  }
   removeScene(scene: Scene): boolean {
-    if ([BuiltinSceneSpawns, BuiltinSceneSculptor].includes(scene.name)) {
+    if (/^\[/.test(scene.name)) {
       return false;
     }
     if (this.scenes.length === 1) {

@@ -33,6 +33,13 @@ declare type NodeProto<VT extends PinValueType = PinValueType> = NodePinsPair<VT
   name: string;
   clsName: string;
 }
+declare type TypeInfo = {
+  type: NodeTypeName;
+  values?: Array<string | number> | Record<string, string | number>;
+  limits?: { min?: number; max?: number; step?: number };
+  descriptor?: string;
+}
+declare type TypeSet = Record<string, TypeInfo>;
 
 //-------------------------------
 // Serializer

@@ -87,13 +87,13 @@ function change(data: TreeNodeData) {
   }
   const object: Object3D = global.project.scene.getObjectById(data.id) as any;
   global.world.selectObject(object);
-  if (store.state.editorType === 'Graph') {
+  if (store.state.editorType === 'World' && store.state.worldViewMode === 'graph') {
     global.editor.setObject(object);
   }
 }
 
 async function onDrop(dataNode: TreeNodeData, event: DragEvent) {
-  if (store.state.editorType === 'Sculptor') {
+  if (store.state.editorType === 'Geometry') {
     return;
   }
   const data = parseDragParams(event);
@@ -172,7 +172,7 @@ function click(data: TreeNodeData, node: TreeNode, e: MouseEvent) {
   const diff = e.timeStamp - clickEventSave.timeStamp;
   if (clickEventSave.offsetX === e.offsetX && clickEventSave.offsetY === e.offsetY && diff <= 300) {
     // double click
-    store.state.editorType = 'Graph';
+    store.state.worldViewMode = 'graph';
     if (global.world.selected) {
       global.editor.setObject(global.world.selected);
     }
@@ -268,8 +268,8 @@ onMounted(() => {
   global.addEventListener('sceneChanged', reset);
   global.addEventListener('objectChanged', reset);
   global.addEventListener('treeModified', reset);
-  global.addEventListener('enterSculptor', reset);
-  global.addEventListener('leaveSculptor', reset);
+  global.addEventListener('enterGeoEditor', reset);
+  global.addEventListener('leaveGeoEditor', reset);
 });
 
 onUnmounted(() => {
@@ -277,8 +277,8 @@ onUnmounted(() => {
   global.removeEventListener('sceneChanged', reset);
   global.removeEventListener('objectChanged', reset);
   global.removeEventListener('treeModified', reset);
-  global.removeEventListener('enterSculptor', reset);
-  global.removeEventListener('leaveSculptor', reset);
+  global.removeEventListener('enterGeoEditor', reset);
+  global.removeEventListener('leaveGeoEditor', reset);
 });
 </script>
 <style scoped>

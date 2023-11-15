@@ -1,5 +1,5 @@
 <template>
-  <Menubar :disabled="!isEnabled" title="Geometry" :menus="menus" @select="onSelect" />
+  <Menubar :disabled="!isEnabled" title="Geometry" icon="icon-web" :menus="menus" @select="onSelect" />
 </template>
 <script setup lang="ts">
 import { Mesh, Object3D, Vector3, Euler, Matrix4, BufferGeometry } from 'three';
@@ -8,16 +8,15 @@ import Menubar from '../elements/menubar.vue';
 import { global } from '../../global';
 import { Entity } from 'u3js/src/extends/three/entity';
 import store from '../../store';
-import { BuiltinSceneSculptor } from '../../core/project';
 
-type GeoOp = 'position' | 'rotation' | 'scale' | 'editor';
+type GeoOp = 'position' | 'rotation' | 'scale' | 'editorVertex';
 
 const isEnabled = ref(false);
 const menus = ref<{ title: string; value: GeoOp }[]>([
   { value: 'position', title: 'Apply Position [Meta + Shift + p]' },
   { value: 'rotation', title: 'Apply Rotation [Meta + Shift + r]' },
   { value: 'scale', title: 'Apply Scale [Meta + Shift + s]' },
-  { value: 'editor', title: 'Geometry Editor [Meta + Shift + g]' },
+  { value: 'editorVertex', title: 'Vertex Editor [Meta + Shift + v]' },
 ]);
 
 function applyUpdate(names: Array<GeoOp>) {
@@ -80,7 +79,8 @@ function onSelect(value: GeoOp) {
   if (['position', 'rotation', 'scale'].includes(value)) {
     return applyUpdate([value]);
   }
-  enterGeoEditor();
+  const name = value.replace(/^editor/, '');
+  enterGeoEditor(name);
 }
 
 const applyPosition = () => {
@@ -107,7 +107,10 @@ const applyScale = () => {
   applyUpdate(['scale']);
 };
 
-const enterGeoEditor = async () => {
+const enterGeoEditor = async (name: string) => {
+  if (store.editorType === 'Geometry') {
+    return;
+  }
   const object = global.world.selected;
   if (!object || !(object instanceof Mesh)) {
     return;
@@ -145,24 +148,24 @@ const enterGeoEditor = async () => {
     }
     global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
   }
-  store.editorType = 'Sculptor';
+  store.editorType = 'Geometry';
   const selectedObject = global.world.selected;
-  const sceneName = global.project.scene.name;
-  global.world.setEditor('Sculptor');
-  global.project.setScene(BuiltinSceneSculptor, true);
+  const sceneNameOld = global.project.scene.name;
+  const sceneName = `[${name}]`;
+  global.project.ensureScene(sceneName);
+  global.project.setScene(sceneName, true);
   global.history.setScene(global.project.scene);
   const geoOld = (object as Mesh<BufferGeometry>).geometry.attributes.position.clone();
-  const promise = global.world.openSculptor(object);
-  global.dispatchEvent({ type: 'enterSculptor', soure: null as any });
+  const promise = global.world.openGeoEditor(global.project.scene, object, 'Vertex');
+  global.dispatchEvent({ type: 'enterGeoEditor', soure: null as any });
   await promise;
   const hasChanged = global.history.canUndo();
   global.history.clear();
-  store.editorType = 'Scene';
-  global.world.setEditor('Scene');
-  global.project.setScene(sceneName);
+  store.editorType = 'World';
+  global.project.setScene(sceneNameOld);
   // global.history.setScene(global.project.scene);
   global.world.selectObject(selectedObject);
-  global.dispatchEvent({ type: 'leaveSculptor', soure: null as any });
+  global.dispatchEvent({ type: 'leaveGeoEditor', soure: null as any });
   if (hasChanged) {
     const geoNew = (object as Mesh<BufferGeometry>).geometry.attributes.position;
     global.history.push({
@@ -187,13 +190,15 @@ function dectectObjectSelected() {
   }
 }
 
+const enterGeoEditorVertex = enterGeoEditor.bind(undefined, 'Vertex');
+
 onMounted(() => {
   dectectObjectSelected();
   global.addEventListener('objectChanged', dectectObjectSelected);
   global.addKeyDownListener('meta+shift+p', applyPosition, 'Geometry Edit.Apply Position');
   global.addKeyDownListener('meta+shift+r', applyRotation, 'Geometry Edit.Apply Rotation');
   global.addKeyDownListener('meta+shift+s', applyScale, 'Geometry Edit.Apply Scale');
-  global.addKeyDownListener('meta+shift+g', enterGeoEditor, 'Geometry Edit.Geometry Editor');
+  global.addKeyDownListener('meta+shift+v', enterGeoEditorVertex, 'Geometry Edit.Geometry Editor');
 });
 
 onUnmounted(() => {
@@ -201,7 +206,7 @@ onUnmounted(() => {
   global.removeKeyDownListener('meta+shift+p', applyPosition);
   global.removeKeyDownListener('meta+shift+r', applyRotation);
   global.removeKeyDownListener('meta+shift+s', applyScale);
-  global.removeKeyDownListener('meta+shift+g', enterGeoEditor);
+  global.removeKeyDownListener('meta+shift+v', enterGeoEditorVertex);
 });
 </script>
 <style scoped></style>

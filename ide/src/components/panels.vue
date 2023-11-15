@@ -1,6 +1,6 @@
 <template>
   <el-tabs class="picker full-height" type="border-card" style="flex: 1 1 auto">
-    <el-tab-pane v-if="store.state.editorType === 'Scene'">
+    <el-tab-pane v-if="store.state.editorType === 'World'">
       <template #label>
         <div class="picker-label">
           <i class="icon-cube" />
@@ -9,7 +9,7 @@
       </template>
       <Units />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType !== 'Graph'">
+    <el-tab-pane v-if="store.state.editorType === 'World'">
       <template #label>
         <div class="picker-label">
           <i class="icon-model3d" />
@@ -18,7 +18,7 @@
       </template>
       <Entities />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Graph'">
+    <el-tab-pane v-if="isGraph">
       <template #label>
         <div class="picker-label">
           <i class="icon-fireworks" />
@@ -27,7 +27,7 @@
       </template>
       <EffectNodes />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Scene'">
+    <el-tab-pane v-if="store.state.editorType === 'World'">
       <template #label>
         <div class="picker-label">
           <i class="icon-fireworks" />
@@ -36,7 +36,7 @@
       </template>
       <Effects />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Scene'">
+    <el-tab-pane v-if="store.state.editorType === 'World'">
       <template #label>
         <div class="picker-label">
           <i class="icon-scene" />
@@ -45,7 +45,7 @@
       </template>
       <Envs />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Graph'">
+    <el-tab-pane v-if="isGraph">
       <template #label>
         <div class="picker-label">
           <i class="icon-brush" />
@@ -54,7 +54,7 @@
       </template>
       <Materials />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Graph'">
+    <el-tab-pane v-if="isGraph">
       <template #label>
         <div class="picker-label">
           <i class="icon-json" />
@@ -63,7 +63,7 @@
       </template>
       <Scripts />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Graph'">
+    <el-tab-pane v-if="isGraph">
       <template #label>
         <div class="picker-label">
           <i class="icon-model3d" />
@@ -72,7 +72,7 @@
       </template>
       <Models />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Graph'">
+    <el-tab-pane v-if="isGraph">
       <template #label>
         <div class="picker-label">
           <i class="icon-font" />
@@ -81,7 +81,7 @@
       </template>
       <Fonts />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Graph'">
+    <el-tab-pane v-if="isGraph">
       <template #label>
         <div class="picker-label">
           <i class="icon-image" />
@@ -90,7 +90,7 @@
       </template>
       <Images />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Graph'">
+    <el-tab-pane v-if="isGraph">
       <template #label>
         <div class="picker-label">
           <i class="icon-audio" />
@@ -98,6 +98,15 @@
         </div>
       </template>
       <Sounds />
+    </el-tab-pane>
+    <el-tab-pane v-if="store.state.editorType === 'Geometry'">
+      <template #label>
+        <div class="picker-label">
+          <i class="icon-clear" />
+          <label class="fullname">Modifiers</label>
+        </div>
+      </template>
+      <Modifiers />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -115,12 +124,17 @@ import EffectNodes from './panels/effectNodes.vue';
 import Effects from './panels/effects.vue';
 import Models from './panels/models.vue';
 import Entities from './panels/entities.vue';
+// import Brushes from './panels/brushes.vue';
+import Modifiers from './panels/modifiers.vue';
 // import Shapes from './panels/shapes.vue';
 import apis from '../apis';
-import { onMounted } from 'vue';
+import { computed, onMounted } from 'vue';
+
+const isGraph = computed(() => {
+  return store.state.editorType === 'World' && store.state.worldViewMode === 'graph';
+});
 
 async function onDrop(e: DragEvent) {
-  debugger;
   if (!e.dataTransfer || !e.dataTransfer.files || e.dataTransfer.files.length === 0) {
     return;
   }

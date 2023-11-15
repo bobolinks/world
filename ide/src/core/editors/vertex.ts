@@ -1,23 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  AmbientLight,
-  BufferGeometry, Color, DirectionalLight, DoubleSide, EventDispatcher, Float32BufferAttribute, GridHelper,
-  Group, Line, Line3, LineBasicMaterial, MOUSE, MathUtils, Matrix4, Mesh, MeshBasicMaterial, MeshStandardMaterial,
-  Object3D,
-  PerspectiveCamera, Ray, Scene, ShadowMaterial, TOUCH, Uint8BufferAttribute, Vector2, Vector3, Vector4, WebGLRenderer
+  BufferGeometry, DoubleSide, EventDispatcher, Float32BufferAttribute,
+  Line, Line3, LineBasicMaterial, MathUtils, Matrix4, Mesh, MeshBasicMaterial,
+  Ray, Uint16BufferAttribute, Vector2, Vector3, Vector4, WebGLRenderer
 } from "three";
-import { CONTAINED, INTERSECTED, MeshBVH, MeshBVHVisualizer, NOT_INTERSECTED } from "three-mesh-bvh";
+import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import { CONTAINED, INTERSECTED, NOT_INTERSECTED } from "three-mesh-bvh";
 import type { HistoryManager } from "u3js/src/types/types";
 import { SceneEditorEventMap } from "./event";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { TransformControls } from "three/examples/jsm/controls/TransformControls";
-import { Evaluator, Brush } from "three-bvh-csg";
-
-// declare module 'three' {
-//   interface BufferGeometry {
-//     boundsTree: MeshBVH;
-//   }
-// }
+import { GeometryEditor } from "./geometry";
 
 const tempVec0 = new Vector2();
 const tempVec1 = new Vector2();
@@ -35,33 +26,10 @@ const boxLines = new Array(12).fill(null).map(() => new Line3());
 const lassoSegments: any[] = [];
 const perBoundsSegments: any[] = [];
 
-
-export class Sculptor extends Scene {
-  private _object?: Mesh;
-  private _actived = false;
-  private _wireframe = true;
-  private _target?: Object3D;
-
-  public readonly camera: PerspectiveCamera;
-
-  public currentScene?: Scene;
+export class VertexEditor extends GeometryEditor {
+  public highlightMesh: Mesh<BufferGeometry, MeshBasicMaterial>;
 
   private selectionShape: Line;
-  private mesh: Mesh;
-  private wireframeMaterial = new MeshBasicMaterial({ wireframe: true });
-  private highlightMesh: Mesh<BufferGeometry, MeshBasicMaterial>;
-  private highlightWireframeMesh: Mesh<BufferGeometry, MeshBasicMaterial>;
-  private group: Group;
-  private helper: MeshBVHVisualizer;
-  private orbit: OrbitControls;
-  private controls: TransformControls;
-  private transforming = false;
-  private beforeTransformedObject?: Object3D;
-  private beforeTransformed = new Object3D();
-
-  private fnPointerDown: any;
-  private fnPointerUp: any;
-  private fnPointerMove: any;
 
   public toolMode: 'box' | 'lasso' = 'lasso';
   private selectionMode: 'centroid' | 'centroid-visible' | 'intersection' = 'intersection';
@@ -72,12 +40,6 @@ export class Sculptor extends Scene {
   private selectionShapeNeedsUpdate = false;
   private selectionNeedsUpdate = false;
   private selectionPoints: Array<number> = [];
-  private prevPoint = new Vector2();
-  private startPoint = new Vector2();
-  private dragging = false;
-
-  // geometry operation
-  private evaluator = new Evaluator();
 
   constructor(
     public readonly renderer: WebGLRenderer,
@@ -85,24 +47,7 @@ export class Sculptor extends Scene {
     public readonly history: HistoryManager,
     public readonly dispatcher: EventDispatcher<SceneEditorEventMap>
   ) {
-    super();
-
-    this.background = new Color(0x263238);
-
-    // camera
-    this.camera = new PerspectiveCamera(50, 1, 0.0001, 3000);
-    this.camera.name = 'Perspective';
-    this.camera.position.set(0, 0, 12);
-    this.camera.lookAt(0, 0, 0);
-
-    this.add(this.camera);
-
-    const light = new DirectionalLight(0xffffff, 1);
-    light.castShadow = true;
-    light.shadow.mapSize.set(2048, 2048);
-    light.position.set(10, 10, 10);
-    this.add(light);
-    this.add(new AmbientLight(0xb0bec5, 0.8));
+    super(renderer, size, history, dispatcher);
 
     // selection shape
     const selectionShape = new Line<BufferGeometry, LineBasicMaterial>();
@@ -115,21 +60,9 @@ export class Sculptor extends Scene {
     this.selectionShape = selectionShape;
     this.camera.add(selectionShape);
 
-    // group for rotation
-    this.group = new Group();
-    this.add(this.group);
-
-    const mesh = new Brush(undefined, this.wireframeMaterial);
-    this.mesh = mesh;
-    this.group.add(this.mesh);
-
-    this.helper = new MeshBVHVisualizer(mesh, 10);
-    this.helper.visible = false;
-    this.group.add(this.helper);
-
     // meshes for selection highlights
     const highlightMesh = new Mesh<BufferGeometry, MeshBasicMaterial>();
-    highlightMesh.geometry = mesh.geometry.clone();
+    highlightMesh.geometry = this.mesh.geometry.clone();
     highlightMesh.geometry.drawRange.count = 0;
     highlightMesh.material = new MeshBasicMaterial({
       opacity: 0.05,
@@ -140,165 +73,13 @@ export class Sculptor extends Scene {
     highlightMesh.renderOrder = 1;
     this.highlightMesh = highlightMesh;
     this.group.add(highlightMesh);
-
-    const highlightWireframeMesh = new Mesh<BufferGeometry, MeshBasicMaterial>();
-    highlightWireframeMesh.geometry = highlightMesh.geometry;
-    highlightWireframeMesh.material = new MeshBasicMaterial({
-      opacity: 0.25,
-      transparent: true,
-      wireframe: true,
-      depthWrite: false,
-    });
-    highlightWireframeMesh.material.color.copy(highlightMesh.material.color);
-    highlightWireframeMesh.renderOrder = 2;
-    this.highlightWireframeMesh = highlightWireframeMesh;
-    this.group.add(highlightWireframeMesh);
-
-    // add floor
-    const gridHelper = new GridHelper(10, 10, 0xffffff, 0xffffff);
-    gridHelper.material.opacity = 0.2;
-    gridHelper.material.transparent = true;
-    // gridHelper.position.y = - 2.75;
-    this.add(gridHelper);
-
-    const shadowPlane = new Mesh(
-      new BufferGeometry(),
-      new ShadowMaterial({ color: 0, opacity: 0.8, depthWrite: false })
-    );
-    // shadowPlane.position.y = - 2.74;
-    shadowPlane.rotation.x = - Math.PI / 2;
-    shadowPlane.scale.setScalar(20);
-    shadowPlane.renderOrder = 2;
-    shadowPlane.receiveShadow = true;
-    this.add(shadowPlane);
-
-    // geometry operations
-    this.evaluator.attributes = ['position', 'normal'];
-
-    // controls
-    const orbit = new OrbitControls(this.camera, renderer.domElement);
-    orbit.minDistance = 0.1;
-    orbit.maxDistance = 100;
-    orbit.touches.ONE = TOUCH.PAN;
-    orbit.mouseButtons.LEFT = MOUSE.PAN;
-    orbit.touches.TWO = TOUCH.ROTATE;
-    orbit.mouseButtons.RIGHT = MOUSE.ROTATE;
-    orbit.enablePan = false;
-    this.orbit = orbit;
-
-    const control = new TransformControls(this.camera, this.renderer.domElement);
-    control.addEventListener('dragging-changed', (event) => {
-      orbit.enabled = !event.value;
-      this.transforming = !orbit.enabled;
-    });
-    control.traverse(e => e.castShadow = false);
-    this.controls = control;
-    this.add(this.controls);
-
-    this.fnPointerDown = (e: PointerEvent) => {
-      this.onPointerDown(e);
-    };
-    this.fnPointerUp = (e: PointerEvent) => {
-      this.onPointerUp(e);
-    };
-    this.fnPointerMove = (e: PointerEvent) => {
-      this.onPointerMove(e);
-    };
-    this.renderer.domElement.addEventListener('pointerdown', this.fnPointerDown);
-    this.renderer.domElement.addEventListener('pointerup', this.fnPointerUp);
-    this.renderer.domElement.addEventListener('pointermove', this.fnPointerMove);
   }
 
   set object(m: Mesh) {
-    this._object = m;
-
-    this.mesh.geometry.dispose();
-    this.mesh.geometry = m.geometry;
-
-    this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
-    const count = this.mesh.geometry.index?.count || 0;
-    this.mesh.geometry.setAttribute('color', new Uint8BufferAttribute(
-      new Array(count * 3).fill(255), 3, true
-    ));
+    super.object = m;
 
     this.highlightMesh.geometry.dispose();
     this.highlightMesh.geometry = this.mesh.geometry.clone();
-    this.highlightWireframeMesh.geometry = this.highlightMesh.geometry;
-
-    this.helper.update();
-  }
-
-  get actived() {
-    return this._actived;
-  }
-  set actived(val: boolean) {
-    this._actived = val;
-    this.orbit.enabled = val;
-  }
-
-  get wireframe() {
-    return this._wireframe;
-  }
-  set wireframe(val: boolean) {
-    if (this._wireframe === val) {
-      return;
-    }
-    this._wireframe = val;
-    if (this._object) {
-      this.mesh.material = val ? this.wireframeMaterial : this._object.material;
-    }
-    this.updateScene();
-  }
-
-  get showHelper() {
-    return this.helper.visible;
-  }
-  set showHelper(val: boolean) {
-    this.helper.visible = val;
-  }
-
-  setScene(scene: Scene) {
-    let target = scene.getObjectByName('[target]');
-    if (!target) {
-      target = new Object3D();
-      target.name = '[target]';
-      scene.add(target);
-    }
-    this._target = target;
-    this.currentScene = scene;
-    this.add(scene);
-    this.updateScene();
-  }
-
-  private updateScene() {
-    if (!this.currentScene) {
-      return;
-    }
-    for (const child of this.currentScene.children) {
-      if (!(child instanceof Mesh)) {
-        continue;
-      }
-      child.material.wireframe = this._wireframe;
-    }
-  }
-
-  selectObject(object?: THREE.Object3D, force?: boolean) {
-    if (!force && object === this.controls.object) {
-      return;
-    }
-    if (object && object instanceof Scene) {
-      return;
-    }
-    if (this.controls.object) {
-      this.controls.detach();
-    }
-    if (object) {
-      this.controls.attach(object);
-    }
-    this.dispatcher.dispatchEvent({ type: 'objectChanged', soure: this, object });
-  }
-  get selected(): THREE.Object3D | undefined {
-    return this.controls.object;
   }
 
   render(delta: number, now: number) {
@@ -348,77 +129,52 @@ export class Sculptor extends Scene {
     }
   }
 
-  dispose(): void {
-    this.renderer.domElement.removeEventListener('pointerdown', this.fnPointerDown);
-    this.renderer.domElement.removeEventListener('pointerup', this.fnPointerUp);
-    this.renderer.domElement.removeEventListener('pointermove', this.fnPointerMove);
-  }
-
-  private onPointerDown(e: PointerEvent) {
-    if (!this._actived) {
+  protected onTargetMove(delta: Vector3) {
+    if (!this.controls.object) {
       return;
-    } else if (this.transforming) {
-      if (this.controls.object) {
-        this.beforeTransformedObject = this.controls.object;
-        this.beforeTransformed.position.copy(this.controls.object.position);
-      }
-    } else {
-      const { left, top, width, height } = this.renderer.domElement.getBoundingClientRect();
-
-      this.prevPoint.x = e.clientX;
-      this.prevPoint.y = e.clientY;
-      this.startPoint.x = ((e.clientX - left) / width) * 2 - 1;
-      this.startPoint.y = - (((e.clientY - top) / height) * 2 - 1);
-      this.selectionPoints.length = 0;
-      this.dragging = true;
     }
+    const invert = delta.clone().multiplyScalar(-1);
+    const index: Uint16BufferAttribute = this.highlightMesh.geometry.index!.clone();
+    const count = this.highlightMesh.geometry.drawRange.count;
+    // update target's geometry
+    this.moveSelectedPoints(delta);
+    this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.controls.object] });
+    this.history.push({
+      tip: 'Object changed!',
+      undo: () => {
+        this.highlightMesh.geometry.index = index;
+        this.highlightMesh.geometry.drawRange.count = count;
+        this.moveSelectedPoints(invert);
+      },
+      redo: () => {
+        this.highlightMesh.geometry.index = index;
+        this.highlightMesh.geometry.drawRange.count = count;
+        this.moveSelectedPoints(delta);
+      },
+    });
   }
-  private onPointerUp(e: PointerEvent) {
-    if (!this._actived) {
-      return;
-    } else if (this.beforeTransformedObject) {
-      if (this.controls.object === this.beforeTransformedObject) {
-        const positionOld = this.beforeTransformed.position.clone();
-        const position = this.controls.object.position.clone();
-        const isEquals = positionOld.equals(position);
-        if (!isEquals) {
-          const delta = position.sub(positionOld);
-          const invert = delta.clone().multiplyScalar(-1);
-          // this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.controls.object] });
-          if (this.beforeTransformedObject === this._target) {
-            const index: Float32BufferAttribute = this.highlightMesh.geometry.index!.clone();
-            const count = this.highlightMesh.geometry.drawRange.count;
-            // update target's geometry
-            this.moveSelectedPoints(delta);
-            this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.controls.object] });
-            this.history.push({
-              tip: 'Object changed!',
-              undo: () => {
-                this.highlightMesh.geometry.index = index;
-                this.highlightMesh.geometry.drawRange.count = count;
-                this.moveSelectedPoints(invert);
-              },
-              redo: () => {
-                this.highlightMesh.geometry.index = index;
-                this.highlightMesh.geometry.drawRange.count = count;
-                this.moveSelectedPoints(delta);
-              },
-            });
-          } else {
-            // do nothings
-          }
-        }
-      }
-      this.beforeTransformedObject = undefined;
-    } else {
+
+  protected onPointerDown(e: PointerEvent) {
+    if (!super.onPointerDown(e)) {
+      return false;
+    } else if (this.transforming) {
+      return true;
+    }
+    this.selectionPoints.length = 0;
+    return true;
+  }
+  protected onPointerUp(e: PointerEvent) {
+    if (!super.onPointerUp(e)) {
+      return false;
+    } else if (!this.dragging && this.selectionShape.visible) {
       this.selectionShape.visible = false;
-      this.dragging = false;
       if (this.selectionPoints.length) {
         this.selectionNeedsUpdate = true;
       }
     }
+    return true;
   }
-  private onPointerMove(e: PointerEvent) {
+  protected onPointerMove(e: PointerEvent) {
     if (!this._actived || this.transforming) {
       return;
     }
@@ -516,10 +272,10 @@ export class Sculptor extends Scene {
     }
   }
 
-  moveSelectedPoints(delta: Vector3) {
+  private moveSelectedPoints(delta: Vector3) {
     const meshPosition = this.mesh.geometry.attributes.position;
     const selPosition = this.highlightMesh.geometry.attributes.position;
-    const index: Float32BufferAttribute = this.highlightMesh.geometry.index as any;
+    const index: Uint16BufferAttribute = this.highlightMesh.geometry.index as any;
     const set = new Set();
     const dc = this.highlightMesh.geometry.drawRange.count;
     const count = dc === Infinity ? index.count : dc;
@@ -538,6 +294,127 @@ export class Sculptor extends Scene {
     }
     meshPosition.needsUpdate = true;
     selPosition.needsUpdate = true;
+  }
+
+  removeSelectedPoints(ignoreEvent?: boolean) {
+    const indexSelected: Uint16BufferAttribute = this.highlightMesh.geometry.index as any;
+    const dc = this.highlightMesh.geometry.drawRange.count;
+    const count = dc === Infinity ? indexSelected.count : dc;
+
+    if (!count) {
+      return;
+    }
+
+    const positionsSelected = new Set();
+
+    for (let i = 0; i < count; i++) {
+      const idx = indexSelected.getX(i);
+      positionsSelected.add(idx);
+    }
+
+    const index: Uint16BufferAttribute = this.mesh.geometry.index as any;
+    const idxCount = index.count;
+    const newIdx: number[] = [];
+    for (let i = 0; i < idxCount; i += 3) {
+      const idx = index.getX(i);
+      const idx1 = index.getX(i + 1);
+      const idx2 = index.getX(i + 2);
+      if (positionsSelected.has(idx) && positionsSelected.has(idx1) && positionsSelected.has(idx2)) {
+        continue;
+      }
+      newIdx.push(idx, idx1, idx2);
+    }
+
+    const oldIndex = this.mesh.geometry.index;
+    const newIndex = new Uint16BufferAttribute(newIdx, 1, false);
+    const ver = oldIndex!.version + 1;
+    this.mesh.geometry.index = newIndex;
+    this.mesh.geometry.index.needsUpdate = true;
+    this.mesh.geometry.index.version = ver;
+
+    if (this.selectionPoints.length) {
+      this.selectionShape.visible = false;
+      this.selectionNeedsUpdate = true;
+      this.selectionPoints.length = 0;
+    }
+
+    const drawRangeCount = this.highlightMesh.geometry.drawRange.count;
+    this.highlightMesh.geometry.drawRange.count = 0;
+
+    if (!ignoreEvent) {
+      this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
+      this.history.push({
+        tip: 'Points removed!',
+        undo: () => {
+          oldIndex!.needsUpdate = true;
+          oldIndex!.version++;
+          this.mesh.geometry.index = oldIndex;
+          this.highlightMesh.geometry.drawRange.count = drawRangeCount;
+          this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
+        },
+        redo: () => {
+          newIndex!.needsUpdate = true;
+          newIndex!.version++;
+          this.mesh.geometry.index = newIndex;
+          this.highlightMesh.geometry.drawRange.count = 0;
+          this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
+        },
+      });
+    }
+  }
+
+  replaceSelectedPoints(geometry: BufferGeometry) {
+    const oldIndex: Uint16BufferAttribute = this.mesh.geometry.index as any;
+    const oldGeo = this.mesh.geometry;
+    const drawRangeCount = this.highlightMesh.geometry.drawRange.count;
+
+    this.removeSelectedPoints(true);
+
+    if (!geometry.index) {
+      geometry = mergeVertices(geometry);
+    }
+    if (this.mesh.geometry.attributes.color && !(this.mesh.geometry.attributes.color instanceof Float32BufferAttribute)) {
+      const clr = this.mesh.geometry.attributes.color;
+      const fmtColor = new Float32BufferAttribute(clr.count * clr.itemSize, clr.itemSize);
+      for (let i = 0; i < clr.count; i++) {
+        fmtColor.setXYZ(i, clr.getX(i), clr.getY(i), clr.getZ(i));
+      }
+      this.mesh.geometry.attributes.color = fmtColor;
+    }
+    if (geometry.attributes.color && !(geometry.attributes.color instanceof Float32BufferAttribute)) {
+      const clr = geometry.attributes.color;
+      const fmtColor = new Float32BufferAttribute(clr.count * clr.itemSize, clr.itemSize);
+      for (let i = 0; i < clr.count; i++) {
+        fmtColor.setXYZ(i, clr.getX(i), clr.getY(i), clr.getZ(i));
+      }
+      geometry.attributes.color = fmtColor;
+    }
+    const newGeo = mergeGeometries([this.mesh.geometry, geometry], true);
+    this.mesh.geometry.dispose();
+    this.mesh.geometry = newGeo;
+
+    const newIndex: Uint16BufferAttribute = this.mesh.geometry.index as any;
+
+    const undo = () => {
+      this.mesh.geometry.dispose();
+      this.mesh.geometry = oldGeo;
+      this.mesh.geometry.index = oldIndex;
+      this.highlightMesh.geometry.drawRange.count = drawRangeCount;
+      this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
+    };
+    const redo = () => {
+      this.mesh.geometry.dispose();
+      this.mesh.geometry = newGeo;
+      this.mesh.geometry.index = newIndex;
+      this.highlightMesh.geometry.drawRange.count = 0;
+      this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
+    };
+    this.dispatcher.dispatchEvent({ type: 'objectModified', soure: this, objects: [this.mesh] });
+    this.history.push({
+      tip: 'Geo merged!',
+      undo,
+      redo,
+    });
   }
 
   updateSelection() {

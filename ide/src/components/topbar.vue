@@ -183,7 +183,7 @@ async function enterVr() {
 }
 
 function escape() {
-  global.world.closeSculptor();
+  global.world.closeGeoEditor();
   if (global.world.isRunningVR()) {
     global.world.stopVR();
   } else {
@@ -196,8 +196,8 @@ onMounted(() => {
   global.addEventListener('projectDirty', onProjectDirty);
   global.addEventListener('sceneChanged', onSceneChanged);
   global.addEventListener('historyChanged', resetHistoryInfo);
-  global.addEventListener('enterSculptor', resetHistoryInfo);
-  global.addEventListener('leaveSculptor', resetHistoryInfo);
+  global.addEventListener('enterGeoEditor', resetHistoryInfo);
+  global.addEventListener('leaveGeoEditor', resetHistoryInfo);
   global.addKeyDownListener('meta+s', save, 'Global.Save');
   global.addKeyDownListener('meta+z', undo, 'Global.Undo');
   global.addKeyDownListener('meta+shift+z', redo, 'Global.Redo');
@@ -210,8 +210,8 @@ onUnmounted(() => {
   global.removeEventListener('projectDirty', onProjectDirty);
   global.removeEventListener('sceneChanged', onSceneChanged);
   global.removeEventListener('historyChanged', resetHistoryInfo);
-  global.removeEventListener('enterSculptor', resetHistoryInfo);
-  global.removeEventListener('leaveSculptor', resetHistoryInfo);
+  global.removeEventListener('enterGeoEditor', resetHistoryInfo);
+  global.removeEventListener('leaveGeoEditor', resetHistoryInfo);
   global.removeKeyDownListener('meta+s', save);
   global.removeKeyDownListener('meta+z', undo);
   global.removeKeyDownListener('meta+shift+z', redo);

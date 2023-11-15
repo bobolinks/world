@@ -1,47 +1,51 @@
 <template>
-  <el-popover :disabled="!isEnabled" title="Editor Options" trigger="click">
+  <el-popover trigger="click" width="320px" placement="bottom-end">
     <template #reference>
-      <div>
-        <i class="icon-vec2" style="margin-left: 0.5em; margin-right: 0.5em; cursor: default" />
-        <label>Editor Options</label>
+      <div class="panel-menu-bar-item">
+        <i class="icon-slider" />
+        <label class="title">Editor Options</label>
       </div>
     </template>
-    <div>
-      <label>asd</label>
+    <div class="props-list">
+      <div class="prop-item">
+        <label class="prop-name">wireframe</label>
+        <el-checkbox v-model="data.wireframe" size="small" class="prop-value" />
+      </div>
+      <div class="prop-item">
+        <label class="prop-name">helper</label>
+        <el-checkbox v-model="data.showHelper" size="small" class="prop-value" />
+      </div>
     </div>
   </el-popover>
 </template>
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
-// import { global } from '../../global';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { global } from '../../global';
 
-const isEnabled = ref(false);
+const data = ref({
+  wireframe: false,
+  showHelper: false,
+});
 
-onMounted(() => {});
+watch(
+  () => data.value.wireframe,
+  () => {
+    Object.values(global.world.geometryEditors).forEach((e) => (e.wireframe = data.value.wireframe));
+  },
+);
+
+watch(
+  () => data.value.showHelper,
+  () => {
+    Object.values(global.world.geometryEditors).forEach((e) => (e.showHelper = data.value.showHelper));
+  },
+);
+
+onMounted(() => {
+  data.value.wireframe = global.world.geometryEditors.Vertex.wireframe;
+  data.value.showHelper = global.world.geometryEditors.Vertex.showHelper;
+});
 
 onUnmounted(() => {});
 </script>
-<style scoped>
-.popver-menu[disabled='true'] {
-  pointer-events: none;
-}
-
-.popver-menu .menu-title {
-  height: 2rem;
-  line-height: 2rem;
-  font-size: 1rem;
-  text-align: center;
-  vertical-align: middle;
-  background-color: #777;
-  color: #eee;
-  overflow: hidden;
-  border-radius: 0.5em;
-  margin: 0px 1em;
-  padding: 0px 0.8em;
-}
-
-.popver-menu[disabled='true'] .menu-title {
-  background-color: #bbb;
-  color: #555;
-}
-</style>
+<style scoped></style>

@@ -1,12 +1,12 @@
 <template>
   <div ref="root" class="wrap" style="position: relative; height: 100%; height: 100%">
     <canvas id="canvas" class="canvas" @drop="onDrop" />
-    <div v-show="store.state.editorType === 'Graph'" ref="graph" class="graph" />
+    <div v-show="isGraph" ref="graph" class="graph" />
     <Selector class="mainLisSelector" :values="store.state.audioListeners" max-width="420px" title="Please select audio listener" />
   </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted } from 'vue';
+import { ref, onMounted, watch, onUnmounted, computed } from 'vue';
 import { Scene } from 'three';
 import Selector, { showSelector } from './elements/selector.vue';
 import { global } from '../global';
@@ -30,6 +30,10 @@ defineProps({
 
 const root = ref<HTMLDivElement>();
 const graph = ref<HTMLDivElement>();
+
+const isGraph = computed(() => {
+  return store.state.editorType === 'World' && store.state.worldViewMode === 'graph';
+});
 
 function resizeCanvas() {
   const canvas = document.getElementById('canvas');

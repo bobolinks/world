@@ -6,6 +6,76 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "397415",
+      "name": "apply",
+      "font_class": "apply",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "515259",
+      "name": "frame",
+      "font_class": "frame",
+      "unicode": "e67f",
+      "unicode_decimal": 59007
+    },
+    {
+      "icon_id": "586721",
+      "name": "layout-align-left",
+      "font_class": "layout-align-left",
+      "unicode": "e68b",
+      "unicode_decimal": 59019
+    },
+    {
+      "icon_id": "609757",
+      "name": "字体",
+      "font_class": "font-small",
+      "unicode": "e76a",
+      "unicode_decimal": 59242
+    },
+    {
+      "icon_id": "13259999",
+      "name": "list",
+      "font_class": "list",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "1160145",
+      "name": "form",
+      "font_class": "form",
+      "unicode": "e64f",
+      "unicode_decimal": 58959
+    },
+    {
+      "icon_id": "1899014",
+      "name": "sliders",
+      "font_class": "slider",
+      "unicode": "e715",
+      "unicode_decimal": 59157
+    },
+    {
+      "icon_id": "7215722",
+      "name": "selector",
+      "font_class": "selector",
+      "unicode": "e6ea",
+      "unicode_decimal": 59114
+    },
+    {
+      "icon_id": "8017574",
+      "name": "timeline",
+      "font_class": "timeline",
+      "unicode": "e6c1",
+      "unicode_decimal": 59073
+    },
+    {
+      "icon_id": "8017634",
+      "name": "steps",
+      "font_class": "steps",
+      "unicode": "e6d0",
+      "unicode_decimal": 59088
+    },
+    {
       "icon_id": "11348932",
       "name": "clear",
       "font_class": "clear",
@@ -700,7 +770,7 @@
     },
     {
       "icon_id": "16516758",
-      "name": "任务流程",
+      "name": "queue",
       "font_class": "queue",
       "unicode": "e6b6",
       "unicode_decimal": 59062
@@ -854,7 +924,7 @@
     },
     {
       "icon_id": "20239353",
-      "name": "arrow down",
+      "name": "arrow-dropup",
       "font_class": "arrow-dropup",
       "unicode": "efd5",
       "unicode_decimal": 61397

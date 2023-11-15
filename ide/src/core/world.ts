@@ -13,20 +13,25 @@ import { logger } from 'u3js/src/extends/helper/logger';
 import { WorldSettings } from 'u3js/src/runtime';
 import { BodyType, Entity } from 'u3js/src/extends/three/entity';
 import { WorldEditor } from './editors/world';
-import { Sculptor } from './editors/sculptor';
+import GeometryEditors from './editors/geometires';
 import { SceneEditorEvent, SceneEditorEventMap } from './editors/event';
+import { VertexEditor } from './editors/vertex';
+import { GeometryEditor } from './editors/geometry';
+
+export type EditorType = 'World' | 'Geometry';
+export type GeoEditorType = keyof typeof GeometryEditors;
 
 const stats = new Stats();
 stats.dom.style.top = 'unset';
 stats.dom.style.bottom = '0';
 document.body.appendChild(stats.dom);
 
-export type WorldEvent = SceneEditorEvent | 'worldStarted' | 'worldSettingsModified' | 'enterSculptor' | 'leaveSculptor';
+export type WorldEvent = SceneEditorEvent | 'worldStarted' | 'worldSettingsModified' | 'enterGeoEditor' | 'leaveGeoEditor';
 export type WorldEventMap = SceneEditorEventMap & {
   worldStarted: { type: WorldEvent; soure: EventDispatcher; world: World };
   worldSettingsModified: { type: WorldEvent; soure: EventDispatcher; settings: Partial<WorldSettings> };
-  enterSculptor: { type: 'enterSculptor'; soure: EventDispatcher; };
-  leaveSculptor: { type: 'leaveSculptor'; soure: EventDispatcher; };
+  enterGeoEditor: { type: 'enterGeoEditor'; soure: EventDispatcher; };
+  leaveGeoEditor: { type: 'leaveGeoEditor'; soure: EventDispatcher; };
 };
 
 const useGPU = false;
@@ -40,9 +45,11 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
   public readonly uuid = THREE.MathUtils.generateUUID();
 
   public readonly worldEditor: WorldEditor;
-  public readonly sculptor: Sculptor;
-  private sculptorResolve: any;
-  private currentEditor: WorldEditor | Sculptor;
+  public readonly geometryEditors: {
+    [k in GeoEditorType]: InstanceType<typeof GeometryEditors[k]>;
+  };
+  private geometryEditorResolve: any;
+  private currentEditor: WorldEditor | GeometryEditor;
 
   protected currentCamera: Camera;
 
@@ -127,12 +134,12 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     this.worldEditor.add(this.cameraPerspVR);
 
     this.currentCamera = this.cameraPersp;
-
-    // sculptor
-    this.sculptor = new Sculptor(this.renderer, this.size, history, this);
-    this.sculptor.actived = false;
-
     this.currentEditor = this.worldEditor;
+
+    // geometry editors
+    this.geometryEditors = {
+      Vertex: new VertexEditor(this.renderer, this.size, history, this),
+    };
 
     // vr
     this.setupVr(this.worldEditor);
@@ -191,8 +198,18 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     }
   }
 
-  setEditor(type: 'Scene' | 'Sculptor') {
-    this.currentEditor = type === 'Scene' ? this.worldEditor : this.sculptor;
+  /**
+   * @param type 
+   * @param geoType valid if type === 'Geometry'
+   */
+  setEditor(type: EditorType, geoType?: GeoEditorType) {
+    const editor = type === 'World' ? this.worldEditor : this.geometryEditors[geoType || 'Vertex'];
+    if (editor === this.currentEditor) {
+      return;
+    }
+    this.currentEditor.actived = false;
+    editor.actived = true;
+    this.currentEditor = editor;
   }
 
   setCamera(camera: Camera) {
@@ -236,23 +253,24 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     return this.worldEditor.setSelectedObjects(ar);
   }
 
-  async openSculptor(mesh: THREE.Mesh) {
-    if (this.sculptorResolve) {
+  async openGeoEditor(scene: Scene, mesh: THREE.Mesh, type: GeoEditorType) {
+    if (this.geometryEditorResolve) {
       return;
     }
-    this.sculptor.object = mesh;
-    this.sculptor.actived = true;
-    this.worldEditor.actived = false;
-    return new Promise((resolve) => this.sculptorResolve = resolve).finally(() => {
-      this.sculptor.actived = false;
+    this.setEditor('Geometry', type);
+    (this.currentEditor as GeometryEditor).setScene(scene);
+    (this.currentEditor as GeometryEditor).object = mesh;
+    return new Promise((resolve) => this.geometryEditorResolve = resolve).finally(() => {
+      this.currentEditor.actived = false;
       this.worldEditor.actived = true;
+      this.currentEditor = this.worldEditor;
     });
   }
 
-  closeSculptor() {
-    if (this.sculptorResolve) {
-      this.sculptorResolve();
-      this.sculptorResolve = undefined;
+  closeGeoEditor() {
+    if (this.geometryEditorResolve) {
+      this.geometryEditorResolve();
+      this.geometryEditorResolve = undefined;
     }
   }
 
@@ -268,8 +286,8 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
       this.renderer.render(this.worldEditor, this.currentCamera);
     } else if (this.vrSession) {
       this.renderer.render(this.worldEditor, this.currentCamera);
-    } else if (this.sculptor.actived) {
-      this.sculptor.render(delta, now);
+    } else if (this.currentEditor instanceof GeometryEditor) {
+      this.currentEditor.render(delta, now);
     } else {
       this.worldEditor.render(delta, now);
       // this.composer.render(delta);
@@ -430,7 +448,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
 
   dispose(): void {
     this.worldEditor.dispose();
-    this.sculptor.dispose();
+    Object.values(this.geometryEditors).forEach(e => e.dispose());
     this.viewHelper.dispose();
     this.clock.stop();
     this.renderer.dispose();

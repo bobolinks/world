@@ -1,5 +1,5 @@
 <template>
-  <Menubar :disabled="!idObjectSelected" title="Object Align" :menus="menus" @select="applyUpdate" />
+  <Menubar :disabled="!idObjectSelected" title="Object Align" :menus="menus" icon="icon-layout-align-left" @select="applyUpdate" />
 </template>
 <script setup lang="ts">
 import { Box3, Vector3 } from 'three';
