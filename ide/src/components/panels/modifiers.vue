@@ -75,6 +75,16 @@ const items = ref<Array<Modifier>>([
       },
     },
   },
+  {
+    name: 'Compress',
+    props: {
+      accuracy: {
+        type: 'Number',
+        value: 2,
+        limits: { min: 0, max: 8 },
+      },
+    },
+  },
 ]);
 
 const modifiers = {
@@ -104,6 +114,22 @@ const modifiers = {
       // weight: props.weight.value,
     };
     const geometry = LoopSubdivision.modify(object.geometry, props.iterations.value, params);
+    global.world.geometryEditors.Vertex.replaceGeometry(geometry);
+  },
+  Compress(props: Record<string, { value: any }>) {
+    const object: Mesh = global.world.geometryEditors.Vertex.mesh;
+    if (!object || !object.isMesh) {
+      return;
+    }
+    const accuracy = props.accuracy.value;
+    const geometry = object.geometry.clone();
+    const position = geometry.attributes.position;
+    for (let i = 0; i < position.count; i++) {
+      const x: any = position.getX(i);
+      const y: any = position.getY(i);
+      const z: any = position.getZ(i);
+      position.setXYZ(i, x.toFixed(accuracy) * 1, y.toFixed(accuracy) * 1, z.toFixed(accuracy) * 1);
+    }
     global.world.geometryEditors.Vertex.replaceGeometry(geometry);
   },
 };

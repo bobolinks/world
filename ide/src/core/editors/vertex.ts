@@ -4,8 +4,8 @@ import {
   Line, Line3, LineBasicMaterial, MathUtils, Matrix4, Mesh, MeshBasicMaterial,
   Ray, Uint16BufferAttribute, Vector2, Vector3, Vector4, WebGLRenderer
 } from "three";
-import { mergeGeometries, mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils';
-import { CONTAINED, INTERSECTED, NOT_INTERSECTED } from "three-mesh-bvh";
+import { mergeVertices } from 'three/examples/jsm/utils/BufferGeometryUtils';
+import { CONTAINED, INTERSECTED, MeshBVH, NOT_INTERSECTED } from "three-mesh-bvh";
 import type { HistoryManager } from "u3js/src/types/types";
 import { SceneEditorEventMap } from "./event";
 import { GeometryEditor } from "./geometry";
@@ -374,6 +374,10 @@ export class VertexEditor extends GeometryEditor {
 
     if (!geometry.index) {
       geometry = mergeVertices(geometry);
+    }
+
+    if (!this.mesh.geometry.boundsTree) {
+      this.mesh.geometry.boundsTree = new MeshBVH(this.mesh.geometry);
     }
 
     const newHighlightGeo = geometry.clone();

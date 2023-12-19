@@ -17,6 +17,7 @@ import GeometryEditors from './editors/geometires';
 import { SceneEditorEvent, SceneEditorEventMap } from './editors/event';
 import { VertexEditor } from './editors/vertex';
 import { GeometryEditor } from './editors/geometry';
+import { BollEditor } from './editors/boll';
 
 export type EditorType = 'World' | 'Geometry';
 export type GeoEditorType = keyof typeof GeometryEditors;
@@ -139,6 +140,7 @@ export class World extends EventDispatcher<WorldEventMap & UserEventMap> {
     // geometry editors
     this.geometryEditors = {
       Vertex: new VertexEditor(this.renderer, this.size, history, this),
+      Boll: new BollEditor(this.renderer, this.size, history, this),
     };
 
     // vr

@@ -9,6 +9,7 @@ const state = {
   isLoading: true,
   isNetBusy: false,
   editorType: 'World' as EditorType,
+  geoEditorType: '',
   worldViewMode: 'world' as 'world' | 'graph',
   isFloating: false,
   projects: [] as Array<string>,

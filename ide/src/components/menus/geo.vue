@@ -8,8 +8,9 @@ import Menubar from '../elements/menubar.vue';
 import { global } from '../../global';
 import { Entity } from 'u3js/src/extends/three/entity';
 import store from '../../store';
+import { GeoEditorType } from '../../core/world';
 
-type GeoOp = 'position' | 'rotation' | 'scale' | 'editorVertex';
+type GeoOp = 'position' | 'rotation' | 'scale' | 'editorVertex' | 'editorBoll';
 
 const isEnabled = ref(false);
 const menus = ref<{ title: string; value: GeoOp }[]>([
@@ -17,6 +18,7 @@ const menus = ref<{ title: string; value: GeoOp }[]>([
   { value: 'rotation', title: 'Apply Rotation [Meta + Shift + r]' },
   { value: 'scale', title: 'Apply Scale [Meta + Shift + s]' },
   { value: 'editorVertex', title: 'Vertex Editor [Meta + Shift + v]' },
+  { value: 'editorBoll', title: 'Geo Editor [Meta + Shift + g]' },
 ]);
 
 function applyUpdate(names: Array<GeoOp>) {
@@ -79,7 +81,7 @@ function onSelect(value: GeoOp) {
   if (['position', 'rotation', 'scale'].includes(value)) {
     return applyUpdate([value]);
   }
-  const name = value.replace(/^editor/, '');
+  const name: GeoEditorType = value.replace(/^editor/, '') as any;
   enterGeoEditor(name);
 }
 
@@ -107,7 +109,7 @@ const applyScale = () => {
   applyUpdate(['scale']);
 };
 
-const enterGeoEditor = async (name: string) => {
+const enterGeoEditor = async (name: GeoEditorType) => {
   if (store.editorType === 'Geometry') {
     return;
   }
@@ -149,6 +151,7 @@ const enterGeoEditor = async (name: string) => {
     global.dispatchEvent({ type: 'objectModified', soure: null as any, objects: [object] });
   }
   store.editorType = 'Geometry';
+  store.geoEditorType = name;
   const selectedObject = global.world.selected;
   const sceneNameOld = global.project.scene.name;
   const sceneName = `[${name}]`;
@@ -156,7 +159,7 @@ const enterGeoEditor = async (name: string) => {
   global.project.setScene(sceneName, true);
   global.history.setScene(global.project.scene);
   const geoOld = (object as Mesh<BufferGeometry>).geometry.attributes.position.clone();
-  const promise = global.world.openGeoEditor(global.project.scene, object, 'Vertex');
+  const promise = global.world.openGeoEditor(global.project.scene, object, name);
   global.dispatchEvent({ type: 'enterGeoEditor', soure: null as any });
   await promise;
   const hasChanged = global.history.canUndo();
@@ -191,6 +194,7 @@ function dectectObjectSelected() {
 }
 
 const enterGeoEditorVertex = enterGeoEditor.bind(undefined, 'Vertex');
+const enterGeoEditorBoll = enterGeoEditor.bind(undefined, 'Boll');
 
 onMounted(() => {
   dectectObjectSelected();
@@ -198,7 +202,8 @@ onMounted(() => {
   global.addKeyDownListener('meta+shift+p', applyPosition, 'Geometry Edit.Apply Position');
   global.addKeyDownListener('meta+shift+r', applyRotation, 'Geometry Edit.Apply Rotation');
   global.addKeyDownListener('meta+shift+s', applyScale, 'Geometry Edit.Apply Scale');
-  global.addKeyDownListener('meta+shift+v', enterGeoEditorVertex, 'Geometry Edit.Geometry Editor');
+  global.addKeyDownListener('meta+shift+v', enterGeoEditorVertex, 'Geometry Edit.Vertex Editor');
+  global.addKeyDownListener('meta+shift+g', enterGeoEditorBoll, 'Geometry Edit.Geometry Editor');
 });
 
 onUnmounted(() => {
@@ -207,6 +212,7 @@ onUnmounted(() => {
   global.removeKeyDownListener('meta+shift+r', applyRotation);
   global.removeKeyDownListener('meta+shift+s', applyScale);
   global.removeKeyDownListener('meta+shift+v', enterGeoEditorVertex);
+  global.removeKeyDownListener('meta+shift+g', enterGeoEditorBoll);
 });
 </script>
 <style scoped></style>

@@ -315,7 +315,7 @@ export class Project extends EventDispatcher<ProjectEventMap & UserEventMap> {
     if ((object as any).isScene) {
       return this.removeScene(object as any);
     }
-    const o = this.scene.getObjectById(object.id);
+    const o = this.scene.getObjectByProperty('uuid', object.uuid);
     if (!o) {
       return false;
     }

@@ -4,6 +4,7 @@ import {
   BufferGeometry, Color, DirectionalLight, EventDispatcher, GridHelper,
   Group, MOUSE, Mesh, MeshBasicMaterial,
   Object3D,
+  Object3DEventMap,
   PerspectiveCamera, Scene, ShadowMaterial, TOUCH, Uint8BufferAttribute, Vector2, Vector3, WebGLRenderer
 } from "three";
 import { MeshBVH, MeshBVHVisualizer } from "three-mesh-bvh";
@@ -179,6 +180,20 @@ export class GeometryEditor extends Scene {
     this._target = target;
     this.currentScene = scene;
     this.add(scene);
+
+    const hook: any = scene;
+    if (!hook.__add) {
+      hook.__add = scene.add;
+      scene.add = (...object: Object3D<Object3DEventMap>[]) => {
+        hook.__add.call(scene, ...object);
+        for (const child of object) {
+          if (child instanceof Mesh) {
+            child.material.wireframe = this._wireframe;
+          }
+        }
+        return scene;
+      }
+    }
     this.updateScene();
   }
 

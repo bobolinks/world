@@ -1,7 +1,7 @@
 import type * as Monaco from 'monaco-editor';
 import { Input } from '../../../libs/flow';
 
-declare const monaco: any;
+declare const monaco: typeof Monaco;
 
 export class CodeElement extends Input {
   protected updateInterval: number;

@@ -21,9 +21,19 @@ addThreeClass('SpawnsScene', {
 });
 
 export class OperationScene extends Scene {
+  private varNames = 'abcdefghijklmnopqrstuvwxyz'.split('').reverse();
+
   constructor() {
     super();
+    (this as any).type = 'OperationScene';
     this.name = BuiltinSceneOperator;
+    this.userData.varNames = this.varNames;
+  }
+
+  deserialize() {
+    if (this.userData.varNames) {
+      this.varNames = this.userData.varNames;
+    }
   }
 
   add(...object: Object3D<Object3DEventMap>[]): this {
@@ -38,7 +48,7 @@ export class OperationScene extends Scene {
       const brush = new Brush(mesh.geometry, mesh.material);
       brush.uuid = mesh.uuid;
 
-      if (mesh.name !== '') brush.name = this.name;
+      if (mesh.name !== '') brush.name = e.name;
       if (mesh.castShadow === true) brush.castShadow = true;
       if (mesh.receiveShadow === true) brush.receiveShadow = true;
       if (mesh.visible === false) brush.visible = false;
@@ -53,9 +63,23 @@ export class OperationScene extends Scene {
 
       if (mesh.matrixAutoUpdate === false) brush.matrixAutoUpdate = false;
 
+      if (!brush.name) {
+        brush.name = this.varNames.pop() as string;
+      }
+
       return brush;
     });
     return super.add(...object);
+  }
+
+  remove(...object: Object3D[]): this {
+    object = object.map(e => this.children.find(ee => ee.uuid === e.uuid)) as any;
+    for (const child of object) {
+      if (child.name && child.name.length === 1 && this.varNames.findIndex(e => e === child.name) === -1) {
+        this.varNames.push(child.name);
+      }
+    }
+    return super.remove(...object);
   }
 }
 

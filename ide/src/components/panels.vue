@@ -1,6 +1,6 @@
 <template>
   <el-tabs class="picker full-height" type="border-card" style="flex: 1 1 auto">
-    <el-tab-pane v-if="store.state.editorType === 'World'">
+    <el-tab-pane v-if="store.state.editorType === 'World' && store.state.worldViewMode === 'world'">
       <template #label>
         <div class="picker-label">
           <i class="icon-cube" />
@@ -9,7 +9,7 @@
       </template>
       <Units />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'World'">
+    <el-tab-pane v-if="store.state.editorType === 'World' && store.state.worldViewMode === 'world'">
       <template #label>
         <div class="picker-label">
           <i class="icon-model3d" />
@@ -27,7 +27,7 @@
       </template>
       <EffectNodes />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'World'">
+    <el-tab-pane v-if="store.state.editorType === 'World' && store.state.worldViewMode === 'world'">
       <template #label>
         <div class="picker-label">
           <i class="icon-fireworks" />
@@ -36,7 +36,7 @@
       </template>
       <Effects />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'World'">
+    <el-tab-pane v-if="store.state.editorType === 'World' && store.state.worldViewMode === 'world'">
       <template #label>
         <div class="picker-label">
           <i class="icon-scene" />
@@ -99,7 +99,7 @@
       </template>
       <Sounds />
     </el-tab-pane>
-    <el-tab-pane v-if="store.state.editorType === 'Geometry'">
+    <el-tab-pane v-if="store.state.editorType === 'Geometry' && store.state.geoEditorType === 'Vertex'">
       <template #label>
         <div class="picker-label">
           <i class="icon-clear" />
@@ -107,6 +107,24 @@
         </div>
       </template>
       <Modifiers />
+    </el-tab-pane>
+    <el-tab-pane v-if="store.state.editorType === 'Geometry' && store.state.geoEditorType === 'Boll'">
+      <template #label>
+        <div class="picker-label">
+          <i class="icon-clear" />
+          <label class="fullname">Brushes</label>
+        </div>
+      </template>
+      <Brushes />
+    </el-tab-pane>
+    <el-tab-pane v-if="store.state.editorType === 'Geometry' && store.state.geoEditorType === 'Boll'">
+      <template #label>
+        <div class="picker-label">
+          <i class="icon-json" />
+          <label class="fullname">Operation Script</label>
+        </div>
+      </template>
+      <Geoboll />
     </el-tab-pane>
   </el-tabs>
 </template>
@@ -124,8 +142,9 @@ import EffectNodes from './panels/effectNodes.vue';
 import Effects from './panels/effects.vue';
 import Models from './panels/models.vue';
 import Entities from './panels/entities.vue';
-// import Brushes from './panels/brushes.vue';
+import Brushes from './panels/brushes.vue';
 import Modifiers from './panels/modifiers.vue';
+import Geoboll from './panels/geoboll.vue';
 // import Shapes from './panels/shapes.vue';
 import apis from '../apis';
 import { computed, onMounted } from 'vue';
@@ -187,7 +206,7 @@ onMounted(() => {
 }
 
 .fullname {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   font-weight: 400;
   font-family: unset;
   margin-left: 0.1em;
