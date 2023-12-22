@@ -1,6 +1,7 @@
 <template>
   <Popover body-class="popover-context-menu" :show-header="false" :max-width="maxWidth" @on-blur="onBlur">
     <div v-for="it of menus" :key="it.value" class="popover-context-menu-item" @click="select(it)">
+      <i class="popover-context-menu-item-icon" :class="it.icon || 'icon-dot-mini'"></i>
       <label class="popover-context-menu-item-label">{{ it.name || 'unamed' }}</label>
     </div>
   </Popover>
@@ -17,7 +18,7 @@ defineProps({
 import { ref } from 'vue';
 import Popover, { showPopover } from './popover.vue';
 
-type MenuItem = { name: string; value: string };
+type MenuItem = { icon?: string; name: string; value: string };
 
 const menus = ref<Array<MenuItem>>([]);
 
@@ -87,10 +88,18 @@ export async function showMenu(el: HTMLElement, ev: Event, items: Array<MenuItem
   cursor: pointer;
 }
 
-.popover-context-menu-item-label {
+.popover-context-menu-item-icon {
   flex: 0 0 0%;
+  min-width: 24px;
+  max-width: 24px;
+  width: 24px;
+  font-size: 24px;
+  pointer-events: none;
+}
+
+.popover-context-menu-item-label {
+  flex: 1 1 auto;
   min-width: 80px;
-  width: 80px;
   padding: 0 0.5em;
   pointer-events: none;
 }

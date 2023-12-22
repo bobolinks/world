@@ -16,7 +16,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { ElNotification } from 'element-plus';
 import type { TreeNode, TreeNodeData } from 'element-plus/es/components/tree-v2/src/types';
 import { Object3D, Scene } from 'three';
-import { BuiltinObjectKeyHidden, clone } from 'u3js/src/index';
+import { BuiltinObjectKeyHidden, BuiltinSceneSpawns, clone } from 'u3js/src/index';
 import { global } from '../global';
 import { store } from '../store';
 import icons from '../assets/font/iconfont.json';
@@ -191,25 +191,41 @@ async function contextmenu(e: PointerEvent, data: TreeNodeData) {
   if ((object as any).isScene) {
     return;
   }
-  const action: 'DeeplyClone' | 'Clone' = (await showMenu(document.querySelector('.mainContextMenu') as any, e, [
+  const action: 'DeeplyClone' | 'Clone' | 'CloneAsSpawn' = (await showMenu(document.querySelector('.mainContextMenu') as any, e, [
     { name: 'Clone Deeply', value: 'DeeplyClone' },
     { name: 'Clone', value: 'Clone' },
+    { name: 'Clone As Spawn', value: 'CloneAsSpawn' },
   ])) as any;
   if (!action) {
     return;
   }
   const parent = object.parent as Object3D;
-  const cloned: Object3D = action === 'DeeplyClone' ? clone(object, true) : object.clone(false);
-  global.history.push({
-    tip: `Duplicate object from [uuid=${object.uuid}]`,
-    undo: () => {
-      global.project.removeObject(cloned);
-    },
-    redo: () => {
-      global.project.addObject(cloned, parent);
-    },
-  });
-  global.project.addObject(cloned, parent);
+  if (action === 'CloneAsSpawn') {
+    const scene: Scene = global.project.scenes.find((e) => e.name === BuiltinSceneSpawns) as any;
+    const cloned: Object3D = clone(object, true);
+    global.history.push({
+      tip: `Clone object as Spawn [uuid=${object.uuid}]`,
+      undo: () => {
+        global.project.removeObject(cloned);
+      },
+      redo: () => {
+        global.project.addObject(cloned, scene);
+      },
+    });
+    global.project.addObject(cloned, scene);
+  } else {
+    const cloned: Object3D = action === 'DeeplyClone' ? clone(object, true) : object.clone(false);
+    global.history.push({
+      tip: `Duplicate object from [uuid=${object.uuid}]`,
+      undo: () => {
+        global.project.removeObject(cloned);
+      },
+      redo: () => {
+        global.project.addObject(cloned, parent);
+      },
+    });
+    global.project.addObject(cloned, parent);
+  }
 }
 
 function onItemDragStart(data: TreeNodeData, ev: DragEvent) {

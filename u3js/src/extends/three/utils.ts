@@ -113,6 +113,10 @@ export function createObjectFromJson<T extends Object3D>(className: string, json
   throw logger.panic(`object class[${className}] not found`);
 }
 
+export function isThreeClass(clsName: string) {
+  return !!threeObjects[clsName as keyof typeof threeObjects];
+}
+
 export function getBaseThreeObjectClass(clsName: string) {
   if (basicThreeObjectNames.has(clsName)) {
     return clsName;

@@ -46,7 +46,7 @@ import * as Utils from 'three/src/utils.js';
 import * as Nodes from "three/examples/jsm/nodes/Nodes";
 import './extends/three/index';
 import './extends/effects/index';
-import { createObjectFromJson, getBaseThreeObjectClass } from './extends/three/utils';
+import { createObjectFromJson, getBaseThreeObjectClass, isThreeClass } from './extends/three/utils';
 import { NodeLoaderResult } from 'three/examples/jsm/nodes/loaders/NodeLoader';
 import { NodeMaterialLoader } from 'three/examples/jsm/nodes/Nodes';
 import { createThreeNode } from './extends/helper/clslib';
@@ -624,6 +624,13 @@ export class ObjectLoader extends Loader<Object3D, string> {
     if (clsName === 'PositionalAudio2' && data.listener) {
       const listener = this._listeners[data.listener];
       data = { ...data, listener };
+    }
+
+    if (!isThreeClass(clsName) && /^\[.*\]$/.test(data.name)) {
+      const object = new Object3D();
+      object.uuid = data.uuid;
+      if (data.name !== undefined) object.name = data.name;
+      return object;
     }
 
     const object: any = createObjectFromJson(clsName, data);
