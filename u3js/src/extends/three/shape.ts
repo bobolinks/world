@@ -1,11 +1,13 @@
-import { Color, ExtrudeGeometry, Material, MeshStandardMaterial, Object3DEventMap, Shape as ThreeShape, Vector2, Vector3 } from 'three';
-import { addThreeClass, getProxyRawObject, objectPathAccessible, propsFromJson, propsToJson } from "./utils";
-import { Entity } from './entity';
+import { ExtrudeGeometry, Material, MeshStandardMaterial, Object3DEventMap, Shape as ThreeShape, } from 'three';
+import { addThreeClass, getProxyRawObject, propsFromJson, propsToJson } from "./utils";
+import { Entity, EntityProps } from './entity';
 
 export type ShapePathCommand = 'A' | 'L' | 'M' | 'Q' | 'C' | 'Z';
 export type ShapePathSequence = Array<ShapePathCommand | Array<number>>;
 
-const defaultExtrudeOpts: ExtrudeGeometry['parameters']['options'] = {
+type ShapeProps = Omit<ExtrudeGeometry['parameters']['options'], 'extrudePath' | 'UVGenerator'>;
+
+const defaultExtrudeOpts: ShapeProps = {
   curveSegments: 12,
   steps: 1,
   depth: 1,
@@ -16,37 +18,31 @@ const defaultExtrudeOpts: ExtrudeGeometry['parameters']['options'] = {
   bevelSegments: 3,
 };
 
-export type ShapeProps = Record<string, boolean | number | string | Color | Vector2 | Vector3 | Array<number> | null>;
-
 export class Shape<
   TGeometry extends ExtrudeGeometry = ExtrudeGeometry,
   TMaterial extends Material | Material[] = Material | Material[],
   TEventMap extends Object3DEventMap = Object3DEventMap,
-  TProps extends ShapeProps = ShapeProps,
-> extends Entity<TGeometry, TMaterial, TEventMap, ExtrudeGeometry['parameters']['options']> {
+  TProps extends EntityProps = ShapeProps,
+> extends Entity<TGeometry, TMaterial, TEventMap, TProps> {
   public readonly isShape = true;
 
   protected shapes: ThreeShape[] = [];
-  protected props: TProps;
+  // protected props: TProps;
 
   constructor(geometry?: TGeometry, material?: TMaterial, props?: TProps, bodyType = 0, mass = 0) {
     super(geometry || new ExtrudeGeometry() as any, material || new MeshStandardMaterial() as any, bodyType, mass);
 
     (this as any).type = 'Shape';
 
-    this.props = objectPathAccessible({ ...props }, () => {
-      this.rebuildShapes();
-    });
-
     if (!geometry) {
       this.rebuildShapes();
     }
   }
 
-  protected get parameters(): ExtrudeGeometry['parameters']['options'] {
-    const params = this.geometry.parameters?.options || {};
+  protected get parameters(): TProps {
+    const params: TProps = (this.geometry.parameters?.options || {}) as any;
     if (!Object.keys(params).length) {
-      return { ...defaultExtrudeOpts };
+      return { ...defaultExtrudeOpts } as TProps;
     }
     return params;
   }
@@ -62,22 +58,15 @@ export class Shape<
     return cloned;
   }
 
-  serialize(json: any) {
-    super.serialize(json);
-
-    const props = (this.props as any)[getProxyRawObject];
-    json.props = propsToJson(props);
-  }
-
   deserialize(json: any) {
     super.deserialize(json);
 
-    if (json.props) {
-      const props = (this.props as any)[getProxyRawObject];
-      propsFromJson(props, json.props);
-    }
-
     this.shapes = Array.isArray(this.geometry.parameters.shapes) ? this.geometry.parameters.shapes : [this.geometry.parameters.shapes];
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected onPropsChanged(key: string, value: any) {
+    this.rebuildShapes();
   }
 
   protected rebuildShapes() {
@@ -88,7 +77,7 @@ export class Shape<
   protected rebuildGeometry() {
     const cls = this.geometry.constructor;
     this.geometry.dispose();
-    const options = (this.geo as any)[getProxyRawObject];
+    const options = (this.props as any)[getProxyRawObject];
     this.geometry = (cls as any).fromJSON({ shapes: this.shapes.map((v, i) => i), options }, this.shapes);
     this.geometry.applyMatrix4(this.geoMatrix);
     this.geometry.computeBoundingBox();
@@ -98,14 +87,14 @@ export class Shape<
 addThreeClass('Shape', {
   create: ({ material, geometry }: any = {}) => new Shape(geometry, material),
   members: {
-    'geo.curveSegments': 'Number',
-    'geo.steps': 'Number',
-    'geo.depth': 'Number',
-    'geo.bevelEnabled': 'Boolean',
-    'geo.bevelThickness': 'Number',
-    'geo.bevelSize': 'Number',
-    'geo.bevelOffset': 'Number',
-    'geo.bevelSegments': 'Number',
+    'props.curveSegments': 'Number',
+    'props.steps': 'Number',
+    'props.depth': 'Number',
+    'props.bevelEnabled': 'Boolean',
+    'props.bevelThickness': 'Number',
+    'props.bevelSize': 'Number',
+    'props.bevelOffset': 'Number',
+    'props.bevelSegments': 'Number',
   },
   proto: 'Entity',
   group: '',

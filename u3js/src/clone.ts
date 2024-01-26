@@ -39,6 +39,7 @@ export function clone<T extends Object3D = Object3D>(object: T, recursive?: bool
       return;
     }
     cloned.graph = o.graph.clone(root || object, objectsTransferred);
+    cloned.fromuuid = o.uuid;
   });
 
   cloneTracingEnd();

@@ -22,10 +22,10 @@ export class Plane<
 addThreeClass('Plane', {
   create: ({ material, geometry }: any = {}) => new Plane(geometry, material),
   members: {
-    'geo.width': 'Number',
-    'geo.height': 'Number',
-    'geo.widthSegments': 'Number',
-    'geo.heightSegments': 'Number',
+    'props.width': 'Number',
+    'props.height': 'Number',
+    'props.widthSegments': 'Number',
+    'props.heightSegments': 'Number',
   },
   /** yes, we hide mass and body-type properties */
   proto: 'Mesh',

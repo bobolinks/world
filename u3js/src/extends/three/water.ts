@@ -24,7 +24,7 @@ const halfCycle = cycle * 0.5;
 export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
   public readonly isWaterPlane = true;
 
-  public readonly props: Required<Water2Options> = {
+  public readonly props1: Required<Water2Options> = {
     color: new Color(),
     textureWidth: 512,
     textureHeight: 512,
@@ -61,17 +61,17 @@ export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
     // internal components
 
     const reflector = new Reflector(geometry);
-    reflector.textureWidth = this.props.textureWidth;
-    reflector.textureHeight = this.props.textureHeight;
-    reflector.clipBias = this.props.clipBias;
+    reflector.textureWidth = this.props1.textureWidth;
+    reflector.textureHeight = this.props1.textureHeight;
+    reflector.clipBias = this.props1.clipBias;
 
     const refractor = new Refractor(geometry, {
-      textureWidth: this.props.textureWidth,
-      textureHeight: this.props.textureHeight,
+      textureWidth: this.props1.textureWidth,
+      textureHeight: this.props1.textureHeight,
       clipBias: 0,
     });
     this.refractorClipBias = refractor.camera.projectionMatrix.elements[10];
-    // refractor.camera.projectionMatrix.elements[10] = this.refractorClipBias + this.props.clipBias;
+    // refractor.camera.projectionMatrix.elements[10] = this.refractorClipBias + this.props1.clipBias;
 
     reflector.matrixAutoUpdate = false;
     refractor.matrixAutoUpdate = false;
@@ -92,7 +92,7 @@ export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
       } else {
         this.material.uniforms['flowDirection'] = {
           type: 'v2',
-          value: this.props.flowDirection,
+          value: this.props1.flowDirection,
         } as any;
       }
 
@@ -110,8 +110,8 @@ export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
 
       // water
 
-      this.material.uniforms['color'].value = this.props.color;
-      this.material.uniforms['reflectivity'].value = this.props.reflectivity;
+      this.material.uniforms['color'].value = this.props1.color;
+      this.material.uniforms['reflectivity'].value = this.props1.reflectivity;
       this.material.uniforms['textureMatrix'].value = this.textureMatrix;
 
       // inital values
@@ -119,16 +119,16 @@ export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
       this.material.uniforms['config'].value.x = 0; // flowMapOffset0
       this.material.uniforms['config'].value.y = halfCycle; // flowMapOffset1
       this.material.uniforms['config'].value.z = halfCycle; // halfCycle
-      this.material.uniforms['config'].value.w = this.props.scale; // scale
+      this.material.uniforms['config'].value.w = this.props1.scale; // scale
     } else {
       this.material.uniforms['tReflectionMap'].value = reflector.getRenderTarget().texture;
       this.material.uniforms['tRefractionMap'].value = refractor.getRenderTarget().texture;
 
-      this.props.flowDirection = this.material.uniforms['flowDirection'].value;
-      this.props.color = this.material.uniforms['color'].value;
-      this.props.reflectivity = this.material.uniforms['reflectivity'].value;
+      this.props1.flowDirection = this.material.uniforms['flowDirection'].value;
+      this.props1.color = this.material.uniforms['color'].value;
+      this.props1.reflectivity = this.material.uniforms['reflectivity'].value;
       this.textureMatrix = this.material.uniforms['textureMatrix'].value;
-      this.props.scale = this.material.uniforms['config'].value.w;
+      this.props1.scale = this.material.uniforms['config'].value.w;
     }
 
     this.onBeforeRender = function (renderer, scene, camera) {
@@ -173,107 +173,107 @@ export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
   }
 
   get color(): Color {
-    return this.props.color as any;
+    return this.props1.color as any;
   }
   set color(val: Color) {
-    this.props.color = val;
+    this.props1.color = val;
     this.material.uniforms['color'].value = val;
   }
 
   get textureWidth() {
-    return this.props.textureWidth;
+    return this.props1.textureWidth;
   }
   set textureWidth(val: number) {
-    if (this.props.textureWidth === val) {
+    if (this.props1.textureWidth === val) {
       return;
     }
-    this.props.textureWidth = val;
-    this.reflector.getRenderTarget().setSize(this.props.textureWidth, this.props.textureHeight);
-    this.refractor.getRenderTarget().setSize(this.props.textureWidth, this.props.textureHeight);
+    this.props1.textureWidth = val;
+    this.reflector.getRenderTarget().setSize(this.props1.textureWidth, this.props1.textureHeight);
+    this.refractor.getRenderTarget().setSize(this.props1.textureWidth, this.props1.textureHeight);
   }
 
   get textureHeight() {
-    return this.props.textureHeight;
+    return this.props1.textureHeight;
   }
   set textureHeight(val: number) {
-    if (this.props.textureHeight === val) {
+    if (this.props1.textureHeight === val) {
       return;
     }
-    this.props.textureHeight = val;
-    this.reflector.getRenderTarget().setSize(this.props.textureWidth, this.props.textureHeight);
-    this.refractor.getRenderTarget().setSize(this.props.textureWidth, this.props.textureHeight);
+    this.props1.textureHeight = val;
+    this.reflector.getRenderTarget().setSize(this.props1.textureWidth, this.props1.textureHeight);
+    this.refractor.getRenderTarget().setSize(this.props1.textureWidth, this.props1.textureHeight);
   }
 
   get clipBias() {
-    return this.props.clipBias;
+    return this.props1.clipBias;
   }
   set clipBias(val: number) {
-    if (this.props.clipBias === val) {
+    if (this.props1.clipBias === val) {
       return;
     }
-    this.props.clipBias = val;
+    this.props1.clipBias = val;
     this.reflector.clipBias = val;
   }
 
   get flowDirection() {
-    return this.props.flowDirection;
+    return this.props1.flowDirection;
   }
   set flowDirection(val: Vector2) {
-    if (this.props.flowDirection === val) {
+    if (this.props1.flowDirection === val) {
       return;
     }
-    this.props.flowDirection = val;
+    this.props1.flowDirection = val;
     this.material.uniforms['flowDirection'].value = val;
   }
 
   get flowSpeed() {
-    return this.props.flowSpeed;
+    return this.props1.flowSpeed;
   }
   set flowSpeed(val: number) {
-    if (this.props.flowSpeed === val) {
+    if (this.props1.flowSpeed === val) {
       return;
     }
-    this.props.flowSpeed = val;
+    this.props1.flowSpeed = val;
   }
 
   get reflectivity() {
-    return this.props.reflectivity;
+    return this.props1.reflectivity;
   }
   set reflectivity(val: number) {
-    if (this.props.reflectivity === val) {
+    if (this.props1.reflectivity === val) {
       return;
     }
-    this.props.reflectivity = val;
-    this.material.uniforms['reflectivity'].value = this.props.reflectivity;
+    this.props1.reflectivity = val;
+    this.material.uniforms['reflectivity'].value = this.props1.reflectivity;
   }
 
   get waterScale() {
-    return this.props.scale;
+    return this.props1.scale;
   }
   set waterScale(val: number) {
-    if (this.props.scale === val) {
+    if (this.props1.scale === val) {
       return;
     }
-    this.props.scale = val;
-    this.material.uniforms['config'].value.w = this.props.scale;
+    this.props1.scale = val;
+    this.material.uniforms['config'].value.w = this.props1.scale;
   }
 
   appleProps() {
-    this.material.uniforms['color'].value = this.props.color;
-    this.material.uniforms['reflectivity'].value = this.props.reflectivity;
-    this.material.uniforms['flowDirection'].value = this.props.flowDirection;
-    this.material.uniforms['config'].value.w = this.props.scale;
+    this.material.uniforms['color'].value = this.props1.color;
+    this.material.uniforms['reflectivity'].value = this.props1.reflectivity;
+    this.material.uniforms['flowDirection'].value = this.props1.flowDirection;
+    this.material.uniforms['config'].value.w = this.props1.scale;
 
-    this.reflector.textureWidth = this.props.textureWidth;
-    this.reflector.textureHeight = this.props.textureHeight;
-    this.reflector.clipBias = this.props.clipBias;
-    this.refractor.getRenderTarget().setSize(this.props.textureWidth, this.props.textureHeight);
+    this.reflector.textureWidth = this.props1.textureWidth;
+    this.reflector.textureHeight = this.props1.textureHeight;
+    this.reflector.clipBias = this.props1.clipBias;
+    this.refractor.getRenderTarget().setSize(this.props1.textureWidth, this.props1.textureHeight);
   }
 
   clone(recursive?: boolean | undefined): this {
     const cloned = super.clone(recursive);
 
-    const props = (this.props as any)[getProxyRawObject];
+    const props = (this.props1 as any)[getProxyRawObject];
     const json = propsToJson(props);
     const propsClone = (cloned.props as any)[getProxyRawObject];
     propsFromJson(propsClone, json);
@@ -285,14 +285,14 @@ export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
   serialize(json: any) {
     super.serialize(json);
 
-    json.props = propsToJson(this.props as any);
+    json.props = propsToJson(this.props1 as any);
   }
 
   deserialize(json: any) {
     super.deserialize(json);
 
     if (json.props) {
-      propsFromJson(this.props as any, json.props);
+      propsFromJson(this.props1 as any, json.props);
       this.appleProps();
     }
   }
@@ -324,7 +324,7 @@ export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
   private updateFlow() {
     const config = this.material.uniforms['config'];
 
-    config.value.x += this.props.flowSpeed * worldGlobal.delta; // flowMapOffset0
+    config.value.x += this.props1.flowSpeed * worldGlobal.delta; // flowMapOffset0
     config.value.y = config.value.x + halfCycle; // flowMapOffset1
 
     // Important: The distance between offsets should be always the value of "halfCycle".
@@ -485,10 +485,10 @@ export class WaterPlane extends Entity<PlaneGeometry, ShaderMaterial> {
 /* 
 addThreeClass('WaterPlane', {
   members: {
-    'geo.width': 'Number',
-    'geo.height': 'Number',
-    'geo.widthSegments': 'Number',
-    'geo.heightSegments': 'Number',
+    'props.width': 'Number',
+    'props.height': 'Number',
+    'props.widthSegments': 'Number',
+    'props.heightSegments': 'Number',
 
     castShadow: 'Boolean',
     receiveShadow: 'Boolean',

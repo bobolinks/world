@@ -1,6 +1,8 @@
 declare function Ammo<T>(api?: T): Promise<T & typeof Ammo>;
 declare module Ammo {
   function destroy(obj: any): void;
+  function castObject(object: btCollisionObject, cls: typeof btCollisionObject): btCollisionObject;
+
   class btIDebugDraw {
     drawLine(from: btVector3, to: btVector3, color: btVector3): void;
     drawContactPoint(pointOnB: btVector3, normalOnB: btVector3, distance: number, lifeTime: number, color: btVector3): void;

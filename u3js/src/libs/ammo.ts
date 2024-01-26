@@ -10,7 +10,48 @@ export interface PhysicalObject extends THREE.Mesh {
   mass: number;
 }
 
-export type AmmoBody = Ammo.btRigidBody;
+export type AmmoBody = Ammo.btRigidBody | Ammo.btSoftBody;
+
+export class PhysicalContext {
+  public readonly world: Ammo.btSoftRigidDynamicsWorld;
+  public readonly collisionConfiguration: Ammo.btDefaultCollisionConfiguration;
+  public readonly dispatcher: Ammo.btCollisionDispatcher;
+  public readonly broadphase: Ammo.btDbvtBroadphase;
+  public readonly solver: Ammo.btSequentialImpulseConstraintSolver;
+  public readonly softBodySolver: Ammo.btDefaultSoftBodySolver;
+  public readonly softBodyHelpers: Ammo.btSoftBodyHelpers;
+  public readonly worldTransform: Ammo.btTransform;
+
+  private destroyed = false;
+
+  constructor(gravity: number = -9.82) {
+    this.collisionConfiguration = new ammo.btDefaultCollisionConfiguration();
+    this.dispatcher = new ammo.btCollisionDispatcher(this.collisionConfiguration);
+    this.broadphase = new ammo.btDbvtBroadphase();
+    this.solver = new ammo.btSequentialImpulseConstraintSolver();
+    this.softBodySolver = new ammo.btDefaultSoftBodySolver();
+    this.softBodyHelpers = new Ammo.btSoftBodyHelpers();
+    this.world = new ammo.btSoftRigidDynamicsWorld(this.dispatcher, this.broadphase, this.solver, this.collisionConfiguration, this.softBodySolver);
+    this.world.setGravity(new ammo.btVector3(0, gravity, 0));
+    this.worldTransform = new ammo.btTransform();
+  }
+
+  public dispose() {
+    if (!this.destroyed) {
+      ammo.destroy(this.collisionConfiguration);
+      ammo.destroy(this.dispatcher);
+      ammo.destroy(this.broadphase);
+      ammo.destroy(this.solver);
+      ammo.destroy(this.softBodySolver);
+      ammo.destroy(this.softBodyHelpers);
+      ammo.destroy(this.world);
+      ammo.destroy(this.worldTransform);
+      this.destroyed = true;
+    }
+  }
+}
+
+export const physicalWorldContex = new PhysicalContext();
 
 const _tmpMatrix = new THREE.Matrix4();
 let _tmpAmmoVectorA: Ammo.btVector3;
@@ -203,7 +244,7 @@ export namespace AmmoUtils {
       return shape;
     }
   }
-  export function createBody(mesh: PhysicalObject, mass: number = 0, preShape?: Ammo.btCollisionShape): AmmoBody | Array<AmmoBody> {
+  export function createRigidBody(mesh: PhysicalObject, mass: number = 0, preShape?: Ammo.btCollisionShape): AmmoBody | Array<AmmoBody> {
     const shape = preShape || createShape(mesh);
 
     function handleMesh(mesh: PhysicalObject, mass: number, shape: any) {
@@ -258,22 +299,23 @@ export namespace AmmoUtils {
     }
     return handleMesh(mesh, mass, shape);
   }
+  export function createRope(start: THREE.Vector3, end: THREE.Vector3, mass: number, segments: number = 10, margin: number = 0.001) {
+    const softBodyHelpers = new Ammo.btSoftBodyHelpers();
+    const ropeStart = new Ammo.btVector3(start.x, start.y, start.z);
+    const ropeEnd = new Ammo.btVector3(end.x, end.y, end.z);
+    const ropeSoftBody = softBodyHelpers.CreateRope(physicalWorldContex.world.getWorldInfo(), ropeStart, ropeEnd, segments - 1, 0);
+    const sbConfig = ropeSoftBody.get_m_cfg();
+    sbConfig.set_viterations(10);
+    sbConfig.set_piterations(10);
+    ropeSoftBody.setTotalMass(mass, false);
+    Ammo.castObject(ropeSoftBody, Ammo.btCollisionObject).getCollisionShape().setMargin(margin * 3);
+  }
   export function destroyBody(body: AmmoBody) {
     ammo.destroy(body);
   }
 }
 
 export class PhysicalWorld {
-  public readonly world: Ammo.btDiscreteDynamicsWorld;
-
-  private readonly collisionConfiguration: Ammo.btDefaultCollisionConfiguration;
-  private readonly dispatcher: Ammo.btCollisionDispatcher;
-  private readonly broadphase: Ammo.btDbvtBroadphase;
-  private readonly solver: Ammo.btSequentialImpulseConstraintSolver;
-  private readonly softBodySolver: Ammo.btDefaultSoftBodySolver;
-  private readonly softBodyHelpers: Ammo.btSoftBodyHelpers;
-  private readonly worldTransform: Ammo.btTransform;
-
   private destroyed = false;
   private meshes: Array<PhysicalObject> = [];
   private meshMap = new WeakMap<PhysicalObject, AmmoBody | Array<AmmoBody>>();
@@ -281,15 +323,7 @@ export class PhysicalWorld {
   private conllisionMap = new Set<string>();
 
   constructor(gravity: number = -9.82) {
-    this.collisionConfiguration = new ammo.btDefaultCollisionConfiguration();
-    this.dispatcher = new ammo.btCollisionDispatcher(this.collisionConfiguration);
-    this.broadphase = new ammo.btDbvtBroadphase();
-    this.solver = new ammo.btSequentialImpulseConstraintSolver();
-    this.softBodySolver = new ammo.btDefaultSoftBodySolver();
-    this.softBodyHelpers = new Ammo.btSoftBodyHelpers();
-    this.world = new ammo.btSoftRigidDynamicsWorld(this.dispatcher, this.broadphase, this.solver, this.collisionConfiguration, this.softBodySolver);
-    this.world.setGravity(new ammo.btVector3(0, gravity, 0));
-    this.worldTransform = new ammo.btTransform();
+    this.setGravity(gravity);
   }
 
   public dispose() {
@@ -300,28 +334,31 @@ export class PhysicalWorld {
         ammo.destroy(body);
       }
       this.meshes.length = 0;
-
-      ammo.destroy(this.collisionConfiguration);
-      ammo.destroy(this.dispatcher);
-      ammo.destroy(this.broadphase);
-      ammo.destroy(this.solver);
-      ammo.destroy(this.softBodySolver);
-      ammo.destroy(this.softBodyHelpers);
-      ammo.destroy(this.world);
-      ammo.destroy(this.worldTransform);
       this.destroyed = true;
     }
+  }
+
+  setGravity(gravity: number = -9.82) {
+    physicalWorldContex.world.setGravity(new ammo.btVector3(0, gravity, 0));
   }
 
   addMesh(mesh: PhysicalObject, body: AmmoBody | Array<AmmoBody>) {
     if (body) {
       if (Array.isArray(body)) {
         for (const b of body) {
-          this.world.addRigidBody(b);
+          if (b instanceof Ammo.btSoftBody) {
+            physicalWorldContex.world.addSoftBody(b, 1, -1);
+          } else {
+            physicalWorldContex.world.addRigidBody(b);
+          }
         }
       } else {
         // body.setFriction( 4 );
-        this.world.addRigidBody(body);
+        if (body instanceof Ammo.btSoftBody) {
+          physicalWorldContex.world.addSoftBody(body, 1, -1);
+        } else {
+          physicalWorldContex.world.addRigidBody(body);
+        }
       }
 
       this.meshes.push(mesh);
@@ -349,10 +386,18 @@ export class PhysicalWorld {
     delete this.meshIdx[mesh.id];
     if (Array.isArray(body)) {
       for (const b of body) {
-        this.world.removeRigidBody(b);
+        if (b instanceof Ammo.btSoftBody) {
+          physicalWorldContex.world.removeSoftBody(b);
+        } else {
+          physicalWorldContex.world.addRigidBody(b);
+        }
       }
     } else {
-      this.world.removeRigidBody(body);
+      if (body instanceof Ammo.btSoftBody) {
+        physicalWorldContex.world.removeSoftBody(body);
+      } else {
+        physicalWorldContex.world.addRigidBody(body);
+      }
     }
     mesh.world = undefined;
   }
@@ -369,9 +414,9 @@ export class PhysicalWorld {
       }
       const body = bodies[index];
 
-      this.worldTransform.setIdentity();
-      this.worldTransform.setOrigin(new ammo.btVector3(position.x, position.y, position.z));
-      body.setWorldTransform(this.worldTransform);
+      physicalWorldContex.worldTransform.setIdentity();
+      physicalWorldContex.worldTransform.setOrigin(new ammo.btVector3(position.x, position.y, position.z));
+      body.setWorldTransform(physicalWorldContex.worldTransform);
 
     } else if (mesh.isMesh) {
       const body = this.meshMap.get(mesh) as AmmoBody;
@@ -379,18 +424,18 @@ export class PhysicalWorld {
         return;
       }
 
-      this.worldTransform.setIdentity();
-      this.worldTransform.setOrigin(new ammo.btVector3(position.x, position.y, position.z));
-      body.setWorldTransform(this.worldTransform);
+      physicalWorldContex.worldTransform.setIdentity();
+      physicalWorldContex.worldTransform.setOrigin(new ammo.btVector3(position.x, position.y, position.z));
+      body.setWorldTransform(physicalWorldContex.worldTransform);
     }
   }
 
   detectCollision() {
-    const numManifolds = this.dispatcher.getNumManifolds();
+    const numManifolds = physicalWorldContex.dispatcher.getNumManifolds();
     const curConllisionMap = new Set<string>();
 
     for (let i = 0; i < numManifolds; i++) {
-      const contactManifold = this.dispatcher.getManifoldByIndexInternal(i);
+      const contactManifold = physicalWorldContex.dispatcher.getManifoldByIndexInternal(i);
 
       const id0 = contactManifold.getBody0().getUserIndex();
       const id1 = contactManifold.getBody1().getUserIndex();
@@ -435,7 +480,7 @@ export class PhysicalWorld {
     if (!delta) {
       return;
     }
-    this.world.stepSimulation(delta, 10);
+    physicalWorldContex.world.stepSimulation(delta, 10);
 
     this.detectCollision();
 
@@ -454,11 +499,15 @@ export class PhysicalWorld {
         for (let j = 0; j < bodies.length; j++) {
           const body = bodies[j];
 
-          const motionState = body.getMotionState();
-          motionState.getWorldTransform(this.worldTransform);
+          if (!(body instanceof Ammo.btRigidBody)) {
+            continue;
+          }
 
-          const position = this.worldTransform.getOrigin();
-          const quaternion = this.worldTransform.getRotation();
+          const motionState = body.getMotionState();
+          motionState.getWorldTransform(physicalWorldContex.worldTransform);
+
+          const position = physicalWorldContex.worldTransform.getOrigin();
+          const quaternion = physicalWorldContex.worldTransform.getRotation();
 
           compose(position, quaternion, array, j * 16);
         }
@@ -469,11 +518,15 @@ export class PhysicalWorld {
       } else if (mesh.isMesh) {
         const body = this.meshMap.get(mesh) as AmmoBody;
 
-        const motionState = body.getMotionState();
-        motionState.getWorldTransform(this.worldTransform);
+        if (!(body instanceof Ammo.btRigidBody)) {
+          continue;
+        }
 
-        const position = this.worldTransform.getOrigin();
-        const quaternion = this.worldTransform.getRotation();
+        const motionState = body.getMotionState();
+        motionState.getWorldTransform(physicalWorldContex.worldTransform);
+
+        const position = physicalWorldContex.worldTransform.getOrigin();
+        const quaternion = physicalWorldContex.worldTransform.getRotation();
         mesh.position.set(position.x(), position.y(), position.z());
         mesh.quaternion.set(quaternion.x(), quaternion.y(), quaternion.z(), quaternion.w());
       }

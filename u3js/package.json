@@ -8,13 +8,13 @@
   "typings": "./dist/index.d.ts",
   "type": "module",
   "dependencies": {
-    "three": "^0.158.0",
+    "three": "^0.160.0",
     "three-mesh-bvh": "^0.6.8",
     "troika-three-text": "^0.48.0-unicode.1"
   },
   "devDependencies": {
     "@types/node": "^20.3.2",
-    "@types/three": "^0.158.1",
+    "@types/three": "^0.160.0",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "eslint": "^8.50.0",

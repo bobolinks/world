@@ -5,6 +5,7 @@ import type { Meta } from "./types/types";
 declare module 'three' {
   interface Object3D {
     graph?: Graph;
+    fromuuid?: string;
   }
 }
 

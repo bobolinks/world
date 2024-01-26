@@ -1,21 +1,24 @@
 import {
-  BoxGeometry, BufferGeometry, Euler, Material,
+  BoxGeometry, BufferGeometry, Color, Euler, Material,
   Matrix4,
   Mesh,
   MeshBasicMaterial, Object3DEventMap,
   Quaternion,
+  Vector2,
   Vector3,
 } from "three";
 import { AmmoBody, AmmoUtils, PhysicalObject, PhysicalWorld } from "../../libs/ammo";
-import { addThreeClass, getProxyRawObject, objectPathAccessible } from "./utils";
+import { addThreeClass, getProxyRawObject, objectPathAccessible, propsFromJson, propsToJson } from "./utils";
 import { types } from "../accessors/deco";
+
+export type EntityProps = Record<string, boolean | number | string | Color | Vector2 | Vector3 | Array<number> | null>;
 
 export type Writable<T> = { -readonly [P in keyof T]: T[P] };
 
 export enum BodyType {
   Ghost = 0,
   RigidBody = 1,
-  // SoftBody = 2,
+  SoftBody = 2,
 }
 
 (types as any).BodyType = {
@@ -31,11 +34,11 @@ export class Entity<
   TGeometry extends BufferGeometry = BoxGeometry,
   TMaterial extends Material | Material[] = MeshBasicMaterial,
   TEventMap extends Object3DEventMap = Object3DEventMap,
-  TGeoParams extends Record<string, any> = Record<string, any>,
+  TParams extends EntityProps = EntityProps,
 > extends Mesh<TGeometry, TMaterial, TEventMap> implements PhysicalObject {
   public readonly isEntity = true;
 
-  public readonly geo: Writable<TGeoParams>;
+  public readonly props: Writable<TParams>;
   public readonly geoMatrix = new Matrix4().identity();
 
   public readonly physicalBody: AmmoBody = null as any;
@@ -53,8 +56,8 @@ export class Entity<
       this.rebuildBody();
     }
 
-    this.geo = objectPathAccessible(Object.assign({}, this.parameters) as Writable<TGeoParams>, () => {
-      this.rebuildGeometry();
+    this.props = objectPathAccessible(Object.assign({}, this.parameters) as Writable<TParams>, (key: string, value: any) => {
+      this.onPropsChanged(key, value);
     });
   }
 
@@ -68,8 +71,10 @@ export class Entity<
     if (this._mass === 0 || val === 0) {
       this._mass = val;
       this.rebuildBody();
-    } else {
+    } else if (this.physicalBody instanceof Ammo.btRigidBody) {
       this.physicalBody.setMassProps(val);
+    } else if (this.physicalBody instanceof Ammo.btSoftBody) {
+      this.physicalBody.setTotalMass(val, false);
     }
   }
 
@@ -84,7 +89,7 @@ export class Entity<
     this.rebuildBody();
   }
 
-  protected get parameters(): TGeoParams {
+  protected get parameters(): TParams {
     return (this.geometry as any).parameters || {};
   }
 
@@ -124,8 +129,11 @@ export class Entity<
       cloned.rebuildBody();
     }
 
-    const geo = (cloned.geo as any)[getProxyRawObject];
-    Object.assign(geo, this.parameters);
+    const props = (this.props as any)[getProxyRawObject];
+    const json = propsToJson(props);
+    const propsClone = (cloned.props as any)[getProxyRawObject];
+    propsFromJson(propsClone, json);
+
     cloned.geoMatrix.copy(this.geoMatrix);
 
     return cloned;
@@ -134,7 +142,10 @@ export class Entity<
   serialize(json: any) {
     json.mass = this._mass;
     json.bodyType = this._bodyType;
-    // json.geo = (this.geo as any)[getProxyRawObject];
+
+    const props = (this.props as any)[getProxyRawObject];
+    json.props = propsToJson(props);
+
     json.geoMatrix = this.geoMatrix.toArray();
   }
 
@@ -147,10 +158,13 @@ export class Entity<
       this._bodyType = bodyType;
       this.rebuildBody();
     }
+
     // fill geo info
-    const geo = (this.geo as any)[getProxyRawObject];
-    Object.assign(geo, this.parameters);
-    // if (json.geo) Object.assign(this.geo, json.geo);
+    const props = (this.props as any)[getProxyRawObject];
+    if (json.props) {
+      propsFromJson(props, json.props);
+    }
+    Object.assign(props, this.parameters);
 
     if (json.geoMatrix) {
       this.geoMatrix.fromArray(json.geoMatrix);
@@ -176,14 +190,20 @@ export class Entity<
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected onPropsChanged(key: string, value: any) {
+    this.rebuildGeometry();
+  }
+
   protected rebuildGeometry() {
     const cls = this.geometry.constructor;
     this.geometry.dispose();
-    this.geometry = (cls as any).fromJSON((this.geo as any)[getProxyRawObject]);
+    this.geometry = (cls as any).fromJSON((this.props as any)[getProxyRawObject]);
     this.geometry.applyMatrix4(this.geoMatrix);
     this.geometry.computeBoundingBox();
   }
 
+  // defaul action is only for RigidBody
   protected rebuildBody() {
     const world = this.world;
 
@@ -197,7 +217,7 @@ export class Entity<
 
     // create body
     if (this._bodyType !== BodyType.Ghost) {
-      (this as any).physicalBody = AmmoUtils.createBody(this, this._mass) as any;
+      (this as any).physicalBody = AmmoUtils.createRigidBody(this, this._mass) as any;
       this.physicalBody.setUserIndex(this.id);
       if (world) {
         world.addMesh(this, this.physicalBody);
@@ -243,10 +263,12 @@ export class Entity<
       this.physicalBody.setWorldTransform(trans);
 
       if (this.mass == 0) {
-        // Kinematic objects must be updated using motion state
-        const motionState = this.physicalBody.getMotionState();
-        if (motionState) {
-          motionState.setWorldTransform(trans);
+        if (this.physicalBody instanceof Ammo.btRigidBody) {
+          // Kinematic objects must be updated using motion state
+          const motionState = this.physicalBody.getMotionState();
+          if (motionState) {
+            motionState.setWorldTransform(trans);
+          }
         }
       } else {
         this.physicalBody.activate();

@@ -285,7 +285,7 @@ export class StaticMesh<
     if (this._bodyType !== BodyType.Ghost) {
       // unsupport soft
       const pShape = AmmoUtils.createShape(this._object as any);
-      (this as any).physicalBody = AmmoUtils.createBody(this, this._mass, pShape) as any;
+      (this as any).physicalBody = AmmoUtils.createRigidBody(this, this._mass, pShape) as any;
       this.physicalBody.setUserIndex(this.id);
       if (world) {
         world.addMesh(this, this.physicalBody);
@@ -299,9 +299,9 @@ export class StaticMesh<
 addThreeClass('StaticMesh', {
   create: ({ material, geometry }: any = {}) => new StaticMesh(geometry, material),
   members: {
-    'geo.width': 'Number',
-    'geo.height': 'Number',
-    'geo.depth': 'Number',
+    'props.width': 'Number',
+    'props.height': 'Number',
+    'props.depth': 'Number',
     model: 'String',
   },
   proto: 'Entity',

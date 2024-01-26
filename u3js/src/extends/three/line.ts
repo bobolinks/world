@@ -5,7 +5,7 @@ import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { addNodeClass } from '../helper/clslib';
 
-class BezierLineGeometry extends LineGeometry {
+export class BezierLineGeometry extends LineGeometry {
   public readonly isBezieoLineGeometry = true;
 
   toJSON(): any {

@@ -85,7 +85,7 @@ declare type NodeEventMap = {
 };
 
 // events for object3d
-declare type Object3DEventName = 'onBorn' | 'onDead' | 'onCollisionEnter' | 'onCollisionLeave';
+declare type Object3DEventName = 'onBorn' | 'onDead' | 'onCollisionEnter' | 'onCollisionLeave' | 'onDragStart' | 'onDrop';
 declare type Object3DEventMap = {
   // when it added to scene
   onBorn: { type: 'onBorn'; source: EventDispatcher; object: Object3D; };

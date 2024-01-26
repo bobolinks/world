@@ -81,5 +81,7 @@ addNodeClass('EventListenerNode', EventListenerNode, {
   eventOnDead: { clsName: 'EventListenerNode', func: () => new EventListenerNode('eventOnDead', 'onDead'), group: 'Scripts.On Dead', icon: 'bell-off' },
   eventOnCollisionEnter: { clsName: 'EventListenerNode', func: () => new EventListenerNode('eventOnCollisionEnter', 'onCollisionEnter'), group: 'Scripts.On Collision Enter', icon: 'arrows-shuffle' },
   eventOnCollisionLeave: { clsName: 'EventListenerNode', func: () => new EventListenerNode('eventOnCollisionLeave', 'onCollisionLeave'), group: 'Scripts.On Collision Leave', icon: 'arrow-bounce' },
+  eventOnDragStart: { clsName: 'EventListenerNode', func: () => new EventListenerNode('eventOnDragStart', 'onDragStart'), group: 'Scripts.On Drag Start', icon: 'hand-grab' },
+  eventOnDrop: { clsName: 'EventListenerNode', func: () => new EventListenerNode('eventOnDrop', 'onDrop'), group: 'Scripts.On Drop', icon: 'hand-grab' },
   eventCustom: { clsName: 'EventListenerNode', func: () => new EventListenerNode('eventCustom', 'onCustomEvent'), group: 'Scripts.On Custom Event', icon: 'calendar-event' },
 });

@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as THREE from "three";
-import { ACESFilmicToneMapping, PCFSoftShadowMap, ShadowMapType, ToneMapping } from "three";
+import { ACESFilmicToneMapping, PCFSoftShadowMap, ShadowMapType, ToneMapping, Vector3 } from "three";
 // @ts-ignore
 import { nodeFrame } from 'three/examples/jsm/renderers/webgl-legacy/nodes/WebGLNodes.js';
 import { GPUComputationRenderer } from 'three/examples/jsm/misc/GPUComputationRenderer';
 import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory.js';
 import { OculusHandModel } from 'three/examples/jsm/webxr/OculusHandModel.js';
+import { OculusHandPointerModel } from 'three/examples/jsm/webxr/OculusHandPointerModel.js';
 // import { XRHandModelFactory } from 'three/examples/jsm/webxr/XRHandModelFactory.js';
 import { PhysicalScene } from "./extends/three/scene";
 import { LoadingScene } from "./loading";
@@ -50,6 +51,8 @@ const defaultWorldSetting: WorldSettings = {
   vrEnable: false,
 };
 
+type PinchState = 'pinched' | 'none';
+
 export class U3JsRuntime extends THREE.EventDispatcher {
   public readonly renderer: THREE.WebGLRenderer;
   public readonly clock: THREE.Clock;
@@ -66,6 +69,21 @@ export class U3JsRuntime extends THREE.EventDispatcher {
   /** left, right */
   protected hands: [OculusHandModel?, OculusHandModel?] = [];
   protected handsConllisionMap = new Set<string>();
+  protected handPointers: [OculusHandPointerModel?, OculusHandPointerModel?] = [];
+  protected dragState: {
+    state: {
+      left: PinchState;
+      right: PinchState;
+    };
+    draging: {
+      left?: Entity;
+      right?: Entity;
+    };
+    positions: {
+      left: Vector3;
+      right: Vector3;
+    };
+  } = { state: { left: 'none', right: 'none' }, draging: {}, positions: { left: new Vector3(), right: new Vector3 } };
 
   protected working = false;
 
@@ -279,6 +297,10 @@ export class U3JsRuntime extends THREE.EventDispatcher {
       this.hands[0].name = 'left';
     }
     hand0.add(this.hands[0]);
+    const handPointer0 = new OculusHandPointerModel(hand0, controller0);
+    handPointer0.name = 'left';
+    this.handPointers[0] = handPointer0;
+    hand0.add(handPointer0);
     // hand0.add(handModelFactory.createHandModel(hand0));
 
     scene.add(hand0);
@@ -294,6 +316,10 @@ export class U3JsRuntime extends THREE.EventDispatcher {
       this.hands[1].name = 'right';
     }
     hand1.add(this.hands[1]);
+    const handPointer1 = new OculusHandPointerModel(hand1, controller1);
+    handPointer1.name = 'right';
+    this.handPointers[1] = handPointer1;
+    hand1.add(handPointer1);
     // hand1.add(handModelFactory.createHandModel(hand1));
     scene.add(hand1);
   }
@@ -369,6 +395,63 @@ export class U3JsRuntime extends THREE.EventDispatcher {
           it.dispatchEvent({ type: 'onCollisionLeave', target: hand } as any);
         }
       }
+    }
+    this.updateDragState();
+  }
+
+  protected updateDragState() {
+    for (const pointer of this.handPointers) {
+      if (!pointer) continue;
+
+      const side: 'left' | 'right' = pointer.name as any;
+      const dragingObject: Entity = this.dragState.draging[side] as any;
+      const state = this.dragState.state[side];
+
+      if (state === 'pinched') {
+        // release
+        if (!pointer.pinched) {
+          const delta = pointer.children[0].position.clone().sub(this.dragState.positions[side]);
+          this.dragState.draging[side] = undefined;
+          this.dragState.state[side] = 'none';
+          this.currentScene.add(dragingObject);
+          pointer.setAttached(false);
+          dragingObject.position.add(delta);
+          dragingObject.scale.set(1, 1, 1);
+          dragingObject.dispatchEvent({ type: 'onDrop', target: pointer } as any);
+        }
+        continue;
+      } else if (!pointer.pinched) {
+        continue;
+      }
+
+      let distance = 10000;
+      let nearObject: Entity | undefined;
+
+      for (const it of this.currentScene.children as Entity[]) {
+        if (it.bodyType === BodyType.Ghost) {
+          continue;
+        }
+        const intersections = pointer.intersectObject(it, false);
+        if (!intersections || !intersections.length) {
+          continue;
+        }
+        if (intersections[0].distance < distance) {
+          distance = intersections[0].distance;
+          nearObject = it;
+        }
+      }
+
+      if (!nearObject) {
+        continue;
+      }
+
+      nearObject.scale.set(1.2, 1.2, 1.2);
+      pointer.setAttached(true);
+      this.dragState.draging[side] = nearObject;
+      this.dragState.state[side] = 'pinched';
+      this.dragState.positions[side].copy(pointer.children[0].position).sub(nearObject.position);
+      pointer.children[0].attach(nearObject);
+      nearObject.dispatchEvent({ type: 'onDragStart', target: pointer } as any);
     }
   }
 

@@ -31,7 +31,7 @@ export class PhysicalScene extends Scene {
       return;
     }
     this._gravity = val;
-    this.physics.world.setGravity(new Ammo.btVector3(0, this._gravity, 0));
+    this.physics.setGravity(this._gravity);
   }
 
   update(renderer: WebGLRenderer, camera: Camera, delta: number, now: number, globalOnly = false) {

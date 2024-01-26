@@ -109,10 +109,10 @@ export class Character<
 addThreeClass('Character', {
   create: ({ material, geometry }: any = {}) => new Character(geometry, material),
   members: {
-    'geo.radius': 'Number',
-    'geo.length': 'Number',
-    'geo.capSegments': 'Number',
-    'geo.radialSegments': 'Number',
+    'props.radius': 'Number',
+    'props.length': 'Number',
+    'props.capSegments': 'Number',
+    'props.radialSegments': 'Number',
   },
   proto: 'Model3D',
   group: 'Objects.Character',
