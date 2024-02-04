@@ -1,6 +1,6 @@
 import {
   WebGLRenderer, Scene, Camera, BufferGeometry, NormalBufferAttributes,
-  Material, Group, Object3DEventMap, Vector2, InstancedInterleavedBuffer, InterleavedBufferAttribute, Vector3,
+  Material, Group, Object3DEventMap, Vector2, Vector3,
 } from 'three';
 import { addThreeClass, } from './utils';
 import { BezierLineGeometry, BezierLineMaterial } from './line';
@@ -12,6 +12,8 @@ type RopeParamters = {
   anchor1?: string;
   anchor2?: string;
 };
+
+//// todos, unfinished
 
 export class Rope<
   TGeometry extends BezierLineGeometry = BezierLineGeometry,
@@ -92,18 +94,18 @@ export class Rope<
       ropePositions[indexFloat++] = nodePos.z();
     }
 
-    let lineSegments;
+    // let lineSegments;
 
-    if (array instanceof Float32Array) {
-      lineSegments = array;
-    } else if (Array.isArray(array)) {
-      lineSegments = new Float32Array(array);
-    }
+    // if (array instanceof Float32Array) {
+    //   lineSegments = array;
+    // } else if (Array.isArray(array)) {
+    //   lineSegments = new Float32Array(array);
+    // }
 
-    const instanceBuffer = new InstancedInterleavedBuffer(lineSegments, 6, 1); // xyz, xyz
+    // const instanceBuffer = new InstancedInterleavedBuffer(lineSegments, 6, 1); // xyz, xyz
 
-    geo.setAttribute('instanceStart', new InterleavedBufferAttribute(instanceBuffer, 3, 0)); // xyz
-    geo.setAttribute('instanceEnd', new InterleavedBufferAttribute(instanceBuffer, 3, 3)); // xyz
+    // geo.setAttribute('instanceStart', new InterleavedBufferAttribute(instanceBuffer, 3, 0)); // xyz
+    // geo.setAttribute('instanceEnd', new InterleavedBufferAttribute(instanceBuffer, 3, 3)); // xyz
 
     //
 
